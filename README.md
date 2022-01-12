@@ -1,0 +1,3 @@
+# sicau_device_management
+
+四川农业大学设备管理项目后端代码仓库
