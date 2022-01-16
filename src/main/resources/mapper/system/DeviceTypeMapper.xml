@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sicau.devicemanagement.mapper.DeviceTypeMapper">
+
+    <resultMap type="DeviceType" id="DeviceTypeResult">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="total" column="total"/>
+        <result property="inventory" column="inventory"/>
+        <result property="precautions" column="precautions"/>
+        <result property="introduction" column="introduction"/>
+    </resultMap>
+
+    <sql id="selectDeviceTypeVo">
+        select id, name, total, inventory, precautions, introduction
+        from device_type
+    </sql>
+
+    <select id="selectDeviceTypeList" parameterType="DeviceType" resultMap="DeviceTypeResult">
+        <include refid="selectDeviceTypeVo"/>
+        <where>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="total != null ">and total = #{total}</if>
+            <if test="inventory != null ">and inventory = #{inventory}</if>
+            <if test="precautions != null  and precautions != ''">and precautions = #{precautions}</if>
+            <if test="introduction != null  and introduction != ''">and introduction = #{introduction}</if>
+        </where>
+    </select>
+
+    <select id="selectDeviceTypeById" parameterType="String" resultMap="DeviceTypeResult">
+        <include refid="selectDeviceTypeVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDeviceType" parameterType="DeviceType">
+        insert into device_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="total != null">total,</if>
+            <if test="inventory != null">inventory,</if>
+            <if test="precautions != null">precautions,</if>
+            <if test="introduction != null">introduction,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="total != null">#{total},</if>
+            <if test="inventory != null">#{inventory},</if>
+            <if test="precautions != null">#{precautions},</if>
+            <if test="introduction != null">#{introduction},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDeviceType" parameterType="DeviceType">
+        update device_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="total != null">total = #{total},</if>
+            <if test="inventory != null">inventory = #{inventory},</if>
+            <if test="precautions != null">precautions = #{precautions},</if>
+            <if test="introduction != null">introduction = #{introduction},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDeviceTypeById" parameterType="String">
+        delete
+        from device_type
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteDeviceTypeByIds" parameterType="String">
+        delete from device_type where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

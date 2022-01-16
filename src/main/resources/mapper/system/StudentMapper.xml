@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sicau.devicemanagement.mapper.StudentMapper">
+
+    <resultMap type="Student" id="StudentResult">
+        <result property="uid" column="uid"/>
+        <result property="stuNumber" column="stu_number"/>
+        <result property="name" column="name"/>
+        <result property="password" column="password"/>
+        <result property="tel" column="tel"/>
+        <result property="teacherId" column="teacher_id"/>
+        <result property="collegeId" column="college_id"/>
+        <result property="majorClass" column="major_class"/>
+        <result property="roleId" column="role_id"/>
+    </resultMap>
+
+    <sql id="selectStudentVo">
+        select uid,
+               stu_number,
+               name,
+               password,
+               tel,
+               teacher_id,
+               college_id,
+               major_class,
+               role_id
+        from student
+    </sql>
+
+    <select id="selectStudentList" parameterType="Student" resultMap="StudentResult">
+        <include refid="selectStudentVo"/>
+        <where>
+            <if test="stuNumber != null  and stuNumber != ''">and stu_number = #{stuNumber}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="password != null  and password != ''">and password = #{password}</if>
+            <if test="tel != null  and tel != ''">and tel = #{tel}</if>
+            <if test="teacherId != null  and teacherId != ''">and teacher_id = #{teacherId}</if>
+            <if test="collegeId != null  and collegeId != ''">and college_id = #{collegeId}</if>
+            <if test="majorClass != null  and majorClass != ''">and major_class = #{majorClass}</if>
+            <if test="roleId != null  and roleId != ''">and role_id = #{roleId}</if>
+        </where>
+    </select>
+
+    <select id="selectStudentByUid" parameterType="String" resultMap="StudentResult">
+        <include refid="selectStudentVo"/>
+        where uid = #{uid}
+    </select>
+
+    <insert id="insertStudent" parameterType="Student">
+        insert into student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uid != null">uid,</if>
+            <if test="stuNumber != null and stuNumber != ''">stu_number,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="password != null and password != ''">password,</if>
+            <if test="tel != null and tel != ''">tel,</if>
+            <if test="teacherId != null and teacherId != ''">teacher_id,</if>
+            <if test="collegeId != null and collegeId != ''">college_id,</if>
+            <if test="majorClass != null and majorClass != ''">major_class,</if>
+            <if test="roleId != null and roleId != ''">role_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="uid != null">#{uid},</if>
+            <if test="stuNumber != null and stuNumber != ''">#{stuNumber},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="password != null and password != ''">#{password},</if>
+            <if test="tel != null and tel != ''">#{tel},</if>
+            <if test="teacherId != null and teacherId != ''">#{teacherId},</if>
+            <if test="collegeId != null and collegeId != ''">#{collegeId},</if>
+            <if test="majorClass != null and majorClass != ''">#{majorClass},</if>
+            <if test="roleId != null and roleId != ''">#{roleId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStudent" parameterType="Student">
+        update student
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stuNumber != null and stuNumber != ''">stu_number = #{stuNumber},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="tel != null and tel != ''">tel = #{tel},</if>
+            <if test="teacherId != null and teacherId != ''">teacher_id = #{teacherId},</if>
+            <if test="collegeId != null and collegeId != ''">college_id = #{collegeId},</if>
+            <if test="majorClass != null and majorClass != ''">major_class = #{majorClass},</if>
+            <if test="roleId != null and roleId != ''">role_id = #{roleId},</if>
+        </trim>
+        where uid = #{uid}
+    </update>
+
+    <delete id="deleteStudentByUid" parameterType="String">
+        delete
+        from student
+        where uid = #{uid}
+    </delete>
+
+    <delete id="deleteStudentByUids" parameterType="String">
+        delete from student where uid in
+        <foreach item="uid" collection="array" open="(" separator="," close=")">
+            #{uid}
+        </foreach>
+    </delete>
+</mapper>
