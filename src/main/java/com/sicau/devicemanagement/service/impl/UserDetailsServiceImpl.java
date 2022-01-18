@@ -53,7 +53,6 @@ public class UserDetailsServiceImpl implements UserDetailsService
 //            log.info("登录用户：{} 已被删除.", username);
 //            throw new UsernameNotFoundException("用户被删除");
 //        }
-        System.out.println("==========");
         return createLoginUser(user);
     }
 

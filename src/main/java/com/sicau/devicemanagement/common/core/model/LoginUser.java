@@ -1,8 +1,11 @@
 package com.sicau.devicemanagement.common.core.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sicau.devicemanagement.entity.User;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,8 +18,10 @@ import java.util.Collection;
  * @author ruoyi
  */
 @Data
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LoginUser implements UserDetails {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1214213423L;
 
     /**
      * 用户ID
@@ -62,6 +67,7 @@ public class LoginUser implements UserDetails {
         return user.getPassword();
     }
 
+    @JSONField(serialize = false)
     @Override
     public String getUsername() {
         System.out.println("==============username");

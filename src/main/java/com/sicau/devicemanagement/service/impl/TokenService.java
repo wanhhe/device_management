@@ -6,11 +6,15 @@ import com.sicau.devicemanagement.common.core.redis.RedisCache;
 import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 
+import com.sicau.devicemanagement.exception.GlobalExceptionHandler;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class TokenService
 {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     // 令牌自定义标识
     @Value("${token.header}")
     private String header;
@@ -52,6 +57,7 @@ public class TokenService
      *
      * @return 用户信息
      */
+
     public LoginUser getLoginUser(HttpServletRequest request)
     {
         // 获取请求携带的令牌
@@ -69,6 +75,7 @@ public class TokenService
             }
             catch (Exception e)
             {
+                log.error("错误{}",e.getMessage());
             }
         }
         return null;
@@ -131,7 +138,7 @@ public class TokenService
     }
 
     /**
-     * 刷新令牌有效期
+     * 刷新令牌有效期 && 缓存用户信息
      *
      * @param loginUser 登录信息
      */
