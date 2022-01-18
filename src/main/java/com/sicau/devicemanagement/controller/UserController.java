@@ -14,10 +14,7 @@ import com.sicau.devicemanagement.mapper.TeacherMapper;
 import com.sicau.devicemanagement.service.impl.SysLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author zx
@@ -61,5 +58,10 @@ public class UserController extends BaseController {
         teacher.setPassword(bCryptPasswordEncoder.encode(teacher.getPassword()));
         teacherMapper.insert(teacher);
         return success();
+    }
+
+    @GetMapping("/test")
+    public String test(){
+        return "test";
     }
 }
