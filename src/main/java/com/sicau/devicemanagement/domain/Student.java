@@ -1,6 +1,7 @@
 package com.sicau.devicemanagement.domain;
 
 import com.sicau.devicemanagement.common.annotation.Excel;
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -10,7 +11,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author ruoyi
  * @date 2022-01-15
  */
-public class Student
+@Data
+public class Student extends User
 {
     private static final long serialVersionUID = 1L;
 
@@ -48,6 +50,9 @@ public class Student
     /** 角色id */
     @Excel(name = "角色id")
     private String roleId;
+
+
+    private Integer isDel;
 
     public void setUid(String uid) 
     {

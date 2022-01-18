@@ -2,7 +2,7 @@ package com.sicau.devicemanagement.service.impl;
 
 
 import com.sicau.devicemanagement.common.constant.Constants;
-import com.sicau.devicemanagement.common.core.model.LoginUser;
+import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.common.core.redis.RedisCache;
 import com.sicau.devicemanagement.exception.CaptchaException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +36,13 @@ public class SysLoginService {
      * @param password 密码
      * @param code     验证码
      * @param uuid     唯一标识
+     * @param type     用户类型
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid) throws CaptchaException {
-        validateCaptcha(username, code, uuid);
+    public String login(String username, String password, String code, String uuid,String type) throws CaptchaException {
+        /* 验证码校验 */
+        validateCaptcha(code, uuid);
+        username = username+"::"+type;
         // 用户验证
         Authentication authentication = null;
         try {
@@ -57,12 +60,11 @@ public class SysLoginService {
     /**
      * 校验验证码
      *
-     * @param username 用户名
      * @param code     验证码
      * @param uuid     唯一标识
      * @return 结果
      */
-    public void validateCaptcha(String username, String code, String uuid) throws CaptchaException {
+    public void validateCaptcha(String code, String uuid) throws CaptchaException {
         String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
         String captcha = redisCache.getCacheObject(verifyKey);
         // TODO 为了测试

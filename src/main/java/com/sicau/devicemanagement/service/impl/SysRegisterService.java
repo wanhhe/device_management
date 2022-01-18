@@ -1,7 +1,7 @@
 package com.sicau.devicemanagement.service.impl;
 
 import com.sicau.devicemanagement.common.constant.Constants;
-import com.sicau.devicemanagement.common.core.model.RegisterBody;
+import com.sicau.devicemanagement.domain.model.RegisterBody;
 import com.sicau.devicemanagement.common.core.redis.RedisCache;
 import com.sicau.devicemanagement.exception.CaptchaException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class SysRegisterService
      */
     public String register(RegisterBody registerBody)
     {
-        String msg = "", username = registerBody.getUsername(), password = registerBody.getPassword();
+        String msg = "", username = registerBody.getName(), password = registerBody.getPassword();
 
         //TODO
         return msg;

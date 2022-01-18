@@ -1,6 +1,6 @@
 package com.sicau.devicemanagement.security.filter;
 
-import com.sicau.devicemanagement.common.core.model.LoginUser;
+import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.common.utils.SecurityUtils;
 import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.service.impl.TokenService;

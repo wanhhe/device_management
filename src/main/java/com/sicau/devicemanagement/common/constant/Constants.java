@@ -14,6 +14,16 @@ public class Constants
 {
 
     /**
+     * 老师
+     */
+    public static final  String TEACHER = "teacher";
+
+    /**
+     * 学生
+     */
+    public static final  String STUDENT = "student";
+
+    /**
      * linux服务器文件上传地址
      */
     public static final String LINUX_UPLOAD = "/upload";

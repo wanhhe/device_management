@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sicau.devicemanagement.domain.Teacher;
+import org.springframework.stereotype.Component;
 
 /**
  * 【请填写功能名称】Mapper接口
@@ -11,6 +12,7 @@ import com.sicau.devicemanagement.domain.Teacher;
  * @author ruoyi
  * @date 2022-01-15
  */
+@Component
 public interface TeacherMapper extends BaseMapper<Teacher>
 {
     /**

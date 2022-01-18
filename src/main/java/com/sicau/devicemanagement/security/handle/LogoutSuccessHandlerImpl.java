@@ -3,7 +3,7 @@ package com.sicau.devicemanagement.security.handle;
 import com.alibaba.fastjson.JSON;
 import com.sicau.devicemanagement.common.constant.HttpStatus;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
-import com.sicau.devicemanagement.common.core.model.LoginUser;
+import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.common.utils.ServletUtils;
 import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.service.impl.TokenService;

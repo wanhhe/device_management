@@ -1,6 +1,6 @@
 package com.sicau.devicemanagement.service;
 
-import com.sicau.devicemanagement.entity.User;
+import com.sicau.devicemanagement.domain.User;
 import org.springframework.stereotype.Component;
 
 @Component

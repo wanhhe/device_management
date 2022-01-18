@@ -1,7 +1,7 @@
 package com.sicau.devicemanagement.service.impl;
 
 import com.sicau.devicemanagement.common.constant.Constants;
-import com.sicau.devicemanagement.common.core.model.LoginUser;
+import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.common.core.redis.RedisCache;
 import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;

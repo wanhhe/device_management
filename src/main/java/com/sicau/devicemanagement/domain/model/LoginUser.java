@@ -1,9 +1,8 @@
-package com.sicau.devicemanagement.common.core.model;
+package com.sicau.devicemanagement.domain.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sicau.devicemanagement.entity.User;
-import lombok.AllArgsConstructor;
+import com.sicau.devicemanagement.domain.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -63,14 +62,12 @@ public class LoginUser implements UserDetails {
     @JSONField(serialize = false)
     @Override
     public String getPassword() {
-        System.out.println("==============password");
         return user.getPassword();
     }
 
     @JSONField(serialize = false)
     @Override
     public String getUsername() {
-        System.out.println("==============username");
         return user.getName();
     }
 

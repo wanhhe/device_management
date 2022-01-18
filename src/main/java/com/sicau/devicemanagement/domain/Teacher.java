@@ -13,7 +13,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @date 2022-01-15
  */
 @TableName("teacher")
-public class Teacher
+public class Teacher extends User
 {
     private static final long serialVersionUID = 1L;
 

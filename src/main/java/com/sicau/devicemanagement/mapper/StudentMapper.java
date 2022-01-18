@@ -1,7 +1,10 @@
 package com.sicau.devicemanagement.mapper;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sicau.devicemanagement.domain.Student;
+import org.springframework.stereotype.Component;
 
 /**
  * 【请填写功能名称】Mapper接口
@@ -9,7 +12,9 @@ import com.sicau.devicemanagement.domain.Student;
  * @author ruoyi
  * @date 2022-01-15
  */
-public interface StudentMapper 
+
+@Component
+public interface StudentMapper extends BaseMapper<Student>
 {
     /**
      * 查询【请填写功能名称】

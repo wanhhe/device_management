@@ -1,4 +1,4 @@
-package com.sicau.devicemanagement.common.core.model;
+package com.sicau.devicemanagement.domain.model;
 
 import lombok.Data;
 
@@ -13,7 +13,7 @@ public class LoginBody
     /**
      * 用户名
      */
-    private String username;
+    private String name;
 
     /**
      * 用户密码
@@ -29,5 +29,10 @@ public class LoginBody
      * 唯一标识
      */
     private String uuid = "";
+
+    /**
+     * 用户类型
+     */
+    private String type;
 
 }

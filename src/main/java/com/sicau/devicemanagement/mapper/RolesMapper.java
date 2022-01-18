@@ -1,6 +1,9 @@
 package com.sicau.devicemanagement.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sicau.devicemanagement.domain.Roles;
+import org.mapstruct.Mapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -10,7 +13,8 @@ import java.util.List;
  * @author ruoyi
  * @date 2022-01-15
  */
-public interface RolesMapper 
+@Component
+public interface RolesMapper extends BaseMapper<Roles>
 {
     /**
      * 查询【请填写功能名称】
