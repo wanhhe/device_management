@@ -33,6 +33,26 @@ public interface StudentMapper extends BaseMapper<Student>
     public List<Student> selectStudentList(Student student);
 
     /**
+     * 根据学号选择uid
+     *
+     * @param stuNumber 斯图号
+     * @return {@link String }
+     * @author sora
+     * @date 2022/01/19
+     */
+    public String selectStudentUidByStuNumber(String stuNumber);
+
+    /**
+     * 查询指导老师id
+     *
+     * @param uid uid
+     * @return {@link String }
+     * @author sora
+     * @date 2022/01/19
+     */
+    public String selectTeacherId(String uid);
+
+    /**
      * 新增【请填写功能名称】
      * 
      * @param student 【请填写功能名称】

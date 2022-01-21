@@ -1,5 +1,6 @@
 package com.sicau.devicemanagement.mapper;
 
+import com.sicau.devicemanagement.common.core.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.domain.Device;
 
 import java.util.List;
@@ -28,6 +29,25 @@ public interface DeviceMapper
      * @return 【请填写功能名称】集合
      */
     public List<Device> selectDeviceList(Device device);
+
+    /**
+     * 统计设备总数
+     *
+     * @return int
+     * @author sora
+     * @date 2022/01/18
+     */
+    public int countTotalDeviceNumber();
+
+    /**
+     * 根据设备状态统计数量
+     *
+     * @param status 状态
+     * @return int
+     * @author sora
+     * @date 2022/01/18
+     */
+    public int countDeviceByStatus(String status);
 
     /**
      * 新增【请填写功能名称】

@@ -7,6 +7,8 @@ import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 
 import com.sicau.devicemanagement.exception.GlobalExceptionHandler;
+import com.sicau.devicemanagement.mapper.StudentMapper;
+import com.sicau.devicemanagement.mapper.TeacherMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -50,6 +52,12 @@ public class TokenService
 
     @Autowired
     private RedisCache redisCache;
+
+    @Autowired
+    private TeacherMapper teacherMapper;
+
+    @Autowired
+    private StudentMapper studentMapper;
 
     /**
      * 获取用户身份信息
@@ -189,6 +197,30 @@ public class TokenService
     {
         Claims claims = parseToken(token);
         return claims.getSubject();
+    }
+
+    /**
+     * 得到老师的uid
+     *
+     * @param token 令牌
+     * @return {@link String }
+     * @author sora
+     * @date 2022/01/21
+     */
+    public String getTeacherUidFromToken(String token) {
+        return teacherMapper.selectUidByEmployeeId(getUsernameFromToken(token));
+    }
+
+    /**
+     * 得到学生uid
+     *
+     * @param token 令牌
+     * @return {@link String }
+     * @author sora
+     * @date 2022/01/21
+     */
+    public String getStudentUidFromToken(String token) {
+        return studentMapper.selectStudentUidByStuNumber(getUsernameFromToken(token));
     }
 
     /**

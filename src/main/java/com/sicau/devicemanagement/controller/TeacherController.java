@@ -3,22 +3,17 @@ package com.sicau.devicemanagement.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sicau.devicemanagement.common.constant.HttpStatus;
 import com.sicau.devicemanagement.common.core.controller.BaseController;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
 import com.sicau.devicemanagement.domain.Teacher;
 import com.sicau.devicemanagement.service.ITeacherService;
+import com.sicau.devicemanagement.service.impl.TokenService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 【请填写功能名称】Controller
@@ -32,6 +27,9 @@ public class TeacherController extends BaseController
 {
     @Autowired
     private ITeacherService teacherService;
+
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 查询【请填写功能名称】列表
@@ -95,5 +93,69 @@ public class TeacherController extends BaseController
     public AjaxResult remove(@PathVariable String[] uids)
     {
         return toAjax(teacherService.deleteTeacherByUids(uids));
+    }
+
+    /**
+     * 下属学生未归还的设备
+     *
+     * @param id 老师id
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/01/19
+     */
+    @GetMapping("/unreturn/student/{id}")
+    public AjaxResult belongStudentUnreturnDevice(@PathVariable("id") String id) {
+        return null;
+    }
+
+    /**
+     * 外借的还未归还该教师的设备
+     *
+     * @param id 该教师的id
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/01/19
+     */
+    @GetMapping("/unreturn/owner/{id}")
+    public AjaxResult lentDeviceUnreturn(@PathVariable("id") String id) {
+        return null;
+    }
+
+    /**
+     * 延长下属学生时间
+     *
+     * @param stuId 要延长的学生账户的id
+     * @param month 月
+     * @param token 令牌
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/01/19
+     */
+    @PutMapping("/sub/{id}")
+    public AjaxResult prolongSubordinateStudentAccount(@PathVariable("id") String stuId,
+                                                       @RequestParam("month") int month,
+                                                       @RequestHeader("Authorization") String token) {
+        return null;
+    }
+
+    /**
+     * 管理员或指导老师封禁下属学生账户
+     *
+     * @param stuId 要封禁的学生账户id
+     * @param token 令牌
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/01/19
+     */
+    @DeleteMapping("/sub/{id}")
+    public AjaxResult banSubordinateStudentAccount(@PathVariable("id") String stuId, @RequestHeader("Authorization") String token) {
+        String tid = tokenService.getTeacherUidFromToken(token);
+        // 判断是否有权限封禁
+        boolean flag = teacherService.isStudentMasterOrAdmin(tid, stuId);
+        if (!flag) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "您无权封禁该账户");
+        }
+        teacherService.banStudent(stuId);
+        return AjaxResult.success();
     }
 }

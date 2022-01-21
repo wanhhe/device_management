@@ -40,7 +40,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectDeviceVo"/>
         where id = #{id}
     </select>
-        
+
+    <select id="countTotalDeviceNumber" resultType="java.lang.Integer">
+        select count(*)
+        from `device`;
+    </select>
+
+    <select id="countDeviceByStatus" resultType="java.lang.Integer">
+        select count(*)
+        from `device`
+        where `status` = #{status}
+    </select>
+
     <insert id="insertDevice" parameterType="Device">
         insert into device
         <trim prefix="(" suffix=")" suffixOverrides=",">

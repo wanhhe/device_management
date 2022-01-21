@@ -60,4 +60,25 @@ public interface ITeacherService
      * @return 结果
      */
     public int deleteTeacherByUid(String uid);
+
+    /**
+     * 删除学生账号
+     *
+     * @param sid sid
+     * @return boolean
+     * @author sora
+     * @date 2022/01/19
+     */
+    public void banStudent(String sid);
+
+    /**
+     * 判断是否是学生指导老师或是管理员
+     *
+     * @param tid tid
+     * @param sid sid
+     * @return boolean
+     * @author sora
+     * @date 2022/01/19
+     */
+    public boolean isStudentMasterOrAdmin(String tid, String sid);
 }
