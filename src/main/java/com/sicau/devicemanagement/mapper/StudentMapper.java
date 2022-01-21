@@ -1,6 +1,8 @@
 package com.sicau.devicemanagement.mapper;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sicau.devicemanagement.domain.Student;
 
 /**
@@ -9,7 +11,7 @@ import com.sicau.devicemanagement.domain.Student;
  * @author ruoyi
  * @date 2022-01-15
  */
-public interface StudentMapper 
+public interface StudentMapper extends BaseMapper<Student>
 {
     /**
      * 查询【请填写功能名称】
@@ -26,6 +28,26 @@ public interface StudentMapper
      * @return 【请填写功能名称】集合
      */
     public List<Student> selectStudentList(Student student);
+
+    /**
+     * 根据学号选择uid
+     *
+     * @param stuNumber 斯图号
+     * @return {@link String }
+     * @author sora
+     * @date 2022/01/19
+     */
+    public String selectStudentUidByStuNumber(String stuNumber);
+
+    /**
+     * 查询指导老师id
+     *
+     * @param uid uid
+     * @return {@link String }
+     * @author sora
+     * @date 2022/01/19
+     */
+    public String selectTeacherId(String uid);
 
     /**
      * 新增【请填写功能名称】

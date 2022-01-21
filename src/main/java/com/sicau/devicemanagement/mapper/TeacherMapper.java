@@ -30,6 +30,25 @@ public interface TeacherMapper extends BaseMapper<Teacher>
     public List<Teacher> selectTeacherList(Teacher teacher);
 
     /**
+     * 根据工号选择uid
+     *
+     * @param employeeId 雇员id
+     * @return {@link String }
+     * @author sora
+     * @date 2022/01/19
+     */
+    public String selectUidByEmployeeId(String employeeId);
+
+    /**
+     * 查询管理员uid
+     *
+     * @return {@link List<String> }
+     * @author sora
+     * @date 2022/01/19
+     */
+    public List<String> selectAdminUid();
+
+    /**
      * 新增【请填写功能名称】
      * 
      * @param teacher 【请填写功能名称】

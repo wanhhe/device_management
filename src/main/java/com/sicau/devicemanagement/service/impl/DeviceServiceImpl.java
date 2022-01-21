@@ -2,6 +2,7 @@ package com.sicau.devicemanagement.service.impl;
 
 import java.util.List;
 
+import com.sicau.devicemanagement.common.core.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.domain.Device;
 import com.sicau.devicemanagement.mapper.DeviceMapper;
 import com.sicau.devicemanagement.service.IDeviceService;
@@ -20,6 +21,9 @@ public class DeviceServiceImpl implements IDeviceService
 {
     @Autowired
     private DeviceMapper deviceMapper;
+
+    @Autowired
+    private SmsService smsService;
 
     /**
      * 查询【请填写功能名称】
@@ -91,5 +95,103 @@ public class DeviceServiceImpl implements IDeviceService
     public int deleteDeviceById(String id)
     {
         return deviceMapper.deleteDeviceById(id);
+    }
+
+    @Override
+    public DeviceUsingSituation queryDeviceTotalStatus() {
+        int total = deviceMapper.countTotalDeviceNumber();
+        int using = deviceMapper.countDeviceByStatus(DeviceUsingSituation.DevcieRentStatus.DEVICE_USING.status());
+        int overtime = deviceMapper.countDeviceByStatus(DeviceUsingSituation.DevcieRentStatus.DEVICE_OVERTIME.status());
+        DeviceUsingSituation deviceUsingSituation = new DeviceUsingSituation();
+        deviceUsingSituation.setTotal(total);
+        deviceUsingSituation.setUsing(using);
+        deviceUsingSituation.setOvertime(overtime);
+        return deviceUsingSituation;
+    }
+
+    /**
+     * 老师开始使用设备
+     *
+     * @param uid uid
+     * @param id  id
+     * @author sora
+     * @date 2022/01/19
+     */
+    @Override
+    public void teacherStartUsingDevice(String uid, String id) {
+        smsService.sendStartSms(uid);
+    }
+
+    /**
+     * 学生开始使用设备
+     *
+     * @param uid uid
+     * @param id  id
+     * @author sora
+     * @date 2022/01/19
+     */
+    @Override
+    public void studentStartUsingDevice(String uid, String id) {
+        smsService.sendStartSms(uid);
+    }
+
+    /**
+     * 老师正常结束使用设备
+     *
+     * @param uid uid
+     * @param id  id
+     * @author sora
+     * @date 2022/01/19
+     */
+    @Override
+    public void teacherFinishUsingDevice(String uid, String id) {
+
+    }
+
+    /**
+     * 学生正常结束使用设备
+     *
+     * @param uid uid
+     * @param id  id
+     * @author sora
+     * @date 2022/01/19
+     */
+    @Override
+    public void studentFinishUsingDevice(String uid, String id) {
+
+    }
+
+    /**
+     * 判断该时间段用户是否能够使用该设备
+     *
+     * @param uid uid
+     * @param id  id
+     * @return boolean
+     * @author sora
+     * @date 2022/01/19
+     */
+    @Override
+    public boolean isUserAccessDevice(String uid, String id) {
+        return false;
+    }
+
+    /**
+     * 是否是设备所有者
+     *
+     * @param uid uid
+     * @param id  id
+     * @return boolean
+     * @author sora
+     * @date 2022/01/19
+     */
+    @Override
+    public boolean isDeviceOwner(String uid, String id) {
+        String managerId = deviceMapper.selectDeviceById(id).getManagerId();
+        return uid.equals(managerId);
+    }
+
+    @Override
+    public void replaceDevice(String uid, String id) {
+
     }
 }

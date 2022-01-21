@@ -48,6 +48,18 @@
         where uid = #{uid}
     </select>
 
+    <select id="selectStudentUidByStuNumber" resultType="java.lang.String">
+        select `uid`
+        from `student`
+        where `stu_num` = #{stuNumber}
+    </select>
+
+    <select id="selectTeacherId" resultType="java.lang.String">
+        select `teacher_id`
+        from `student`
+        where `uid` = #{uid}
+    </select>
+
     <insert id="insertStudent" parameterType="Student">
         insert into student
         <trim prefix="(" suffix=")" suffixOverrides=",">

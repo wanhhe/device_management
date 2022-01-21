@@ -48,6 +48,19 @@
         where uid = #{uid}
     </select>
 
+    <select id="selectUidByEmployeeId" resultType="java.lang.String">
+        select `uid`
+        from `teacher`
+        where `employee_id` = #{employeeId}
+    </select>
+
+    <select id="selectAdminUid" resultType="java.lang.String">
+        select `uid`
+        from `teacher` as t inner join `roles` as r
+        on t.`role_id` = r.`role_id`
+        where r.name = "admin"
+    </select>
+
     <insert id="insertTeacher" parameterType="Teacher">
         insert into teacher
         <trim prefix="values (" suffix=")" suffixOverrides=",">
