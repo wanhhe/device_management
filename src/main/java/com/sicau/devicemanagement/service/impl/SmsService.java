@@ -22,44 +22,44 @@ public class SmsService {
     /**
      * 发送开始使用设备短信
      *
-     * @param id id
+     * @param tel tel
      * @author sora
      * @date 2022/01/18
      */
-    public void sendStartSms(String id) {
+    public void sendStartSms(String tel) {
 
     }
 
     /**
      * 发送短信提醒审核申请
      *
-     * @param id id
+     * @param tel tel
      * @author sora
      * @date 2022/01/18
      */
-    public void sendRemindAuditSms(String id) {
+    public void sendRemindAuditSms(String tel) {
 
     }
 
     /**
      * 向申请者发送拒绝借用申请的短信
      *
-     * @param id id
+     * @param tel tel
      * @author sora
      * @date 2022/01/18
      */
-    public void sendRejectApply(String id, String reason) {
+    public void sendRejectApply(String tel, String reason) {
 
     }
 
     /**
      * 修改用户联系方式时进行校验
      *
-     * @param id id
+     * @param tel tel
      * @author sora
      * @date 2022/01/18
      */
-    public void sendCheckSms(String id, String verifyCode) {
+    public void sendCheckSms(String tel, String verifyCode) {
 
     }
 }

@@ -59,4 +59,74 @@ public interface IRentApplyService
      * @return 结果
      */
     public int deleteRentApplyById(String id);
+
+    /**
+     * 老师开始使用设备
+     *
+     * @param uid uid
+     * @param id  申请使用id
+     * @author sora
+     * @date 2022/01/19
+     */
+    void teacherStartUsingDevice(String uid, String id);
+
+    /**
+     * 学生开始使用设备
+     *
+     * @param uid uid
+     * @param id  申请使用id
+     * @author sora
+     * @date 2022/01/19
+     */
+    void studentStartUsingDevice(String uid, String id);
+
+    /**
+     * 申请归还
+     *
+     * @param uid uid
+     * @param id  id
+     * @author sora
+     * @date 2022/01/21
+     */
+    void finishUse(String uid, String id);
+
+    /**
+     * 确认物品已归还
+     *
+     * @param id  id
+     * @author sora
+     * @date 2022/01/21
+     */
+    void confirmReturn(String id);
+
+    /**
+     * 设备报修
+     *
+     * @param id id
+     * @author sora
+     * @date 2022/01/21
+     */
+    void deviceBroken(String id);
+
+    /**
+     * 是否是借用设备的管理者
+     *
+     * @param uid uid
+     * @param id  id
+     * @return boolean
+     * @author sora
+     * @date 2022/01/21
+     */
+    boolean isDeviceOwner(String uid, String id);
+
+    /**
+     * 判断该时间段用户是否能够使用该设备
+     *
+     * @param uid uid
+     * @param id  申请使用id
+     * @return boolean
+     * @author sora
+     * @date 2022/01/19
+     */
+    boolean isUserAccessDevice(String uid, String id);
 }

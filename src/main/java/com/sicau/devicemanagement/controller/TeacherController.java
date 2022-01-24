@@ -104,7 +104,10 @@ public class TeacherController extends BaseController
      * @date 2022/01/19
      */
     @GetMapping("/unreturn/student/{id}")
-    public AjaxResult belongStudentUnreturnDevice(@PathVariable("id") String id) {
+    public AjaxResult belongStudentUnreturnDevice(@PathVariable("id") String id, @RequestHeader("Authorization") String token) {
+        if (!tokenService.getTeacherUidFromToken(token).equals(id)) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "token校验失败");
+        }
         return null;
     }
 
@@ -117,7 +120,11 @@ public class TeacherController extends BaseController
      * @date 2022/01/19
      */
     @GetMapping("/unreturn/owner/{id}")
-    public AjaxResult lentDeviceUnreturn(@PathVariable("id") String id) {
+    public AjaxResult lentDeviceUnreturn(@PathVariable("id") String id, @RequestHeader("Authorization") String token) {
+        // TODO: 2022/1/21 判断是不是管理员
+        if (!tokenService.getTeacherUidFromToken(token).equals(id)) {
+            return AjaxResult.error(HttpStatus.UNAUTHORIZED, "token校验失败");
+        }
         return null;
     }
 
@@ -135,6 +142,12 @@ public class TeacherController extends BaseController
     public AjaxResult prolongSubordinateStudentAccount(@PathVariable("id") String stuId,
                                                        @RequestParam("month") int month,
                                                        @RequestHeader("Authorization") String token) {
+        // 判断是否是下属学生或是否是管理员
+        String tid = tokenService.getTeacherUidFromToken(token);
+        boolean flag = teacherService.isStudentMasterOrAdmin(tid, stuId);
+        if (!flag) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "您无权进行该操作");
+        }
         return null;
     }
 

@@ -1,5 +1,6 @@
 package com.sicau.devicemanagement.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sicau.devicemanagement.common.core.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.domain.Device;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2022-01-15
  */
-public interface DeviceMapper 
+public interface DeviceMapper extends BaseMapper<Device>
 {
     /**
      * 查询【请填写功能名称】

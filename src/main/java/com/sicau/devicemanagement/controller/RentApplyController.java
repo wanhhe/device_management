@@ -3,22 +3,18 @@ package com.sicau.devicemanagement.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sicau.devicemanagement.common.constant.HttpStatus;
 import com.sicau.devicemanagement.common.core.controller.BaseController;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
 import com.sicau.devicemanagement.domain.RentApply;
+import com.sicau.devicemanagement.service.IDeviceService;
 import com.sicau.devicemanagement.service.IRentApplyService;
+import com.sicau.devicemanagement.service.impl.TokenService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -33,6 +29,12 @@ public class RentApplyController extends BaseController
 {
     @Autowired
     private IRentApplyService rentApplyService;
+
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private IDeviceService deviceService;
 
     /**
      * 查询【请填写功能名称】列表
@@ -96,5 +98,174 @@ public class RentApplyController extends BaseController
     public AjaxResult remove(@PathVariable String[] ids)
     {
         return toAjax(rentApplyService.deleteRentApplyByIds(ids));
+    }
+
+    /**
+     * 确认开始使用设备
+     *
+     * @param id 申请使用id
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/01/18
+     */
+    @GetMapping("/start")
+    public AjaxResult confirmStartUseDevice(@RequestParam("id") String id, @RequestHeader("Authorization") String token) {
+        String uid = tokenService.getStudentUidFromToken(token);
+        boolean access;
+        if (uid == null) {
+            uid = tokenService.getTeacherUidFromToken(token);
+            if (uid == null) {
+                return AjaxResult.error(HttpStatus.UNAUTHORIZED, "token校验失败");
+            }
+            // 判断是否能够使用设备
+            access = rentApplyService.isUserAccessDevice(uid,id);
+            if (!access) {
+                return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
+            }
+            rentApplyService.teacherStartUsingDevice(uid, id);
+            return AjaxResult.success();
+        }
+        // 判断是否能够使用设备
+        access = rentApplyService.isUserAccessDevice(uid, id);
+        if (!access) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
+        }
+        rentApplyService.studentStartUsingDevice(uid, id);
+        return AjaxResult.success();
+    }
+
+    /**
+     * 申请归还设备
+     *
+     * @param id 申请使用id
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/01/18
+     */
+    @GetMapping("/return")
+    public AjaxResult applyRetrunDevice(@RequestParam("id") String id, @RequestHeader("Authorization") String token) {
+        String uid = tokenService.getStudentUidFromToken(token);
+        // 判断是否能够结束设备
+        boolean access = rentApplyService.isUserAccessDevice(uid, id);
+        if (!access) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权结束该设备!");
+        }
+        rentApplyService.finishUse(uid, id);
+        return AjaxResult.success();
+    }
+
+    /**
+     * 管理老师确认设备已归还
+     *
+     * @param id    申请使用id
+     * @param token 令牌
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/01/21
+     */
+    @GetMapping("/return/confirm")
+    public AjaxResult confirmReturnDevice(@RequestParam("id") String id,
+                                          @RequestHeader("Authorization") String token,
+                                          @RequestParam("broken") boolean broken) {
+        String uid = tokenService.getStudentUidFromToken(token);
+        // 判断是否能够确认归还
+        boolean flag = rentApplyService.isDeviceOwner(uid, id);
+        if (!flag) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "您不是设备管理者!");
+        }
+        if (broken) { // 如果设备损坏，更新设备状态
+            rentApplyService.deviceBroken(id);
+        } else {
+            rentApplyService.confirmReturn(id);
+        }
+        return AjaxResult.success();
+    }
+
+    /**
+     * 在使用之前已经设备损坏
+     *
+     * @param id    申请使用id
+     * @param token 令牌
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/01/19
+     */
+    @GetMapping("/damage/before")
+    public AjaxResult hasDamagedBeforeUseDevice(@RequestParam("id") String id, @RequestHeader("Authorization") String token) {
+        String uid = tokenService.getStudentUidFromToken(token);
+        boolean access;
+        if (uid == null) {
+            uid = tokenService.getTeacherUidFromToken(token);
+            if (uid == null) {
+                return AjaxResult.error(HttpStatus.UNAUTHORIZED, "token校验失败");
+            }
+            // 判断是否能够使用设备
+            access = rentApplyService.isUserAccessDevice(uid,id);
+            if (!access) {
+                return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
+            }
+            rentApplyService.teacherStartUsingDevice(uid, id);
+            return AjaxResult.success();
+        }
+        // 判断是否能够使用设备
+        access = rentApplyService.isUserAccessDevice(uid, id);
+        if (!access) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
+        }
+        rentApplyService.finishUse(uid, id);
+        return AjaxResult.success();
+    }
+
+    /**
+     * 设备损坏，申请替换设备
+     *
+     * @param id    申请使用id
+     * @param token 令牌
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/01/21
+     */
+    @GetMapping("/damage/replacement")
+    public AjaxResult replaceDeviceBecauseDamage(@RequestParam("id") String id, @RequestHeader("Authorization") String token) {
+        String uid = tokenService.getStudentUidFromToken(token);
+        boolean access;
+        if (uid == null) {
+            uid = tokenService.getTeacherUidFromToken(token);
+            if (uid == null) {
+                return AjaxResult.error(HttpStatus.UNAUTHORIZED, "token校验失败");
+            }
+            // 判断是否能够使用设备
+            access = rentApplyService.isUserAccessDevice(uid,id);
+            if (!access) {
+                return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
+            }
+            rentApplyService.teacherStartUsingDevice(uid, id);
+            return AjaxResult.success();
+        }
+        // 判断是否能够使用设备
+        access = rentApplyService.isUserAccessDevice(uid, id);
+        if (!access) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
+        }
+        deviceService.replaceDevice(uid, id);
+        return AjaxResult.success();
+    }
+
+    /**
+     * 使用设备后设备损坏
+     *
+     * @param id    申请使用id
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/01/19
+     */
+    @GetMapping("/damage/after")
+    public AjaxResult hasDamageAfterUseDevice(@RequestParam("id") String id, @RequestHeader("Authorization") String token) {
+        String uid = tokenService.getTeacherUidFromToken(token);
+        boolean flag = deviceService.isDeviceOwner(uid, id);
+        if (!flag) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "您不是该设备的拥有者，无权结束该设备使用!");
+        }
+        return null;
     }
 }

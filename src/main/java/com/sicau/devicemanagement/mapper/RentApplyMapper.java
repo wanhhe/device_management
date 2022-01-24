@@ -1,5 +1,6 @@
 package com.sicau.devicemanagement.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sicau.devicemanagement.domain.RentApply;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2022-01-15
  */
-public interface RentApplyMapper 
+public interface RentApplyMapper extends BaseMapper<RentApply>
 {
     /**
      * 查询【请填写功能名称】
@@ -59,4 +60,57 @@ public interface RentApplyMapper
      * @return 结果
      */
     public int deleteRentApplyByIds(String[] ids);
+
+    /**
+     * 该用户在该时间段内能使用的申请
+     *
+     * @param uid  uid
+     * @param time 时间
+     * @return {@link List<String> }
+     * @author sora
+     * @date 2022/01/21
+     */
+    public List<String> selectUserAccessApply(String uid, String time);
+
+    /**
+     * 通过id查找设备管理者
+     *
+     * @param id id
+     * @return {@link String }
+     * @author sora
+     * @date 2022/01/21
+     */
+    public String selectOwnerById(String id);
+
+    /**
+     * 更新申请状态
+     *
+     * @param id id
+     * @return int
+     * @author sora
+     * @date 2022/01/21
+     */
+    public int updateStatus(String id, String status);
+
+    /**
+     * 查找申请同样类型设备，且申请时间在当前时间之后的所有老师id
+     *
+     * @param typeId id类型
+     * @param time   时间
+     * @return {@link List<String> }
+     * @author sora
+     * @date 2022/01/21
+     */
+    public List<String> selectNowApplyTeacherTelByDeviceTypeId(String typeId, String time);
+
+    /**
+     * 查找申请同样设备，且申请时间在当前时间之后的所有老师id
+     *
+     * @param typeId id类型
+     * @param time   时间
+     * @return {@link List<String> }
+     * @author sora
+     * @date 2022/01/21
+     */
+    public List<String> selectNowApplyStudentTelByDeviceTypeId(String typeId, String time);
 }

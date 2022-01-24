@@ -49,7 +49,44 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectRentApplyVo"/>
         where id = #{id}
     </select>
-        
+
+    <select id="selectUserAccessApply" resultType="java.lang.String">
+        select `id`
+        from `rent_apply` as ra inner join `schedule` as s
+        on ra.`schedule_id` = s.`id`
+        where ra.`device_status` = '待使用' and ra.`applicants_id` = #{uid}
+          and #{time} between s.`begin_time` and `end_time`
+    </select>
+
+    <select id="selectOwnerById" resultType="java.lang.String">
+        select d.`manager_id`
+        from `rent_apply` as ra inner join `device` as d
+        on ra.`device_id` = d.`id`
+        where ra.`id` = #{id}
+    </select>
+
+    <select id="selectNowApplyTeacherTelByDeviceTypeId" resultType="java.lang.String">
+        select t.`tel`
+        from `teacher` as t
+        where t.`uid` in (
+            select ra.`applicants_id`
+            from `rent_apply` as ra inner join `schedule` as s
+            on ra.`schedule_id` = s.id
+            where ra.`device_type_id` = #{typeId} and s.`begin_time` > #{time}
+        )
+    </select>
+
+    <select id="selectNowApplyStudentTelByDeviceTypeId" resultType="java.lang.String">
+        select stu.`tel`
+        from `student` as stu
+        where stu.`uid` in (
+            select ra.`applicants_id`
+            from `rent_apply` as ra inner join `schedule` as s
+            on ra.`schedule_id` = s.id
+            where ra.`device_type_id` = #{typeId} and s.`begin_time` > #{time}
+        )
+    </select>
+
     <insert id="insertRentApply" parameterType="RentApply">
         insert into rent_apply
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -107,6 +144,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="isDel != null">is_del = #{isDel},</if>
         </trim>
         where id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        update `rent_apply`
+        set `device_status` = #{status}
+        where `id` = #{id}
     </update>
 
     <delete id="deleteRentApplyById" parameterType="String">

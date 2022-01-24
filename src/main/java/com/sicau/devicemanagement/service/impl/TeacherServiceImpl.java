@@ -9,6 +9,8 @@ import com.sicau.devicemanagement.service.ITeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 
 /**
  * 【请填写功能名称】Service业务层处理
@@ -22,7 +24,7 @@ public class TeacherServiceImpl implements ITeacherService
     @Autowired
     private TeacherMapper teacherMapper;
 
-    @Autowired
+    @Resource
     private StudentMapper studentMapper;
 
     /**

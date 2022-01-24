@@ -72,57 +72,6 @@ public interface IDeviceService
     public DeviceUsingSituation queryDeviceTotalStatus();
 
     /**
-     * 老师开始使用设备
-     *
-     * @param uid uid
-     * @param id  id
-     * @author sora
-     * @date 2022/01/19
-     */
-    void teacherStartUsingDevice(String uid, String id);
-
-    /**
-     * 学生开始使用设备
-     *
-     * @param uid uid
-     * @param id  id
-     * @author sora
-     * @date 2022/01/19
-     */
-    void studentStartUsingDevice(String uid, String id);
-
-    /**
-     * 老师正常结束使用设备
-     *
-     * @param uid uid
-     * @param id  id
-     * @author sora
-     * @date 2022/01/19
-     */
-    void teacherFinishUsingDevice(String uid, String id);
-
-    /**
-     * 学生正常结束使用设备
-     *
-     * @param uid uid
-     * @param id  id
-     * @author sora
-     * @date 2022/01/19
-     */
-    void studentFinishUsingDevice(String uid, String id);
-
-    /**
-     * 判断该时间段用户是否能够使用该设备
-     *
-     * @param uid uid
-     * @param id  id
-     * @return boolean
-     * @author sora
-     * @date 2022/01/19
-     */
-    boolean isUserAccessDevice(String uid, String id);
-
-    /**
      * 是否是设备所有者
      *
      * @param uid uid

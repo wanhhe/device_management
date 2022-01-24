@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.sicau.devicemanagement.common.core.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.domain.Device;
+import com.sicau.devicemanagement.domain.RentApply;
 import com.sicau.devicemanagement.mapper.DeviceMapper;
 import com.sicau.devicemanagement.service.IDeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,72 +108,6 @@ public class DeviceServiceImpl implements IDeviceService
         deviceUsingSituation.setUsing(using);
         deviceUsingSituation.setOvertime(overtime);
         return deviceUsingSituation;
-    }
-
-    /**
-     * 老师开始使用设备
-     *
-     * @param uid uid
-     * @param id  id
-     * @author sora
-     * @date 2022/01/19
-     */
-    @Override
-    public void teacherStartUsingDevice(String uid, String id) {
-        smsService.sendStartSms(uid);
-    }
-
-    /**
-     * 学生开始使用设备
-     *
-     * @param uid uid
-     * @param id  id
-     * @author sora
-     * @date 2022/01/19
-     */
-    @Override
-    public void studentStartUsingDevice(String uid, String id) {
-        smsService.sendStartSms(uid);
-    }
-
-    /**
-     * 老师正常结束使用设备
-     *
-     * @param uid uid
-     * @param id  id
-     * @author sora
-     * @date 2022/01/19
-     */
-    @Override
-    public void teacherFinishUsingDevice(String uid, String id) {
-
-    }
-
-    /**
-     * 学生正常结束使用设备
-     *
-     * @param uid uid
-     * @param id  id
-     * @author sora
-     * @date 2022/01/19
-     */
-    @Override
-    public void studentFinishUsingDevice(String uid, String id) {
-
-    }
-
-    /**
-     * 判断该时间段用户是否能够使用该设备
-     *
-     * @param uid uid
-     * @param id  id
-     * @return boolean
-     * @author sora
-     * @date 2022/01/19
-     */
-    @Override
-    public boolean isUserAccessDevice(String uid, String id) {
-        return false;
     }
 
     /**
