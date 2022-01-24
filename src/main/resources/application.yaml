@@ -13,13 +13,13 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: 1.117.40.192
+    host: redis.kals.dev
     # 端口，默认为6379
     port: 6379
     # 数据库索引
-    database: 0
+    database: 5
     # 密码
-    password: 123456
+    password: Ng*SCIqT&PWByk@7h7t*uXZ51KAQizV7
     # 连接超时时间
     timeout: 10s
     lettuce:
