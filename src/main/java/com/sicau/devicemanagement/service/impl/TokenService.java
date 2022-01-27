@@ -89,6 +89,26 @@ public class TokenService
         return null;
     }
 
+    public LoginUser getLoginUser(String token) {
+        if (StringUtils.isNotEmpty(token))
+        {
+            try
+            {
+                Claims claims = parseToken(token);
+                // 解析对应的权限以及用户信息
+                String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
+                String userKey = getTokenKey(uuid);
+                LoginUser user = redisCache.getCacheObject(userKey);
+                return user;
+            }
+            catch (Exception e)
+            {
+                log.error("错误{}",e.getMessage());
+            }
+        }
+        return null;
+    }
+
     /**
      * 设置用户身份信息
      */

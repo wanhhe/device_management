@@ -3,6 +3,7 @@ package com.sicau.devicemanagement.mapper;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.sicau.devicemanagement.domain.RentApply;
 import com.sicau.devicemanagement.domain.Student;
 import org.springframework.stereotype.Component;
 

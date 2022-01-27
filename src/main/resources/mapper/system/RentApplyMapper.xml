@@ -87,6 +87,41 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         )
     </select>
 
+    <select id="selectAfterNow" resultType="com.sicau.devicemanagement.domain.RentApply">
+        select *
+        from `rent_apply` as ra inner join `schedule` as sc
+        on ra.`schedule_id` = sc.`id`
+        where sc.`begin_time` > (
+            select sc.`end_time`
+            from `rent_apply` as ra inner join `schedule` as sc
+            on ra.`schedule_id` = sc.`id`
+            where ra.`id` = #{id}
+        ) and ra.`device_type_id` = (select `device_type_id` from `rent_apply` where `id` = #{id})
+    </select>
+
+    <select id="querySubStuApplyByName" resultType="com.sicau.devicemanagement.domain.RentApply">
+        select ra.*
+        from `rent_apply` as ra inner join `student` as stu
+        on ra.`applicants_id` = stu.`uid`
+        where stu.`name` = #{name} and stu.`teacher_id` = #{uid}
+        order by stu.`name` asc
+    </select>
+
+    <select id="querySubStuApplyByDevice" resultType="com.sicau.devicemanagement.domain.RentApply">
+        select ra.*
+        from `rent_apply` as ra inner join `student` as stu
+        on ra.`applicants_id` = stu.`uid`
+        where ra.`device_type_id` = #{typeId} and stu.`teacher_id` = #{uid}
+    </select>
+
+    <select id="queryOwnDeviceHistory" resultType="com.sicau.devicemanagement.domain.RentApply">
+        select ra.*
+        from `rent_apply` as ra inner join `device` as de
+        on ra.`device_type_id` = de.`type_id`
+        where de.`manager_id` = #{uid} and ra.`device_type_id` = #{typeId}
+        order by de.`name` asc
+    </select>
+
     <insert id="insertRentApply" parameterType="RentApply">
         insert into rent_apply
         <trim prefix="(" suffix=")" suffixOverrides=",">

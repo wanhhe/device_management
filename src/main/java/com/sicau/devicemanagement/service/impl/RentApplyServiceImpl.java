@@ -3,20 +3,17 @@ package com.sicau.devicemanagement.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.common.core.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.file.DateUtils;
-import com.sicau.devicemanagement.domain.Device;
-import com.sicau.devicemanagement.domain.DeviceType;
-import com.sicau.devicemanagement.domain.RentApply;
-import com.sicau.devicemanagement.mapper.DeviceMapper;
-import com.sicau.devicemanagement.mapper.DeviceTypeMapper;
-import com.sicau.devicemanagement.mapper.RentApplyMapper;
+import com.sicau.devicemanagement.domain.*;
+import com.sicau.devicemanagement.mapper.*;
 import com.sicau.devicemanagement.service.IRentApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -36,6 +33,12 @@ public class RentApplyServiceImpl implements IRentApplyService
 
     @Autowired
     private DeviceTypeMapper deviceTypeMapper;
+
+    @Autowired
+    private StudentMapper studentMapper;
+
+    @Autowired
+    private TeacherMapper teacherMapper;
 
     @Autowired
     private SmsService smsService;
@@ -188,16 +191,22 @@ public class RentApplyServiceImpl implements IRentApplyService
         String deviceTypeId = rentApply.getDeviceTypeId();
         String deviceId = rentApply.getDeviceId();
         QueryWrapper<DeviceType> deviceTypeQueryWrapper = new QueryWrapper<>();
-        deviceTypeQueryWrapper.select("total").eq("id", deviceTypeId);
-        Integer count = deviceTypeMapper.selectCount(deviceTypeQueryWrapper);
-        if (count == 1) {
+        deviceTypeQueryWrapper.select("inventory").eq("id", deviceTypeId);
+        Integer inventory = deviceTypeMapper.selectCount(deviceTypeQueryWrapper);
+        if (inventory == 1) {
             /* 确认归还 */
             confirmReturn(id);
             /* 修改设备表中的设备状态 */
-            UpdateWrapper<Device> deviceUpdateWrapper = new UpdateWrapper<>();
-            deviceUpdateWrapper.set("status", "维修中").eq("id", deviceId);
+            Device device = deviceMapper.selectDeviceById(deviceId);
+            device.setStatus("维修中");
+            deviceMapper.updateDevice(device);
+            /* 修改设备类型表中的设备状态 */
+            // 库存减一
+            DeviceType deviceType = deviceTypeMapper.selectDeviceTypeById(deviceTypeId);
+            deviceType.setInventory(deviceType.getInventory() - 1);
+            deviceTypeMapper.updateDeviceType(deviceType);
             /* 通知后来的使用者该设备已损坏，查找该类设备之后的所有申请借用者 */
-            String reason = "您申请借用的设备已损坏";
+            String reason = "您申请借用的设备已损坏，现暂无其它可用设备";
             // 查找老师
             List<String> teacherList = rentApplyMapper.selectNowApplyTeacherTelByDeviceTypeId(deviceTypeId, DateUtils.getTime());
             // 查找学生
@@ -210,11 +219,104 @@ public class RentApplyServiceImpl implements IRentApplyService
                 smsService.sendRejectApply(applicant, reason);
             }
             /* 取消后面的申请 */
+            // 首先找到后面的所有申请，然后进行遍历
+            List<RentApply> applyList = rentApplyMapper.selectAfterNow(id);
             // 将当前审核环节设置为不通过
-
-            // 补充申请表的拒绝信息
+            refuseNowStage(applyList);
         } else {
-            /* 如果设备大于两个， */
+            /* 确认归还 */
+            confirmReturn(id);
+            /* 修改设备表中的设备状态 */
+            Device device = deviceMapper.selectDeviceById(deviceId);
+            device.setStatus("维修中");
+            deviceMapper.updateDevice(device);
+            /* 修改设备类型表中的设备状态 */
+            // 库存减一
+            DeviceType deviceType = deviceTypeMapper.selectDeviceTypeById(deviceTypeId);
+            deviceType.setInventory(deviceType.getInventory() - 1);
+            deviceTypeMapper.updateDeviceType(deviceType);
+            String reason = "您申请借用的设备已损坏，请在设备维修后再次申请";
+            /* 如果设备大于等于两个，将相同时间段借用该时间段的人按借用时间进行先后排序，拒绝排名在设备数之后的申请*/
+            // 首先找到后面的所有申请，然后进行遍历
+            List<RentApply> applyList = rentApplyMapper.selectAfterNow(id);
+            HashMap<String, Integer> map = new HashMap<>();
+            for (RentApply tmp : applyList) {
+                int num = map.getOrDefault(tmp.getScheduleId(), 0);
+                map.put(tmp.getScheduleId(), num+1);
+            }
+            // 遍历整个map看是否有超出的
+            for (String key : map.keySet()) {
+                int i = map.get(key) - inventory;
+                List<RentApply> res = new ArrayList<>();
+                List<String> stu = new ArrayList<>();
+                List<String> teacher = new ArrayList<>();
+                while (i > 0) {
+                    RentApply latest = new RentApply();
+                    Date latestTime = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, "2000-01-01 00:00:00");
+                    for (RentApply tmp : applyList) {
+                        Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, tmp.getCreatTime());
+                        if (date.after(latestTime)) {
+                            latest = tmp;
+                            latestTime = date;
+                        }
+                    }
+                    if (latest.getApplicantsType().equals(Constants.STUDENT)) {
+                        stu.add(latest.getApplicantsId());
+                    } else if (latest.getApplicantsType().equals(Constants.TEACHER)) {
+                        teacher.add(latest.getApplicantsId());
+                    }
+                    // 找出了最小的
+                    res.add(latest);
+                    applyList.remove(latest);
+                    i--;
+                }
+                QueryWrapper<Student> studentQueryWrapper = new QueryWrapper<>();
+                QueryWrapper<Teacher> teacherQueryWrapper = new QueryWrapper<>();
+                if (!stu.isEmpty()) {
+                    for (String str : stu) {
+                        studentQueryWrapper.select("tel").eq("uid", str);
+                        List<Student> students = studentMapper.selectList(studentQueryWrapper);
+                        smsService.sendRejectApply(students.get(0).getTel(), reason);
+                    }
+                }
+                if (!teacher.isEmpty()) {
+                    for (String str : teacher) {
+                        teacherQueryWrapper.select("tel").eq("uid", str);
+                        List<Teacher> teachers = teacherMapper.selectList(teacherQueryWrapper);
+                        smsService.sendRejectApply(teachers.get(0).getTel(), reason);
+                    }
+                }
+                refuseNowStage(res);
+            }
+        }
+    }
+
+    private void refuseNowStage(List<RentApply> list) {
+        for (RentApply tmp : list) {
+            // 查看已审核到哪个阶段
+            int status = tmp.getAuditStatus();
+            if (status == 1) {
+                tmp.setInstructorPass(0);
+                tmp.setAdministratorPass(0);
+                tmp.setOwnerPass(0);
+                // 有三个阶段的必然是学生
+                tmp.setRefuserId(studentMapper.selectTeacherId(tmp.getApplicantsId()));
+            } else if (status == 2) {
+                tmp.setAdministratorPass(0);
+                tmp.setOwnerPass(0);
+                // 判断是学生还是老师
+                if (tmp.getApplicantsType().equals(Constants.STUDENT)) {
+                    // TODO: 2022/1/25 审核管理员id
+                }
+            } else if (status == 3) {
+                tmp.setOwnerPass(0);
+                QueryWrapper<Device> deviceQueryWrapper = new QueryWrapper<>();
+                deviceQueryWrapper.select("manager_id").eq("id", tmp.getDeviceId());
+            }
+            // 补充申请表的拒绝信息
+            tmp.setRefuseReason("借用设备已损坏");
+            // 落盘
+            rentApplyMapper.updateRentApply(tmp);
         }
     }
 

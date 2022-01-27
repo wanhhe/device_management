@@ -22,6 +22,7 @@ public class DeviceUsingSituation {
 
     public enum DevcieRentStatus {
         DEVICE_USING("使用中"),
+        DEVICE_RETURN("已归还"),
         DEVICE_OVERTIME("未归还");
 
         private final String status;

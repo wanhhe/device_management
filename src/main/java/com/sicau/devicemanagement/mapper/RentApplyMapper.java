@@ -113,4 +113,47 @@ public interface RentApplyMapper extends BaseMapper<RentApply>
      * @date 2022/01/21
      */
     public List<String> selectNowApplyStudentTelByDeviceTypeId(String typeId, String time);
+
+    /**
+     * 选择想要租借的时间在该记录之后的申请
+     *
+     * @param id id
+     * @return {@link List<RentApply> }
+     * @author sora
+     * @date 2022/01/25
+     */
+    public List<RentApply> selectAfterNow(String id);
+
+    /**
+     * 老师通过学生姓名查找所属学生借用历史
+     *
+     * @param uid  uid
+     * @param name 的名字
+     * @return {@link List<RentApply> }
+     * @author sora
+     * @date 2022/01/27
+     */
+    public List<RentApply> querySubStuApplyByName(String uid, String name);
+
+    /**
+     * 老师通过设备类型查找所属学生借用历史
+     *
+     * @param uid  uid
+     * @param typeId 类型
+     * @return {@link List<RentApply> }
+     * @author sora
+     * @date 2022/01/27
+     */
+    public List<RentApply> querySubStuApplyByDevice(String uid, String typeId);
+
+    /**
+     * 老师查询自己的设备外借历史
+     *
+     * @param uid    uid
+     * @param typeId 类型id
+     * @return {@link List<RentApply> }
+     * @author sora
+     * @date 2022/01/27
+     */
+    public List<RentApply> queryOwnDeviceHistory(String uid, String typeId);
 }
