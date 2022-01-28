@@ -101,6 +101,21 @@
         where uid = #{uid}
     </update>
 
+    <update id="banStudentByUid">
+        update `student`
+        set `is_del` = 1
+        where `uid` = #{uid}
+    </update>
+
+    <update id="banStudentByUids">
+        update `student`
+        set `is_del` = 1
+        where `uid` in
+        <foreach item="uid" collection="array" open="(" separator="," close=")">
+            #{uid}
+        </foreach>
+    </update>
+
     <delete id="deleteStudentByUid" parameterType="String">
         delete
         from student

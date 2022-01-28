@@ -112,28 +112,4 @@ public class TeacherServiceImpl implements ITeacherService
 
     }
 
-    /**
-     * 判断是否是学生指导老师或是管理员
-     *
-     * @param tid tid
-     * @param sid sid
-     * @return boolean
-     * @author sora
-     * @date 2022/01/19
-     */
-    @Override
-    public boolean isStudentMasterOrAdmin(String tid, String sid) {
-        // 如果该老师是管理员或者该学生的指导老师，则返回true
-        List<String> adminUids = teacherMapper.selectAdminUid();
-        for (String admin : adminUids) {
-            if (tid.equals(admin)) {
-                return true;
-            }
-        }
-        String teacherId = studentMapper.selectTeacherId(sid);
-        if (tid.equals(teacherId)) {
-            return true;
-        }
-        return false;
-    }
 }

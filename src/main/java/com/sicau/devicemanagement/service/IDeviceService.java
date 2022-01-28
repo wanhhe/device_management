@@ -91,4 +91,23 @@ public interface IDeviceService
      * @date 2022/01/19
      */
     void replaceDevice(String uid, String id);
+
+    /**
+     * 更新设备状态
+     *
+     * @param id     id
+     * @param status 状态
+     * @author sora
+     * @date 2022/01/27
+     */
+    void updateDeviceStatus(String id, String status);
+
+    /**
+     * 确认设备损坏
+     *
+     * @param id id
+     * @author sora
+     * @date 2022/01/27
+     */
+    void deviceBroken(String id);
 }

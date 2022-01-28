@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("history")
+@RequestMapping("system/history")
 public class HistoryController {
 
     @Autowired
@@ -120,5 +120,18 @@ public class HistoryController {
     @GetMapping("/all/{type}")
     public AjaxResult getAllRentHistoryByDevice(@PathVariable("type") String type) {
         return AjaxResult.success(historyService.adminGetBorrowHistoryByDevice(type));
+    }
+
+    /**
+     * 获得某台设备的租用历史
+     *
+     * @param id 该设备id
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/01/18
+     */
+    @GetMapping("/{id}")
+    public AjaxResult getRentHistory(@PathVariable("id") String id) {
+        return AjaxResult.success(historyService.adminGetBorrowHistoryByDeviceId(id));
     }
 }

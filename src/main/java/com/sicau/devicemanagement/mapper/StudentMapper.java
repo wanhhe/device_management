@@ -84,4 +84,24 @@ public interface StudentMapper extends BaseMapper<Student>
      * @return 结果
      */
     public int deleteStudentByUids(String[] uids);
+
+    /**
+     * 封禁学生
+     *
+     * @param uid uid
+     * @return int
+     * @author sora
+     * @date 2022/01/28
+     */
+    public int banStudentByUid(String uid);;
+
+    /**
+     * 批量封禁学生
+     *
+     * @param uids uid
+     * @return int
+     * @author sora
+     * @date 2022/01/28
+     */
+    public int banStudentByUids(String[] uids);
 }

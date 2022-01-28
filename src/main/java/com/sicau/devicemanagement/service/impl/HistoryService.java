@@ -60,7 +60,7 @@ public class HistoryService {
     }
 
     /**
-     * 管理员通过设备id查找借用历史
+     * 管理员通过设备类型id查找借用历史
      *
      * @param typeId 类型
      * @return {@link List<BorrowHistory> }
@@ -74,6 +74,16 @@ public class HistoryService {
         List<BorrowHistory> borrowHistories = applyToBorrow(rentApplies);
         sortNameAsc(borrowHistories);
         advanceUnreturn(borrowHistories);
+        return borrowHistories;
+    }
+
+    public List<BorrowHistory> adminGetBorrowHistoryByDeviceId(String id) {
+        QueryWrapper<RentApply> rentApplyQueryWrapper = new QueryWrapper<>();
+        rentApplyQueryWrapper.eq("device_id", id).eq("status", DeviceUsingSituation.DevcieRentStatus.DEVICE_RETURN);
+        List<RentApply> rentApplies = rentApplyMapper.selectList(rentApplyQueryWrapper);
+        List<BorrowHistory> borrowHistories = applyToBorrow(rentApplies);
+        // 按借用时间从新到旧排序
+        sortTimeDesc(borrowHistories);
         return borrowHistories;
     }
 
@@ -197,5 +207,21 @@ public class HistoryService {
      */
     private void sortDeviceAsc(List<BorrowHistory> list) {
         list.sort((o1, o2) -> o2.getDevice().getName().charAt(0) - o1.getDevice().getName().charAt(0));
+    }
+
+    /**
+     * 按借用时间从新到旧排序
+     *
+     * @param list 列表
+     * @author sora
+     * @date 2022/01/27
+     */
+    private void sortTimeDesc(List<BorrowHistory> list) {
+        list.sort((o1, o2) -> {
+            if (o1.getSchedule().getBeginTime().after(o2.getSchedule().getBeginTime())) {
+                return 1;
+            }
+            return 0;
+        });
     }
 }

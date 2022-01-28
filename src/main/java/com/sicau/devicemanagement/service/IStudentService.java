@@ -55,9 +55,52 @@ public interface IStudentService
 
     /**
      * 删除【请填写功能名称】信息
-     * 
+     *
      * @param uid 【请填写功能名称】主键
      * @return 结果
      */
     public int deleteStudentByUid(String uid);
+
+    /**
+     * 封禁学生
+     *
+     * @param uids uid
+     * @return int
+     * @author sora
+     * @date 2022/01/28
+     */
+    public int banStudentByUids(String[] uids);
+
+    public int banStudentByUid(String uid);
+
+    /**
+     * 判断是否是学生的指导老师
+     *
+     * @param tid tid
+     * @param sid sid
+     * @return boolean
+     * @author sora
+     * @date 2022/01/28
+     */
+    public boolean isStudentMaster(String tid, String sid);
+
+    /**
+     * 延长学生账号使用时间
+     *
+     * @param sid  sid
+     * @param week 周
+     * @author sora
+     * @date 2022/01/28
+     */
+    public void extendStudent(String sid, int week);
+
+    /**
+     * 查询学生账号当前状态
+     *
+     * @param sid sid
+     * @return int
+     * @author sora
+     * @date 2022/01/28
+     */
+    public int queryStudentStatus(String sid);
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.common.constant.HttpStatus;
 import com.sicau.devicemanagement.common.core.controller.BaseController;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
@@ -111,19 +112,6 @@ public class DeviceController extends BaseController
     }
 
     /**
-     * 获得某台设备的租用历史
-     *
-     * @param id 该设备id
-     * @return {@link AjaxResult }
-     * @author sora
-     * @date 2022/01/18
-     */
-    @GetMapping("/history/{id}")
-    public AjaxResult getRentHistory(@PathVariable("id") String id) {
-        return null;
-    }
-
-    /**
      * 修改设备状态
      *
      * @param id 该设备id
@@ -131,21 +119,15 @@ public class DeviceController extends BaseController
      * @author sora
      * @date 2022/01/18
      */
-    @GetMapping("/status")
-    public AjaxResult updateDeviceStatus(@RequestParam("id") String id) {
-        return null;
-    }
-
-    /**
-     * 自己借用但还未归还的设备
-     *
-     * @param id 该用户id
-     * @return {@link AjaxResult }
-     * @author sora
-     * @date 2022/01/19
-     */
-    @GetMapping("/unreturn/{id}")
-    public AjaxResult checkUnReturnDevice(@PathVariable("id") String id) {
-        return null;
+    @PutMapping("/{id}/{status}")
+    public AjaxResult updateDeviceStatus(@PathVariable("id") String id, @PathVariable("status") String status) {
+        if (status.equals(Constants.DEVICE_NATURAL) || status.equals(Constants.DEVICE_UNDERREPAIR)) {
+            deviceService.updateDeviceStatus(id, status);
+        } else if (status.equals(Constants.DEVICE_BROKEN)) {
+            deviceService.deviceBroken(id);
+        } else {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "请输入正确的参数");
+        }
+        return AjaxResult.success();
     }
 }

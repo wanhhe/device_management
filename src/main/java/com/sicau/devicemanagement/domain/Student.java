@@ -51,8 +51,9 @@ public class Student extends User
     @Excel(name = "角色id")
     private String roleId;
 
-
     private Integer isDel;
+
+    private String expirationDate;
 
     public void setUid(String uid) 
     {
@@ -135,6 +136,9 @@ public class Student extends User
     {
         return roleId;
     }
+
+    public String getExpirationDate() {return expirationDate;}
+    public void setExpirationDate(String expirationDate) {this.expirationDate = expirationDate;}
 
     @Override
     public String toString() {

@@ -2,10 +2,14 @@ package com.sicau.devicemanagement.service.impl;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.common.core.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.domain.Device;
+import com.sicau.devicemanagement.domain.DeviceType;
 import com.sicau.devicemanagement.domain.RentApply;
 import com.sicau.devicemanagement.mapper.DeviceMapper;
+import com.sicau.devicemanagement.mapper.DeviceTypeMapper;
 import com.sicau.devicemanagement.service.IDeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +26,9 @@ public class DeviceServiceImpl implements IDeviceService
 {
     @Autowired
     private DeviceMapper deviceMapper;
+
+    @Autowired
+    private DeviceTypeMapper deviceTypeMapper;
 
     @Autowired
     private SmsService smsService;
@@ -128,5 +135,26 @@ public class DeviceServiceImpl implements IDeviceService
     @Override
     public void replaceDevice(String uid, String id) {
 
+    }
+
+    @Override
+    public void updateDeviceStatus(String id, String status) {
+        UpdateWrapper<Device> deviceUpdateWrapper = new UpdateWrapper<>();
+        deviceUpdateWrapper.set("status", status).eq("id", id);
+        deviceMapper.update(null, deviceUpdateWrapper);
+    }
+
+    @Override
+    public void deviceBroken(String id) {
+        Device device = deviceMapper.selectDeviceById(id);
+        UpdateWrapper<Device> deviceUpdateWrapper = new UpdateWrapper<>();
+        deviceUpdateWrapper.set("status", Constants.DEVICE_BROKEN)
+                .set("is_del", 0).eq("id", id);
+        deviceMapper.update(device, deviceUpdateWrapper);
+        // 更改type状态
+        DeviceType deviceType = deviceTypeMapper.selectDeviceTypeById(device.getTypeId());
+        deviceType.setInventory(deviceType.getInventory()-1);
+        deviceType.setTotal(deviceType.getTotal()-1);
+        deviceTypeMapper.updateDeviceType(deviceType);
     }
 }

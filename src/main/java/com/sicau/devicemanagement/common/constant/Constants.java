@@ -23,6 +23,12 @@ public class Constants
      */
     public static final  String STUDENT = "student";
 
+    public static final String DEVICE_UNDERREPAIR = "维修中";
+
+    public static final String DEVICE_NATURAL = "正常";
+
+    public static final String DEVICE_BROKEN = "已损坏";
+
     /**
      * linux服务器文件上传地址
      */
