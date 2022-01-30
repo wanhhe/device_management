@@ -1,5 +1,7 @@
 package com.sicau.devicemanagement;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.sicau.devicemanagement.common.utils.http.HttpUtils;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.Student;
 import com.sicau.devicemanagement.mapper.StudentMapper;
@@ -27,4 +29,11 @@ class DevicemanagementApplicationTests {
         studentMapper.insert(student);
     }
 
+    @Test
+    void update() {
+        UpdateWrapper<Student> studentUpdateWrapper = new UpdateWrapper<>();
+        studentUpdateWrapper.set("is_del", 0).eq("name", "admin");
+        studentMapper.update(null, studentUpdateWrapper);
+        System.out.println("finish");
+    }
 }

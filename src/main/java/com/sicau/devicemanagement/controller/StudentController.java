@@ -124,7 +124,7 @@ public class StudentController extends BaseController
      */
     @PutMapping("/teacher/{sid}/{week}")
     public AjaxResult teacherExtend(@PathVariable("sid") String sid,
-                                    @PathVariable("time") int week,
+                                    @PathVariable("week") int week,
                                     @RequestHeader("Authorization") String token) {
         if (week*7 > 365*2) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "可延长时间在两年内");

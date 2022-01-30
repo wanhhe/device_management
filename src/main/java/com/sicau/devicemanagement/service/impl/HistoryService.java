@@ -47,17 +47,17 @@ public class HistoryService {
         return borrowHistories;
     }
 
-    /**
-     * 管理员通过角色查找借用历史
-     *
-     * @param role 角色
-     * @return {@link List<BorrowHistory> }
-     * @author sora
-     * @date 2022/01/27
-     */
-    public List<BorrowHistory> adminGetBorrowHistoryByRole(String role) {
-
-    }
+//    /**
+//     * 管理员通过角色查找借用历史
+//     *
+//     * @param role 角色
+//     * @return {@link List<BorrowHistory> }
+//     * @author sora
+//     * @date 2022/01/27
+//     */
+//    public List<BorrowHistory> adminGetBorrowHistoryByRole(String role) {
+//
+//    }
 
     /**
      * 管理员通过设备类型id查找借用历史

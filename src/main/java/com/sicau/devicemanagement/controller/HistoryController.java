@@ -91,23 +91,23 @@ public class HistoryController {
         return AjaxResult.success(historyService.getSubBorrowHistoryByDevice(uid, type));
     }
 
-    /**
-     * 通过角色查询借用历史
-     *
-     * @param role 角色
-     * @param tid  tid
-     * @return {@link AjaxResult }
-     * @author sora
-     * @date 2022/01/26
-     */
-    @GetMapping("/all/{role}/{tid}")
-    public AjaxResult getAllRentHistoryByRole(@PathVariable("role") String role,
-                                              @PathVariable(value = "tid", required = false) String tid) {
-        if (!role.equals(Constants.TEACHER) && !role.equals(Constants.STUDENT)) {
-            return AjaxResult.error(HttpStatus.BAD_REQUEST, "请选择正确的角色");
-        }
-        return AjaxResult.success(historyService.adminGetBorrowHistoryByRole(role));
-    }
+//    /**
+//     * 通过角色查询借用历史
+//     *
+//     * @param role 角色
+//     * @param tid  tid
+//     * @return {@link AjaxResult }
+//     * @author sora
+//     * @date 2022/01/26
+//     */
+//    @GetMapping("/all/{role}/{tid}")
+//    public AjaxResult getAllRentHistoryByRole(@PathVariable("role") String role,
+//                                              @PathVariable(value = "tid", required = false) String tid) {
+//        if (!role.equals(Constants.TEACHER) && !role.equals(Constants.STUDENT)) {
+//            return AjaxResult.error(HttpStatus.BAD_REQUEST, "请选择正确的角色");
+//        }
+//        return AjaxResult.success(historyService.adminGetBorrowHistoryByRole(role));
+//    }
 
     /**
      * 按设备型号得到得到所有租赁设备的历史

@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class SmsService {
 
-    @Value("${sms.signName}")
-    private String signName;
+//    @Value("${sms.signName}")
+//    private String signName;
 
     private void sendSms(String text) {
 
