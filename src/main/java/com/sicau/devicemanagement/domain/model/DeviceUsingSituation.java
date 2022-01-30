@@ -1,4 +1,4 @@
-package com.sicau.devicemanagement.common.core.model;
+package com.sicau.devicemanagement.domain.model;
 
 import lombok.Data;
 

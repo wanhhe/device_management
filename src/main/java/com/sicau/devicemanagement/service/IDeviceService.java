@@ -1,8 +1,8 @@
 package com.sicau.devicemanagement.service;
 
 
-import com.sicau.devicemanagement.common.core.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.domain.Device;
+import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
 
 import java.util.List;
 

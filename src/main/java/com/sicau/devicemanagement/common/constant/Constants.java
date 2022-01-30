@@ -23,10 +23,36 @@ public class Constants
      */
     public static final  String STUDENT = "student";
 
-    public static final String DEVICE_UNDERREPAIR = "underrepair";
+    /* 下面三个用于数据库中的逻辑删除 */
+    /**
+     * 正常使用
+     */
+    public static final int NATURAL = 0;
 
+    /**
+     * 该记录被逻辑删除
+     */
+    public static final int DELETE = 1;
+
+    /**
+     * 账号过期
+     */
+    public static final int OVERTIME = 2;
+
+    /* 下面三条是设备的状态 */
+    /**
+     * 维修中
+     */
+    public static final String DEVICE_REPAIR = "repair";
+
+    /**
+     * 正常使用
+     */
     public static final String DEVICE_NATURAL = "natural";
 
+    /**
+     * 损坏
+     */
     public static final String DEVICE_BROKEN = "broken";
 
     /**

@@ -121,7 +121,7 @@ public class DeviceController extends BaseController
      */
     @PutMapping("/{id}/{status}")
     public AjaxResult updateDeviceStatus(@PathVariable("id") String id, @PathVariable("status") String status) {
-        if (status.equals(Constants.DEVICE_NATURAL) || status.equals(Constants.DEVICE_UNDERREPAIR)) {
+        if (status.equals(Constants.DEVICE_NATURAL) || status.equals(Constants.DEVICE_REPAIR)) {
             deviceService.updateDeviceStatus(id, status);
         } else if (status.equals(Constants.DEVICE_BROKEN)) {
             deviceService.deviceBroken(id);
