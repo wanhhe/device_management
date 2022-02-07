@@ -1,7 +1,6 @@
 package com.sicau.devicemanagement.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.sicau.devicemanagement.common.core.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.domain.Device;
 
 import java.util.List;
