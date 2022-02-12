@@ -1,12 +1,21 @@
 package com.sicau.devicemanagement.service.impl;
 
+import java.io.IOException;
 import java.util.List;
 
+import com.sicau.devicemanagement.common.constant.Constants;
+import com.sicau.devicemanagement.common.utils.file.FileUploadUtils;
+import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
+import com.sicau.devicemanagement.domain.Device;
+import com.sicau.devicemanagement.domain.DeviceImg;
 import com.sicau.devicemanagement.domain.DeviceType;
+import com.sicau.devicemanagement.mapper.DeviceImgMapper;
 import com.sicau.devicemanagement.mapper.DeviceTypeMapper;
 import com.sicau.devicemanagement.service.IDeviceTypeService;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -20,6 +29,9 @@ public class DeviceTypeServiceImpl implements IDeviceTypeService
 {
     @Autowired
     private DeviceTypeMapper deviceTypeMapper;
+
+    @Autowired
+    private DeviceImgMapper deviceImgMapper;
 
     /**
      * 查询【请填写功能名称】
@@ -91,5 +103,44 @@ public class DeviceTypeServiceImpl implements IDeviceTypeService
     public int deleteDeviceTypeById(String id)
     {
         return deviceTypeMapper.deleteDeviceTypeById(id);
+    }
+
+    /**
+     * 添加设备类型
+     *
+     * @param deviceType 设备类型
+     * @param files      文件
+     * @return {@link int[] }
+     * @author sora
+     * @date 2022/02/09
+     */
+    @Override
+    public int[] addDeviceType(DeviceType deviceType, MultipartFile[] files) {
+        // 生成uuid
+        String uuid = IdUtils.fastUUID();
+        deviceType.setId(uuid);
+        int count = deviceTypeMapper.insertDeviceType(deviceType);
+        if (count < 1) {
+            return null;
+        }
+        // 上传图片
+        DeviceImg img = new DeviceImg();
+        int flag = 0;
+        if (files != null && files.length != 0) {
+            for (MultipartFile file : files) {
+                String filename = null;
+                try {
+                    filename = FileUploadUtils.upload(Constants.getDefaultUploadAddr(), file, new String[]{"jpg", "jpeg", "png", "bmp"});
+                } catch (FileSizeLimitExceededException | IOException e) {
+                    e.printStackTrace();
+                }
+                img.setDeviceTypeId(uuid);
+                img.setUrl(filename);
+                if (deviceImgMapper.insertDeviceImg(img) < 1) {
+                    flag++;
+                }
+            }
+        }
+        return new int[]{count, flag};
     }
 }

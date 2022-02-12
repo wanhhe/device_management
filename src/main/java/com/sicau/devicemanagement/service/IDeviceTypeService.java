@@ -2,6 +2,7 @@ package com.sicau.devicemanagement.service;
 
 
 import com.sicau.devicemanagement.domain.DeviceType;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -60,4 +61,15 @@ public interface IDeviceTypeService
      * @return 结果
      */
     public int deleteDeviceTypeById(String id);
+
+    /**
+     * 添加设备类型
+     *
+     * @param deviceType 设备类型
+     * @param files      文件
+     * @return {@link int[] }
+     * @author sora
+     * @date 2022/02/09
+     */
+    public int[] addDeviceType(DeviceType deviceType, MultipartFile[] files);
 }

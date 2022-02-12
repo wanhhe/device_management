@@ -2,9 +2,9 @@ package com.sicau.devicemanagement.domain.model;
 
 public class PostEntity {
 
-    private int size = 10;
+    private int size;
 
-    private int page = 1;
+    private int page;
 
     public int getSize() {
         return size;
@@ -19,6 +19,13 @@ public class PostEntity {
     }
 
     public void setPage(int page) {
+        this.page = page;
+    }
+
+    public PostEntity() {}
+
+    public PostEntity(int size, int page) {
+        this.size = size;
         this.page = page;
     }
 }

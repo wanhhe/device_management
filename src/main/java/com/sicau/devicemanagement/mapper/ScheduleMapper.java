@@ -60,4 +60,15 @@ public interface ScheduleMapper extends BaseMapper<Schedule>
      * @return 结果
      */
     public int deleteScheduleByIds(String[] ids);
+
+    /**
+     * 查询几天之间的所有id
+     *
+     * @param begin 开始 yyyy-MM-dd
+     * @param end   结束
+     * @return {@link List<String> }
+     * @author sora
+     * @date 2022/02/12
+     */
+    public List<String> queryIdBetweenDay(String begin, String end);
 }

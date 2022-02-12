@@ -3,7 +3,10 @@ package com.sicau.devicemanagement.service;
 
 import com.sicau.devicemanagement.domain.Device;
 import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -110,4 +113,15 @@ public interface IDeviceService
      * @date 2022/01/27
      */
     void deviceBroken(String id);
+
+    /**
+     * 添加设备
+     *
+     * @param device         设备
+     * @author sora
+     * @date 2022/02/08
+     */
+    int addDevice(Device device);
+
+    int addDevice(List<Device> list);
 }

@@ -1,9 +1,10 @@
 package com.sicau.devicemanagement.service.impl;
 
-import com.baomidou.mybatisplus.extension.api.R;
+import com.alibaba.fastjson.JSONArray;
 import com.sicau.devicemanagement.common.utils.StringUtils;
-import com.sicau.devicemanagement.common.utils.http.HttpUtils;
+import com.sicau.devicemanagement.domain.Lab;
 import com.sicau.devicemanagement.domain.model.*;
+import com.sicau.devicemanagement.mapper.LabMapper;
 import com.sicau.devicemanagement.mapper.ScheduleMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -14,12 +15,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Component
 public class SicauService {
 
     @Resource
     private ScheduleMapper scheduleMapper;
+
+    @Resource
+    private LabMapper labMapper;
 
     @Resource
     private RestTemplate restTemplate;
@@ -54,6 +59,8 @@ public class SicauService {
     @Value("${sicau.url.graduate}")
     private String graduateUrl;
 
+    private HttpHeaders header;
+
     private final int obsoleteStatus = 40101;
 
 
@@ -75,13 +82,18 @@ public class SicauService {
     }
 
     public void updateRent() {
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(MediaType.APPLICATION_JSON);
-        header.add("Authorization", token);
+        updateRent(10, 1);
+    }
 
-        HttpEntity<PostEntity> post = new HttpEntity<>(new PostEntity(), header);
+    public void updateRent(int size, int page) {
+        HttpHeaders header = getHeader();
+        HttpEntity<PostEntity> post = new HttpEntity<>(new PostEntity(size, page), header);
         ResponseEntity<SicauBody> responseEntity = restTemplate.postForEntity(classRentUrl, post, SicauBody.class);
         SicauBody body = responseEntity.getBody();
+        if (body == null) {
+            System.out.println("updateRent body is nulll");
+            return;
+        }
         BasicResponse basicResponse = body.getBasicResponse();
         if (basicResponse == null) {
             System.out.println("basicResponse is null");
@@ -91,6 +103,123 @@ public class SicauService {
         if (status == obsoleteStatus) {
             login();
             updateRent();
+        } else {
+            // 解析resultValue
+            List<ClassRent> classRents = JSONArray.parseArray(body.getResultValue(), ClassRent.class);
+
         }
+
+    }
+
+    public void updateClassInfo() {
+        updateClassInfo(10, 1);
+    }
+
+    public void updateClassInfo(int size, int page) {
+        HttpHeaders header = getHeader();
+        HttpEntity<PostEntity> post = new HttpEntity<>(new PostEntity(size, page), header);
+        ResponseEntity<SicauBody> responseEntity = restTemplate.postForEntity(classRentUrl, post, SicauBody.class);
+        SicauBody body = responseEntity.getBody();
+        if (body == null) {
+            System.out.println("updateClass body is null");
+            return;
+        }
+        int total = body.getTotal();
+        BasicResponse basicResponse = body.getBasicResponse();
+        if (basicResponse == null) {
+            System.out.println("basicResponse is null");
+            return;
+        }
+        int status = basicResponse.getStatus();
+        if (status == obsoleteStatus) {
+            login();
+            updateClassInfo();
+        } else {
+            // 解析resultValue
+            List<ClassInfo> classInfos = JSONArray.parseArray(body.getResultValue(), ClassInfo.class);
+            Lab lab = new Lab();
+            for (ClassInfo tmp : classInfos) {
+                // 如果教室类型不是实验室就筛掉
+                if (!"实验室".equals(tmp.getJSLXM())) {
+                    continue;
+                }
+                lab.setCampusId(tmp.getXQH());
+                // 教室号 3-226
+                lab.setNum(tmp.getJSH());
+                labMapper.insertLab(lab);
+            }
+        }
+    }
+
+    public void updateGraduateClass(int size,  int page) {
+        HttpHeaders header = getHeader();
+        HttpEntity<PostEntity> post = new HttpEntity<>(new PostEntity(size, page), header);
+        ResponseEntity<SicauBody> responseEntity = restTemplate.postForEntity(classRentUrl, post, SicauBody.class);
+        SicauBody body = responseEntity.getBody();
+        if (body == null) {
+            System.out.println("updateRent body is nulll");
+            return;
+        }
+        BasicResponse basicResponse = body.getBasicResponse();
+        if (basicResponse == null) {
+            System.out.println("basicResponse is null");
+            return;
+        }
+        int status = basicResponse.getStatus();
+        if (status == obsoleteStatus) {
+            login();
+            updateClassInfo();
+        } else {
+            // 解析resultValue
+            List<GraduateClass> graduateClasses = JSONArray.parseArray(body.getResultValue(), GraduateClass.class);
+            for (GraduateClass tmp : graduateClasses) {
+
+            }
+        }
+    }
+
+    public void updateGraduateClass() {
+        updateGraduateClass(10, 1);
+    }
+
+    public void updateUnGraduateClass(int size, int page) {
+        HttpHeaders header = getHeader();
+        HttpEntity<PostEntity> post = new HttpEntity<>(new PostEntity(size, page), header);
+        ResponseEntity<SicauBody> responseEntity = restTemplate.postForEntity(classRentUrl, post, SicauBody.class);
+        SicauBody body = responseEntity.getBody();
+        if (body == null) {
+            System.out.println("updateRent body is nulll");
+            return;
+        }
+        int total = body.getTotal();
+        BasicResponse basicResponse = body.getBasicResponse();
+        if (basicResponse == null) {
+            System.out.println("basicResponse is null");
+            return;
+        }
+        int status = basicResponse.getStatus();
+        if (status == obsoleteStatus) {
+            login();
+            updateClassInfo();
+        } else {
+            // 解析resultValue
+            List<UnGraduateClass> unGraduateClasses = JSONArray.parseArray(body.getResultValue(), UnGraduateClass.class);
+            for (UnGraduateClass tmp : unGraduateClasses) {
+
+            }
+        }
+    }
+
+    public void updateUnGraduateClass() {
+        updateUnGraduateClass(10, 1);
+    }
+
+    private HttpHeaders getHeader() {
+        if (this.header == null) {
+            this.header = new HttpHeaders();
+            this.header.setContentType(MediaType.APPLICATION_JSON);
+            this.header.add("Authorization", this.token);
+        }
+        return this.header;
     }
 }

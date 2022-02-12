@@ -60,4 +60,14 @@ public interface IDeviceImgService
      * @return 结果
      */
     public int deleteDeviceImgById(String id);
+
+    /**
+     * 删除类型为type的所有设备
+     *
+     * @param type 类型
+     * @return int
+     * @author sora
+     * @date 2022/02/08
+     */
+    public int deleteDeviceImgByType(String type);
 }

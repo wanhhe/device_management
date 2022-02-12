@@ -1,5 +1,6 @@
 package com.sicau.devicemanagement.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sicau.devicemanagement.domain.DeviceImg;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2022-01-15
  */
-public interface DeviceImgMapper 
+public interface DeviceImgMapper extends BaseMapper<DeviceImg>
 {
     /**
      * 查询【请填写功能名称】
