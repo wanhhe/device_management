@@ -360,6 +360,7 @@ public class HistoryService {
                 borrowHistory.setStudent(studentMapper.selectStudentByUid(temp.getApplicantsId()));
             }
             borrowHistory.setDeviceStatus(temp.getDeviceStatus());
+            borrowHistory.setFinishTime(temp.getFinishTime());
             borrowHistory.setSchedule(scheduleMapper.selectScheduleById(temp.getScheduleId()));
             borrowHistory.setCreatTime(temp.getCreatTime());
             borrowHistory.setRefuseReason(temp.getRefuseReason());
