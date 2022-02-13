@@ -153,4 +153,56 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         // long sec = diff % nd % nh % nm / ns;
         return day + "天" + hour + "小时" + min + "分钟";
     }
+
+    /**
+     * 验证字符串是否为指定日期格式
+     *
+     * @param rawDateStr 待验证字符串
+     * @param pattern    日期字符串格式, 例如 "yyyy-MM-dd"
+     * @return boolean
+     * @author sora
+     * @date 2022/02/10
+     */
+    public static boolean dateStrIsValid(String rawDateStr, String pattern) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        Date date;
+        try {
+            date = simpleDateFormat.parse(rawDateStr);
+            return rawDateStr.equals(simpleDateFormat.format(date));
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
+    public static boolean dateStrIsValid(String rawDateStr) {
+        return dateStrIsValid(rawDateStr, "yyyy-MM-dd");
+    }
+
+    /**
+     * 请先判断日期格式是否正确
+     *
+     * @param date1   date1
+     * @param date2   date2
+     * @param pattern 模式
+     * @return boolean
+     * @author sora
+     * @date 2022/02/12
+     */
+    public static boolean before(String date1, String date2, String pattern) {
+        return DateUtils.dateTime(date1, pattern).before(DateUtils.dateTime(date2, pattern));
+    }
+
+    /**
+     * 请先判断日期格式是否正确
+     *
+     * @param date1   date1
+     * @param date2   date2
+     * @param pattern 模式
+     * @return boolean
+     * @author sora
+     * @date 2022/02/12
+     */
+    public static boolean after(String date1, String date2, String pattern) {
+        return DateUtils.dateTime(date1, pattern).after(DateUtils.dateTime(date2, pattern));
+    }
 }

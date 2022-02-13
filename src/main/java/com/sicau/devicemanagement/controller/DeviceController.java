@@ -1,5 +1,7 @@
 package com.sicau.devicemanagement.controller;
 
+import java.math.BigDecimal;
+import java.util.LinkedList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,11 +13,13 @@ import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
 import com.sicau.devicemanagement.domain.Device;
+import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.service.IDeviceService;
 import com.sicau.devicemanagement.service.impl.TokenService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -124,5 +128,39 @@ public class DeviceController extends BaseController
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "请输入正确的参数");
         }
         return AjaxResult.success();
+    }
+
+    /**
+     * 添加设备
+     *
+     * @param device        设备
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/02/08
+     */
+    @PostMapping("/device")
+    public AjaxResult addDevice(@RequestBody Device device) {
+        List<Device> list = new LinkedList<>();
+        list.add(device);
+        return addDevices(list);
+    }
+
+    /**
+     * 批量添加设备
+     *
+     * @param devices        设备
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/02/08
+     */
+    @PostMapping("/devices")
+    public AjaxResult addDevices(@RequestBody List<Device> devices) {
+        int ints = deviceService.addDevice(devices);
+        if (ints == 0) {
+            return AjaxResult.error(HttpStatus.BAD_METHOD, "请上传相同类型的设备");
+        } else if (ints == -1) {
+            return AjaxResult.error(HttpStatus.BAD_METHOD, "不存在该类型设备");
+        }
+        return toAjax(ints);
     }
 }

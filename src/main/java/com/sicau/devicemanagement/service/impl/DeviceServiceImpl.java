@@ -1,17 +1,32 @@
 package com.sicau.devicemanagement.service.impl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sicau.devicemanagement.common.constant.Constants;
+
+import com.sicau.devicemanagement.common.utils.file.FileUploadUtils;
 import com.sicau.devicemanagement.domain.Device;
+import com.sicau.devicemanagement.domain.DeviceImg;
 import com.sicau.devicemanagement.domain.DeviceType;
+
 import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
+
+import com.sicau.devicemanagement.domain.RentApply;
+import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
+import com.sicau.devicemanagement.mapper.DeviceImgMapper;
 import com.sicau.devicemanagement.mapper.DeviceMapper;
 import com.sicau.devicemanagement.mapper.DeviceTypeMapper;
 import com.sicau.devicemanagement.service.IDeviceService;
+import com.sicau.devicemanagement.service.IDeviceTypeService;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -30,7 +45,13 @@ public class DeviceServiceImpl implements IDeviceService
     private DeviceTypeMapper deviceTypeMapper;
 
     @Autowired
+    private DeviceImgMapper deviceImgMapper;
+
+    @Autowired
     private SmsService smsService;
+
+    @Autowired
+    private IDeviceTypeService deviceTypeService;
 
     /**
      * 查询【请填写功能名称】
@@ -155,5 +176,46 @@ public class DeviceServiceImpl implements IDeviceService
         deviceType.setInventory(deviceType.getInventory()-1);
         deviceType.setTotal(deviceType.getTotal()-1);
         deviceTypeMapper.updateDeviceType(deviceType);
+    }
+
+    @Override
+    public int addDevice(Device device) {
+        List<Device> list = new LinkedList<>();
+        list.add(device);
+        return addDevice(list);
+    }
+
+    /**
+     * 批量上传同类型设备
+     *
+     * @param list           列表
+     * @return int
+     * @author sora
+     * @date 2022/02/08
+     */
+    @Override
+    public int addDevice(List<Device> list) {
+        // 首先判断上传的设备是不是同类型的，同时判断库中是否存在该类型，如果不存在新建类型
+        String type = list.get(0).getTypeId();
+        if (deviceTypeService.selectDeviceTypeById(type) == null) {
+            return -1;
+        }
+        for (Device tmp : list) {
+            if (!type.equals(tmp.getTypeId())) {
+                return 0;
+            }
+        }
+        int count = 0;
+        for (Device tmp : list) {
+            if (deviceMapper.insertDevice(tmp) > 0) {
+                count++;
+            }
+        }
+        // 修改该类设备的库存
+        DeviceType deviceType = deviceTypeMapper.selectDeviceTypeById(type);
+        deviceType.setTotal(deviceType.getTotal() + list.size());
+        deviceType.setInventory(deviceType.getInventory() + list.size());
+        deviceTypeMapper.updateDeviceType(deviceType);
+        return count;
     }
 }

@@ -46,6 +46,9 @@ public class BorrowHistory {
     @Excel(name = "申请时间")
     private String creatTime;
 
+    @Excel(name = "拒绝时间")
+    private String finishTime;
+
     /** 拒绝申请原因 */
     @Excel(name = "拒绝申请原因")
     private String refuseReason;

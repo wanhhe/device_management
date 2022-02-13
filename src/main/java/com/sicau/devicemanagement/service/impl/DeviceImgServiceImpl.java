@@ -2,6 +2,7 @@ package com.sicau.devicemanagement.service.impl;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sicau.devicemanagement.domain.DeviceImg;
 import com.sicau.devicemanagement.mapper.DeviceImgMapper;
 import com.sicau.devicemanagement.service.IDeviceImgService;
@@ -91,5 +92,12 @@ public class DeviceImgServiceImpl implements IDeviceImgService
     public int deleteDeviceImgById(String id)
     {
         return deviceImgMapper.deleteDeviceImgById(id);
+    }
+
+    @Override
+    public int deleteDeviceImgByType(String type) {
+        UpdateWrapper<DeviceImg> deviceImgUpdateWrapper = new UpdateWrapper<>();
+        deviceImgUpdateWrapper.eq("device_type_id", type);
+        return deviceImgMapper.delete(deviceImgUpdateWrapper);
     }
 }

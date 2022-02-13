@@ -3,22 +3,19 @@ package com.sicau.devicemanagement.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sicau.devicemanagement.common.constant.HttpStatus;
 import com.sicau.devicemanagement.common.core.controller.BaseController;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
 import com.sicau.devicemanagement.domain.DeviceType;
+import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.service.IDeviceTypeService;
+import com.sicau.devicemanagement.service.impl.TokenService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -33,6 +30,9 @@ public class DeviceTypeController extends BaseController
 {
     @Autowired
     private IDeviceTypeService deviceTypeService;
+
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 查询【请填写功能名称】列表
@@ -96,5 +96,23 @@ public class DeviceTypeController extends BaseController
     public AjaxResult remove(@PathVariable String[] ids)
     {
         return toAjax(deviceTypeService.deleteDeviceTypeByIds(ids));
+    }
+
+    /**
+     * 添加设备类型
+     *
+     * @param deviceType 设备类型
+     * @param files      文件
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/02/09
+     */
+    @PostMapping("/type")
+    public AjaxResult addDeviceType(@RequestBody DeviceType deviceType, MultipartFile[] files) {
+        int[] ints = deviceTypeService.addDeviceType(deviceType, files);
+        if (ints == null) {
+            return AjaxResult.error(HttpStatus.ERROR, "添加失败");
+        }
+        return AjaxResult.success(ints);
     }
 }

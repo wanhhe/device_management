@@ -24,13 +24,7 @@ public class Lab
     @Excel(name = "管理老师id")
     private String managerId;
 
-    /** 教学楼编号，如十教 */
-    @Excel(name = "教学楼编号，如十教")
-    private Integer buildNum;
-
-    /** 门牌号，如A312 */
-    @Excel(name = "门牌号，如A312")
-    private String number;
+    private String num;
 
     public void setId(String id) 
     {
@@ -59,24 +53,6 @@ public class Lab
     {
         return managerId;
     }
-    public void setBuildNum(Integer buildNum) 
-    {
-        this.buildNum = buildNum;
-    }
-
-    public Integer getBuildNum() 
-    {
-        return buildNum;
-    }
-    public void setNumber(String number) 
-    {
-        this.number = number;
-    }
-
-    public String getNumber() 
-    {
-        return number;
-    }
 
     @Override
     public String toString() {
@@ -84,8 +60,15 @@ public class Lab
             .append("id", getId())
             .append("campusId", getCampusId())
             .append("managerId", getManagerId())
-            .append("buildNum", getBuildNum())
-            .append("number", getNumber())
+            .append("num", getNum())
             .toString();
+    }
+
+    public String getNum() {
+        return num;
+    }
+
+    public void setNum(String num) {
+        this.num = num;
     }
 }

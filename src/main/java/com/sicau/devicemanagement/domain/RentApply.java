@@ -48,6 +48,9 @@ public class RentApply
     @Excel(name = "申请时间")
     private String creatTime;
 
+    @Excel(name = "结束流程时间")
+    private String finishTime;
+
     /** 设备id */
     @Excel(name = "设备id")
     private String deviceId;

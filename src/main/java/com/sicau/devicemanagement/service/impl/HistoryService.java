@@ -2,7 +2,11 @@ package com.sicau.devicemanagement.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sicau.devicemanagement.common.constant.Constants;
+import com.sicau.devicemanagement.common.utils.file.DateUtils;
+import com.sicau.devicemanagement.domain.Device;
+import com.sicau.devicemanagement.domain.DeviceType;
 import com.sicau.devicemanagement.domain.RentApply;
+import com.sicau.devicemanagement.domain.Schedule;
 import com.sicau.devicemanagement.domain.model.BorrowHistory;
 import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.mapper.*;
@@ -29,6 +33,16 @@ public class HistoryService {
 
     @Autowired
     ScheduleMapper scheduleMapper;
+
+    private final static String CREATE_TIME = "create";
+
+    private final static String FINISH_TIME = "finish";
+
+    private final static String USING_TIME = "use";
+
+    private final static String ASC = "asc";
+
+    private final static String DESC = "desc";
 
     /**
      * 通过id查找借用历史
@@ -138,6 +152,195 @@ public class HistoryService {
     }
 
     /**
+     * 根据数量导出该设备的使用情况
+     *
+     * @param id  id
+     * @param size   大小
+     * @param page   页面
+     * @return {@link List<Device> }
+     * @author sora
+     * @date 2022/02/10
+     */
+    public List<RentApply> selectDeviceByNum(String id, int size, int page) {
+        QueryWrapper<RentApply> rentApplyQueryWrapper = new QueryWrapper<>();
+        rentApplyQueryWrapper.eq("device_id", id);
+        rentApplyQueryWrapper.last("limit "+size + " " + page);
+        return rentApplyMapper.selectList(rentApplyQueryWrapper);
+    }
+
+    /**
+     * 根据时间导出该设备的使用情况
+     *
+     * @param id    id
+     * @param begin 开始日期 yyyy-MM-dd
+     * @param end   结束日期
+     * @return {@link List<Device> }
+     * @author sora
+     * @date 2022/02/10
+     */
+    public List<RentApply> selectDeviceByDay(String id, String begin, String end) {
+        QueryWrapper<RentApply> rentApplyQueryWrapper;
+        List<String> scheduleIds = scheduleMapper.queryIdBetweenDay(begin, end);
+        List<RentApply> res = new LinkedList<>();
+        RentApply tmp;
+        for (String sid : scheduleIds) {
+            rentApplyQueryWrapper = new QueryWrapper<>();
+            rentApplyQueryWrapper.eq("device_id", id).eq("schedule_id", sid);
+            tmp = rentApplyMapper.selectList(rentApplyQueryWrapper).get(0);
+            if (tmp != null) {
+                res.add(tmp);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 根据数量导出该设备类型的使用情况
+     *
+     * @param id   id
+     * @param size 大小
+     * @param page 页面
+     * @return {@link List<DeviceType> }
+     * @author sora
+     * @date 2022/02/12
+     */
+    public List<RentApply> selectDeviceTypeByNum(String id, int size, int page) {
+        QueryWrapper<RentApply> rentApplyQueryWrapper = new QueryWrapper<>();
+        rentApplyQueryWrapper.eq("device_type_id", id).last("limit "+size+" "+page);
+        return rentApplyMapper.selectList(rentApplyQueryWrapper);
+    }
+
+    /**
+     * 根据时间导出该设备类型的使用情况
+     *
+     * @param id    id
+     * @param begin 开始日期 yyyy-MM-dd
+     * @param end   结束日期
+     * @return {@link List<DeviceType> }
+     * @author sora
+     * @date 2022/02/10
+     */
+    public List<RentApply> selectDeviceTypeByTime(String id, String begin, String end) {
+        QueryWrapper<RentApply> rentApplyQueryWrapper;
+        List<String> scheduleIds = scheduleMapper.queryIdBetweenDay(begin, end);
+        List<RentApply> res = new LinkedList<>();
+        RentApply tmp;
+        for (String sid : scheduleIds) {
+            rentApplyQueryWrapper = new QueryWrapper<>();
+            rentApplyQueryWrapper.eq("device_type_id", id).eq("schedule_id", sid);
+            tmp = rentApplyMapper.selectList(rentApplyQueryWrapper).get(0);
+            if (tmp != null) {
+                res.add(tmp);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 根据数量导出使用申请
+     *
+     * @param size   大小
+     * @param page   页面
+     * @return {@link List<RentApply> }
+     * @author sora
+     * @date 2022/02/10
+     */
+    public List<RentApply> selectRentApply(int size, int page) {
+        QueryWrapper<RentApply> rentApplyQueryWrapper = new QueryWrapper<>();
+        rentApplyQueryWrapper.last("limit "+size+", " + page);
+        return rentApplyMapper.selectList(rentApplyQueryWrapper);
+    }
+
+    /**
+     * 根据时间导出使用申请
+     *
+     * @param begin  开始日期 yyyy-MM-dd
+     * @param end    结束日期
+     * @param basis  依据
+     * @param method 倒叙还是顺序
+     * @return {@link List<RentApply> }
+     * @author sora
+     * @date 2022/02/12
+     */
+    public List<RentApply> selectRentApply(String begin, String end, String basis, String method) {
+        QueryWrapper<RentApply> rentApplyQueryWrapper = new QueryWrapper<>();
+        int query = query(rentApplyQueryWrapper, basis, method);
+        if (query == -1) {
+            return null;
+        }
+        if (CREATE_TIME.equals(basis)) {
+            basis = "create_time";
+            rentApplyQueryWrapper.between(basis, begin, end);
+            return rentApplyMapper.selectList(rentApplyQueryWrapper);
+        } else if (FINISH_TIME.equals(basis)) {
+            basis = "finish_time";
+            rentApplyQueryWrapper.between(basis, begin, end);
+            return rentApplyMapper.selectList(rentApplyQueryWrapper);
+        } else if (USING_TIME.equals(basis)) {
+            List<String> scheduleIds = scheduleMapper.queryIdBetweenDay(begin, end);
+            QueryWrapper<RentApply> queryWrapper;
+            RentApply tmp;
+            List<RentApply> res = new LinkedList<>();
+            for (String id : scheduleIds) {
+                queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("schedule_id", id);
+                tmp = rentApplyMapper.selectList(queryWrapper).get(0);
+                if (tmp != null) {
+                    res.add(tmp);
+                }
+                return res;
+            }
+        }
+        return null;
+    }
+
+//    /**
+//     * 根据实际使用时间段导出使用申请
+//     *
+//     * @param begin  开始
+//     * @param end    结束
+//     * @return {@link List<RentApply> }
+//     * @author sora
+//     * @date 2022/02/12
+//     */
+//    public List<RentApply> selectRentApply(String begin, String end) {
+//        List<String> scheduleIds = scheduleMapper.queryIdBetweenDay(begin, end);
+//        List<RentApply> res = new LinkedList<>();
+//        QueryWrapper<RentApply> rentApplyQueryWrapper;
+//        RentApply tmp;
+//        for (String id : scheduleIds) {
+//            rentApplyQueryWrapper = new QueryWrapper<>();
+//            rentApplyQueryWrapper.eq("schedule_id", id);
+//            tmp = rentApplyMapper.selectList(rentApplyQueryWrapper).get(0);
+//            if (tmp != null) {
+//                res.add(tmp);
+//            }
+//        }
+//        return res;
+//    }
+
+    private int query(QueryWrapper<RentApply> queryWrapper, String basis, String method) {
+        if (CREATE_TIME.equals(basis)) {
+            if (DESC.equals(method)) {
+                queryWrapper.orderByDesc("create_time");
+            } else if (ASC.equals(method)) {
+                queryWrapper.orderByAsc("create_time");
+            } else {
+                return -1;
+            }
+        } else if (FINISH_TIME.equals(basis)) {
+            if (DESC.equals(method)) {
+                queryWrapper.orderByDesc("finish_time");
+            } else if (ASC.equals(method)) {
+                queryWrapper.orderByAsc("finish_time");
+            } else {
+                return -1;
+            }
+        }
+        return -1;
+    }
+
+    /**
      * 把 Rent_Apply类转化为 BorrowHistory类
      *
      * @param list 列表
@@ -157,6 +360,7 @@ public class HistoryService {
                 borrowHistory.setStudent(studentMapper.selectStudentByUid(temp.getApplicantsId()));
             }
             borrowHistory.setDeviceStatus(temp.getDeviceStatus());
+            borrowHistory.setFinishTime(temp.getFinishTime());
             borrowHistory.setSchedule(scheduleMapper.selectScheduleById(temp.getScheduleId()));
             borrowHistory.setCreatTime(temp.getCreatTime());
             borrowHistory.setRefuseReason(temp.getRefuseReason());

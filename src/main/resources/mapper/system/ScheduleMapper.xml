@@ -34,7 +34,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectScheduleVo"/>
         where id = #{id}
     </select>
-        
+
+    <select id="queryIdBetweenDay" resultType="java.lang.String">
+        select `id`
+        from `schedule`
+        where `day` between #{begin} and #{end}
+    </select>
+
     <insert id="insertSchedule" parameterType="Schedule">
         insert into schedule
         <trim prefix="(" suffix=")" suffixOverrides=",">

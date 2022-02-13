@@ -96,4 +96,17 @@ public class DeviceImgController extends BaseController
     {
         return toAjax(deviceImgService.deleteDeviceImgByIds(ids));
     }
+
+    /**
+     * 按类型删除设备
+     *
+     * @param type 类型
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/02/08
+     */
+    @DeleteMapping("/type/{type}")
+    public AjaxResult delByType(@PathVariable String type) {
+        return toAjax(deviceImgService.deleteDeviceImgByType(type));
+    }
 }

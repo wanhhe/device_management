@@ -72,3 +72,26 @@ xss:
 
 swagger:
   enabled: true
+
+# 学校数据接口
+sicau:
+  # 发起请求的token
+  token:
+  # 认证接口
+  oauth:
+    url: http://bdo.sicau.edu.cn:9090/api/auth/oauth/token
+    username: 72070
+    password: jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=
+    auth: Basic c2N1LXJzcC1wdWJsaWMtY2xpZW50OjEyM3NjdS1yc3AtcHVibGljLWNsaWVudDMyMQ==
+    is_encrypt: 2
+    grant_type: password
+  # 数据接口
+  url:
+    # 教室借用接口
+    class_rent: http://bdo.sicau.edu.cn:9090/api/rsp/data/jssysj
+    # 本专科开课接口
+    undergraduate: http://bdo.sicau.edu.cn:9090/api/rsp/data/bzkkkrw
+    # 研究生开课接口
+    graduate: http://bdo.sicau.edu.cn:9090/api/rsp/data/yjsxskc
+    # 教室基本数据接口
+    classroom_info: http://bdo.sicau.edu.cn:9090/api/rsp/data/jsjbsj
