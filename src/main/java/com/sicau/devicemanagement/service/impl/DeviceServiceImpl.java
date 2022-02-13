@@ -4,10 +4,9 @@ import java.util.List;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sicau.devicemanagement.common.constant.Constants;
-import com.sicau.devicemanagement.common.core.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.domain.Device;
 import com.sicau.devicemanagement.domain.DeviceType;
-import com.sicau.devicemanagement.domain.RentApply;
+import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.mapper.DeviceMapper;
 import com.sicau.devicemanagement.mapper.DeviceTypeMapper;
 import com.sicau.devicemanagement.service.IDeviceService;

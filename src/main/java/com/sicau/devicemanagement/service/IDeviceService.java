@@ -23,10 +23,10 @@ public interface IDeviceService
     public Device selectDeviceById(String id);
 
     /**
-     * 查询【请填写功能名称】列表
+     * 查询【设备】列表  通过金额
      * 
-     * @param device 【请填写功能名称】
-     * @return 【请填写功能名称】集合
+     * @param device 【设备】
+     * @return 【设备】集合
      */
     public List<Device> selectDeviceList(Device device);
 

@@ -8,6 +8,7 @@ import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
 import com.sicau.devicemanagement.domain.Teacher;
+import com.sicau.devicemanagement.domain.model.TeacherQuery;
 import com.sicau.devicemanagement.service.ITeacherService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,10 @@ public class TeacherController extends BaseController
     private ITeacherService teacherService;
 
     /**
-     * 查询【请填写功能名称】列表
+     * 查询【老师】列表
      */
-    @PreAuthorize("@ss.hasPermi('system:teacher:list')")
     @GetMapping("/list")
-    public TableDataInfo list(Teacher teacher)
+    public TableDataInfo list(TeacherQuery teacher)
     {
         startPage();
         List<Teacher> list = teacherService.selectTeacherList(teacher);
@@ -41,9 +41,8 @@ public class TeacherController extends BaseController
     /**
      * 导出【请填写功能名称】列表
      */
-    @PreAuthorize("@ss.hasPermi('system:teacher:export')")
     @PostMapping("/export")
-    public void export(HttpServletResponse response, Teacher teacher)
+    public void export(HttpServletResponse response, TeacherQuery teacher)
     {
         List<Teacher> list = teacherService.selectTeacherList(teacher);
         ExcelUtil<Teacher> util = new ExcelUtil<Teacher>(Teacher.class);
@@ -53,7 +52,6 @@ public class TeacherController extends BaseController
     /**
      * 获取【请填写功能名称】详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:teacher:query')")
     @GetMapping(value = "/{uid}")
     public AjaxResult getInfo(@PathVariable("uid") String uid)
     {

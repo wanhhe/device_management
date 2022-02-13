@@ -35,9 +35,8 @@ public class DeviceController extends BaseController
     private TokenService tokenService;
 
     /**
-     * 查询【请填写功能名称】列表
+     * 查询【通过金额查询】列表
      */
-    @PreAuthorize("@ss.hasPermi('system:device:list')")
     @GetMapping("/list")
     public TableDataInfo list(Device device)
     {
@@ -49,7 +48,6 @@ public class DeviceController extends BaseController
     /**
      * 导出【请填写功能名称】列表
      */
-    @PreAuthorize("@ss.hasPermi('system:device:export')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, Device device)
     {
@@ -61,7 +59,6 @@ public class DeviceController extends BaseController
     /**
      * 获取【请填写功能名称】详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:device:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") String id)
     {
@@ -71,8 +68,7 @@ public class DeviceController extends BaseController
     /**
      * 新增【请填写功能名称】
      */
-    @PreAuthorize("@ss.hasPermi('system:device:add')")
-    @PostMapping
+    @PostMapping("/add")
     public AjaxResult add(@RequestBody Device device)
     {
         return toAjax(deviceService.insertDevice(device));
@@ -81,8 +77,7 @@ public class DeviceController extends BaseController
     /**
      * 修改【请填写功能名称】
      */
-    @PreAuthorize("@ss.hasPermi('system:device:edit')")
-    @PutMapping
+    @PutMapping("/update")
     public AjaxResult edit(@RequestBody Device device)
     {
         return toAjax(deviceService.updateDevice(device));

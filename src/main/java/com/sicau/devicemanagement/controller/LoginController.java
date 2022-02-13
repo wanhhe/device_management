@@ -3,9 +3,6 @@ package com.sicau.devicemanagement.controller;
 import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.common.core.controller.BaseController;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
-import com.sicau.devicemanagement.common.utils.bean.BeanUtils;
-import com.sicau.devicemanagement.domain.Student;
-import com.sicau.devicemanagement.domain.Teacher;
 import com.sicau.devicemanagement.domain.model.LoginBody;
 import com.sicau.devicemanagement.exception.CaptchaException;
 import com.sicau.devicemanagement.service.impl.SysLoginService;
@@ -30,7 +27,7 @@ public class LoginController  extends BaseController {
     @PostMapping("/login")
     public AjaxResult login(@RequestBody LoginBody loginBody) throws CaptchaException {
         if(!loginBody.getType().equals(Constants.TEACHER)&&!loginBody.getType().equals(Constants.STUDENT)){
-            error("用户类型错误");
+           return error("用户类型错误");
         }
         // 生成令牌
         String token = loginService.login(loginBody.getName(), loginBody.getPassword(), loginBody.getCode(),

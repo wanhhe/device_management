@@ -34,6 +34,13 @@ public class Device
     @Excel(name = "设备价格")
     private Integer price;
 
+    /* ==== 不对应数据库字段 ==== */
+    // 上限
+    private Integer priceU;
+    // 下限
+    private Integer priceD;
+    /* ==== 不对应数据库字段 ==== */
+
     /** 设备状态 */
     @Excel(name = "设备状态")
     private String status;
@@ -52,7 +59,7 @@ public class Device
 
     /** 是否逻辑删除，0为删除 */
     @Excel(name = "是否逻辑删除，0为删除")
-    private Integer isDel;
+    private Integer isDel = 1;
 
     public void setId(String id) 
     {

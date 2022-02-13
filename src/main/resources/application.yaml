@@ -37,7 +37,7 @@ spring:
 #mybatis-plus配置
 mybatis-plus:
   #配置Mapper映射文件
-  mapper-locations: classpath:/mapper/*.xml
+  mapper-locations: classpath:/mapper/system/*.xml
   # 配置Mybatis数据返回类型别名（默认别名为类名）
   type-aliases-package: com.sicau.devicemanagement.domain
   configuration:

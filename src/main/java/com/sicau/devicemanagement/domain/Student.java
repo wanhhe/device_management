@@ -1,5 +1,6 @@
 package com.sicau.devicemanagement.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.sicau.devicemanagement.common.annotation.Excel;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -53,6 +54,7 @@ public class Student extends User
 
     private Integer isDel;
 
+    @TableField(exist = false)
     private String expirationDate;
 
     public void setUid(String uid) 

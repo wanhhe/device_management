@@ -2,10 +2,7 @@ package com.sicau.devicemanagement.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sicau.devicemanagement.common.constant.Constants;
-import com.sicau.devicemanagement.common.core.model.DeviceUsingSituation;
-import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.file.DateUtils;
 import com.sicau.devicemanagement.domain.*;
 import com.sicau.devicemanagement.mapper.*;

@@ -6,8 +6,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * 【请填写功能名称】对象 lab
- * 
- * @author ruoyi
+ *
  * @date 2022-01-15
  */
 public class Lab

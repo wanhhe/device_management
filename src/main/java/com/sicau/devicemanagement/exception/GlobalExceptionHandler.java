@@ -6,6 +6,9 @@ import com.sicau.devicemanagement.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,6 +26,29 @@ import javax.servlet.http.HttpServletRequest;
 public class GlobalExceptionHandler
 {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    /**
+     * 登录异常
+     */
+    @ExceptionHandler(AuthenticationException.class)
+    public AjaxResult handleAuthenticationException(AuthenticationException authenticationException,HttpServletRequest request)
+    {
+        String uri = request.getRequestURI();
+        log.info("请求地址：{}, {}",uri,authenticationException.getMessage());
+        if (authenticationException instanceof UsernameNotFoundException || authenticationException instanceof BadCredentialsException) {
+            return AjaxResult.error("用户名或密码错误");
+        } else if (authenticationException instanceof DisabledException) {
+            return AjaxResult.error("用户已被禁用");
+        } else if (authenticationException instanceof LockedException) {
+            return AjaxResult.error("账户被锁定");
+        } else if (authenticationException instanceof AccountExpiredException) {
+            return AjaxResult.error("账户过期");
+        } else if (authenticationException instanceof CredentialsExpiredException) {
+            return AjaxResult.error("证书过期");
+        } else {
+            return AjaxResult.error("登录失败");
+        }
+    }
 
     /**
      * 权限校验异常
@@ -65,7 +91,7 @@ public class GlobalExceptionHandler
     public AjaxResult handleRuntimeException(RuntimeException e, HttpServletRequest request)
     {
         String requestURI = request.getRequestURI();
-        log.error("请求地址'{}',发生未知异常{}.", requestURI, e);
+        log.error("请求地址'{}',发生未知异常{}.", requestURI, e.getMessage());
         return AjaxResult.error(e.getMessage());
     }
 
@@ -113,9 +139,7 @@ public class GlobalExceptionHandler
         return AjaxResult.error(message);
     }
 
-//    @ExceptionHandler(ServiceException.class)
-//    public AjaxResult handleServiceException(ServiceException e){
-//        log.error("请求地址'{}',系统发生异常{}.",e.getMsg());
-//        return AjaxResult.error(e.getMsg());
-//    }
+
+
+
 }
