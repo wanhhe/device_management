@@ -1,10 +1,5 @@
 package com.sicau.devicemanagement.common.constant;
 
-
-import lombok.val;
-
-import java.util.Locale;
-
 /**
  * 通用常量信息
  * 

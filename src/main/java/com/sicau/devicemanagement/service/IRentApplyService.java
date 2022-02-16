@@ -63,22 +63,20 @@ public interface IRentApplyService
     /**
      * 老师开始使用设备
      *
-     * @param uid uid
      * @param id  申请使用id
      * @author sora
      * @date 2022/01/19
      */
-    void teacherStartUsingDevice(String uid, String id);
+    void teacherStartUsingDevice(String id);
 
     /**
      * 学生开始使用设备
      *
-     * @param uid uid
      * @param id  申请使用id
      * @author sora
      * @date 2022/01/19
      */
-    void studentStartUsingDevice(String uid, String id);
+    void studentStartUsingDevice(String id);
 
     /**
      * 申请归还

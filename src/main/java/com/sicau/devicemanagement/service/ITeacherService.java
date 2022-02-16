@@ -63,12 +63,45 @@ public interface ITeacherService
     public int deleteTeacherByUid(String uid);
 
     /**
-     * 删除学生账号
+     * 学生修改自己账号的密码
      *
-     * @param sid sid
-     * @return boolean
+     * @param uid      uid
+     * @param password 密码
+     * @param verify   验证
+     * @return int
      * @author sora
-     * @date 2022/01/19
+     * @date 2022/02/15
      */
-    public void banStudent(String sid);
+    public int teacherUpdatePassword(String uid, String password, String verify);
+
+    /**
+     * 生成更改密码的验证码
+     *
+     * @param uid uid
+     * @author sora
+     * @date 2022/02/15
+     */
+    public boolean getPasswordVerify(String uid);
+
+    /**
+     * 学生修改自己账号的手机号
+     *
+     * @param uid    uid
+     * @param tel    电话
+     * @param verify 验证
+     * @return int
+     * @author sora
+     * @date 2022/02/15
+     */
+    public int teacherUpdateTel(String uid, String tel, String verify);
+
+
+    /**
+     * 生成更改手机号的验证码
+     *
+     * @param uid uid
+     * @author sora
+     * @date 2022/02/15
+     */
+    public boolean getTelVerify(String uid);
 }

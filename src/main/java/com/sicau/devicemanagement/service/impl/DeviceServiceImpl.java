@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sicau.devicemanagement.common.constant.Constants;
 
 import com.sicau.devicemanagement.common.utils.file.FileUploadUtils;
+import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.Device;
 import com.sicau.devicemanagement.domain.DeviceImg;
 import com.sicau.devicemanagement.domain.DeviceType;
@@ -207,6 +209,8 @@ public class DeviceServiceImpl implements IDeviceService
         }
         int count = 0;
         for (Device tmp : list) {
+            tmp.setId(IdUtils.simpleUUID());
+            tmp.setStatus(Constants.DEVICE_NATURAL);
             if (deviceMapper.insertDevice(tmp) > 0) {
                 count++;
             }

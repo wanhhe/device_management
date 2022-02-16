@@ -122,7 +122,7 @@ public class RentApplyController extends BaseController
             if (!access) {
                 return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
             }
-            rentApplyService.teacherStartUsingDevice(uid, id);
+            rentApplyService.teacherStartUsingDevice(id);
             return AjaxResult.success();
         }
         // 判断是否能够使用设备
@@ -130,7 +130,7 @@ public class RentApplyController extends BaseController
         if (!access) {
             return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
         }
-        rentApplyService.studentStartUsingDevice(uid, id);
+        rentApplyService.studentStartUsingDevice(id);
         return AjaxResult.success();
     }
 
@@ -204,7 +204,7 @@ public class RentApplyController extends BaseController
             if (!access) {
                 return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
             }
-            rentApplyService.teacherStartUsingDevice(uid, id);
+            rentApplyService.teacherStartUsingDevice(id);
             return AjaxResult.success();
         }
         // 判断是否能够使用设备
@@ -239,7 +239,7 @@ public class RentApplyController extends BaseController
             if (!access) {
                 return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
             }
-            rentApplyService.teacherStartUsingDevice(uid, id);
+            rentApplyService.teacherStartUsingDevice(id);
             return AjaxResult.success();
         }
         // 判断是否能够使用设备

@@ -62,6 +62,50 @@ public interface IStudentService
     public int deleteStudentByUid(String uid);
 
     /**
+     * 学生修改自己账号的密码
+     *
+     * @param uid      uid
+     * @param password 密码
+     * @param verify   验证
+     * @return int
+     * @author sora
+     * @date 2022/02/15
+     */
+    public int studentUpdatePassword(String uid, String password, String verify);
+
+
+    /**
+     * 生成更改密码的验证码
+     *
+     * @param uid uid
+     * @author sora
+     * @date 2022/02/15
+     */
+    public boolean getPasswordVerify(String uid);
+
+    /**
+     * 学生修改自己账号的手机号
+     *
+     * @param uid    uid
+     * @param tel    电话
+     * @param verify 验证
+     * @return int
+     * @author sora
+     * @date 2022/02/15
+     */
+    public int studentUpdateTel(String uid, String tel, String verify);
+
+
+    /**
+     * 生成更改手机号的验证码
+     *
+     * @param uid uid
+     * @author sora
+     * @date 2022/02/15
+     */
+    public boolean getTelVerify(String uid);
+
+    /**
      * 封禁学生
      *
      * @param uids uid
@@ -72,6 +116,16 @@ public interface IStudentService
     public int banStudentByUids(String[] uids);
 
     public int banStudentByUid(String uid);
+
+    /**
+     * 老师批量解封下属学生
+     *
+     * @param uids uid
+     * @return int
+     * @author sora
+     * @date 2022/02/14
+     */
+    public int cancelBanStudentByUids(String[] uids);
 
     /**
      * 判断是否是学生的指导老师

@@ -123,9 +123,14 @@ public class RentApplyServiceImpl implements IRentApplyService
      * @date 2022/01/19
      */
     @Override
-    public void teacherStartUsingDevice(String uid, String id) {
+    public void teacherStartUsingDevice(String id) {
         // 发送短信提醒开始使用
-        smsService.sendStartSms(uid);
+        QueryWrapper<RentApply> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        RentApply rentApply = rentApplyMapper.selectList(queryWrapper).get(0);
+        String deviceName = deviceMapper.selectDeviceById(rentApply.getDeviceId()).getName();
+        String tel = teacherMapper.selectTeacherByUid(rentApply.getApplicantsId()).getTel();
+        smsService.sendStartSms(deviceName, tel);
         // 修改申请状态
         rentApplyMapper.updateStatus(id, "使用中");
     }
@@ -133,14 +138,19 @@ public class RentApplyServiceImpl implements IRentApplyService
     /**
      * 学生开始使用设备
      *
-     * @param uid uid
      * @param id  申请使用id
      * @author sora
      * @date 2022/01/19
      */
     @Override
-    public void studentStartUsingDevice(String uid, String id) {
-        smsService.sendStartSms(uid);
+    public void studentStartUsingDevice(String id) {
+        // 发送短信提醒开始使用
+        QueryWrapper<RentApply> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        RentApply rentApply = rentApplyMapper.selectList(queryWrapper).get(0);
+        String deviceName = deviceMapper.selectDeviceById(rentApply.getDeviceId()).getName();
+        String tel = studentMapper.selectStudentByUid(rentApply.getApplicantsId()).getTel();
+        smsService.sendStartSms(deviceName, tel);
         rentApplyMapper.updateStatus(id, "使用中");
     }
 

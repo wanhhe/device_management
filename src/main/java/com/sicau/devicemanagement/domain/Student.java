@@ -54,7 +54,7 @@ public class Student extends User
 
     private Integer isDel;
 
-    @TableField(exist = false)
+    @TableField(value = "expiration_date")
     private String expirationDate;
 
     public void setUid(String uid) 

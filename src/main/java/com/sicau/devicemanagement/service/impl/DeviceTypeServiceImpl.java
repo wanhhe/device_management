@@ -12,6 +12,7 @@ import com.sicau.devicemanagement.domain.DeviceType;
 import com.sicau.devicemanagement.mapper.DeviceImgMapper;
 import com.sicau.devicemanagement.mapper.DeviceTypeMapper;
 import com.sicau.devicemanagement.service.IDeviceTypeService;
+import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -117,9 +118,12 @@ public class DeviceTypeServiceImpl implements IDeviceTypeService
     @Override
     public int[] addDeviceType(DeviceType deviceType, MultipartFile[] files) {
         // 生成uuid
-        String uuid = IdUtils.fastUUID();
+        String uuid = IdUtils.simpleUUID();
         deviceType.setId(uuid);
+        // TODO: 2022/2/13 判断逻辑外键
         int count = deviceTypeMapper.insertDeviceType(deviceType);
+        deviceType.setInventory(0);
+        deviceType.setTotal(0);
         if (count < 1) {
             return null;
         }

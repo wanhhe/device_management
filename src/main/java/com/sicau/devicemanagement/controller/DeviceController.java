@@ -140,6 +140,7 @@ public class DeviceController extends BaseController
      */
     @PostMapping("/device")
     public AjaxResult addDevice(@RequestBody Device device) {
+        // TODO: 2022/2/13 判断结构体中的字段是否合法 
         List<Device> list = new LinkedList<>();
         list.add(device);
         return addDevices(list);
@@ -157,9 +158,9 @@ public class DeviceController extends BaseController
     public AjaxResult addDevices(@RequestBody List<Device> devices) {
         int ints = deviceService.addDevice(devices);
         if (ints == 0) {
-            return AjaxResult.error(HttpStatus.BAD_METHOD, "请上传相同类型的设备");
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "请上传相同类型的设备");
         } else if (ints == -1) {
-            return AjaxResult.error(HttpStatus.BAD_METHOD, "不存在该类型设备");
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "不存在该类型设备");
         }
         return toAjax(ints);
     }
