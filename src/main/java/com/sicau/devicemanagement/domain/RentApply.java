@@ -46,7 +46,7 @@ public class RentApply
     /** 申请时间 */
     // TODO mingming
     @Excel(name = "申请时间")
-    private String creatTime;
+    private String createTime;
 
     @Excel(name = "结束流程时间")
     private String finishTime;

@@ -1,12 +1,11 @@
 package com.sicau.devicemanagement.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.pagehelper.PageHelper;
 import com.sicau.devicemanagement.common.constant.Constants;
-import com.sicau.devicemanagement.common.utils.file.DateUtils;
 import com.sicau.devicemanagement.domain.Device;
 import com.sicau.devicemanagement.domain.DeviceType;
 import com.sicau.devicemanagement.domain.RentApply;
-import com.sicau.devicemanagement.domain.Schedule;
 import com.sicau.devicemanagement.domain.model.BorrowHistory;
 import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.mapper.*;
@@ -52,9 +51,10 @@ public class HistoryService {
      * @author sora
      * @date 2022/01/27
      */
-    public List<BorrowHistory> getBorrowHistoryByUid(String uid) {
+    public List<BorrowHistory> getBorrowHistoryByUid(String uid, int size, int page) {
         QueryWrapper<RentApply> rentApplyQueryWrapper = new QueryWrapper<>();
-        rentApplyQueryWrapper.eq("applicants_id", uid);
+        int offset = size * (page-1);
+        rentApplyQueryWrapper.eq("applicants_id", uid).last("limit "+offset + ", "+size);
         List<RentApply> rentApplies = rentApplyMapper.selectList(rentApplyQueryWrapper);
         List<BorrowHistory> borrowHistories = applyToBorrow(rentApplies);
         advanceUnreturn(borrowHistories);
@@ -81,9 +81,10 @@ public class HistoryService {
      * @author sora
      * @date 2022/01/27
      */
-    public List<BorrowHistory> adminGetBorrowHistoryByDevice(String typeId) {
+    public List<BorrowHistory> adminGetBorrowHistoryByDevice(String typeId, int size, int page) {
         QueryWrapper<RentApply> rentApplyQueryWrapper = new QueryWrapper<>();
-        rentApplyQueryWrapper.eq("device_type_id", typeId);
+        int offset = size * (page - 1);
+        rentApplyQueryWrapper.eq("device_type_id", typeId).last("limit "+offset+", "+size);
         List<RentApply> rentApplies = rentApplyMapper.selectList(rentApplyQueryWrapper);
         List<BorrowHistory> borrowHistories = applyToBorrow(rentApplies);
         sortNameAsc(borrowHistories);
@@ -91,9 +92,17 @@ public class HistoryService {
         return borrowHistories;
     }
 
+    /**
+     * 管理员通过设备id查找借用历史
+     *
+     * @param id id
+     * @return {@link List<BorrowHistory> }
+     * @author sora
+     * @date 2022/02/16
+     */
     public List<BorrowHistory> adminGetBorrowHistoryByDeviceId(String id) {
         QueryWrapper<RentApply> rentApplyQueryWrapper = new QueryWrapper<>();
-        rentApplyQueryWrapper.eq("device_id", id).eq("status", DeviceUsingSituation.DevcieRentStatus.DEVICE_RETURN);
+        rentApplyQueryWrapper.eq("device_id", id);
         List<RentApply> rentApplies = rentApplyMapper.selectList(rentApplyQueryWrapper);
         List<BorrowHistory> borrowHistories = applyToBorrow(rentApplies);
         // 按借用时间从新到旧排序
@@ -122,11 +131,14 @@ public class HistoryService {
      *
      * @param uid    uid
      * @param typeId 类型id
+     * @param size   大小
+     * @param page   页面
      * @return {@link List<BorrowHistory> }
      * @author sora
-     * @date 2022/01/27
+     * @date 2022/02/16
      */
-    public List<BorrowHistory> getSubBorrowHistoryByDevice(String uid, String typeId) {
+    public List<BorrowHistory> getSubBorrowHistoryByDevice(String uid, String typeId, int size, int page) {
+        PageHelper.startPage(page, size);
         List<RentApply> rentApplies = rentApplyMapper.querySubStuApplyByDevice(uid, typeId);
         List<BorrowHistory> borrowHistories = applyToBorrow(rentApplies);
         // 对设备名进行排序
@@ -140,11 +152,14 @@ public class HistoryService {
      *
      * @param uid    uid
      * @param typeId 类型id
+     * @param size 数据数
+     * @param page 第几页
      * @return {@link List<BorrowHistory> }
      * @author sora
-     * @date 2022/01/27
+     * @date 2022/02/16
      */
-    public List<BorrowHistory> getOwnDeviceBorrowHistory(String uid, String typeId) {
+    public List<BorrowHistory> getOwnDeviceBorrowHistory(String uid, String typeId, int size, int page) {
+        PageHelper.startPage(page, size);
         List<RentApply> rentApplies = rentApplyMapper.queryOwnDeviceHistory(uid, typeId);
         List<BorrowHistory> borrowHistories = applyToBorrow(rentApplies);
         advanceUnreturn(borrowHistories);
@@ -164,7 +179,8 @@ public class HistoryService {
     public List<RentApply> selectDeviceByNum(String id, int size, int page) {
         QueryWrapper<RentApply> rentApplyQueryWrapper = new QueryWrapper<>();
         rentApplyQueryWrapper.eq("device_id", id);
-        rentApplyQueryWrapper.last("limit "+size + " " + page);
+        int offset = size * (page - 1);
+         rentApplyQueryWrapper.last("limit "+offset + ", " + size);
         return rentApplyMapper.selectList(rentApplyQueryWrapper);
     }
 
@@ -182,11 +198,16 @@ public class HistoryService {
         QueryWrapper<RentApply> rentApplyQueryWrapper;
         List<String> scheduleIds = scheduleMapper.queryIdBetweenDay(begin, end);
         List<RentApply> res = new LinkedList<>();
+        List<RentApply> list;
         RentApply tmp;
         for (String sid : scheduleIds) {
             rentApplyQueryWrapper = new QueryWrapper<>();
             rentApplyQueryWrapper.eq("device_id", id).eq("schedule_id", sid);
-            tmp = rentApplyMapper.selectList(rentApplyQueryWrapper).get(0);
+            list = rentApplyMapper.selectList(rentApplyQueryWrapper);
+            if (list == null || list.isEmpty()) {
+                continue;
+            }
+            tmp = list.get(0);
             if (tmp != null) {
                 res.add(tmp);
             }
@@ -206,7 +227,8 @@ public class HistoryService {
      */
     public List<RentApply> selectDeviceTypeByNum(String id, int size, int page) {
         QueryWrapper<RentApply> rentApplyQueryWrapper = new QueryWrapper<>();
-        rentApplyQueryWrapper.eq("device_type_id", id).last("limit "+size+" "+page);
+        int offset = size * (page - 1);
+        rentApplyQueryWrapper.eq("device_type_id", id).last("limit "+offset+", "+size);
         return rentApplyMapper.selectList(rentApplyQueryWrapper);
     }
 
@@ -224,11 +246,16 @@ public class HistoryService {
         QueryWrapper<RentApply> rentApplyQueryWrapper;
         List<String> scheduleIds = scheduleMapper.queryIdBetweenDay(begin, end);
         List<RentApply> res = new LinkedList<>();
+        List<RentApply> list;
         RentApply tmp;
         for (String sid : scheduleIds) {
             rentApplyQueryWrapper = new QueryWrapper<>();
             rentApplyQueryWrapper.eq("device_type_id", id).eq("schedule_id", sid);
-            tmp = rentApplyMapper.selectList(rentApplyQueryWrapper).get(0);
+            list = rentApplyMapper.selectList(rentApplyQueryWrapper);
+            if (list == null || list.isEmpty()) {
+                continue;
+            }
+            tmp = list.get(0);
             if (tmp != null) {
                 res.add(tmp);
             }
@@ -247,7 +274,8 @@ public class HistoryService {
      */
     public List<RentApply> selectRentApply(int size, int page) {
         QueryWrapper<RentApply> rentApplyQueryWrapper = new QueryWrapper<>();
-        rentApplyQueryWrapper.last("limit "+size+", " + page);
+        int offset = size * (page - 1);
+        rentApplyQueryWrapper.last("limit "+offset+", " + size);
         return rentApplyMapper.selectList(rentApplyQueryWrapper);
     }
 
@@ -281,15 +309,20 @@ public class HistoryService {
             QueryWrapper<RentApply> queryWrapper;
             RentApply tmp;
             List<RentApply> res = new LinkedList<>();
+            List<RentApply> list;
             for (String id : scheduleIds) {
                 queryWrapper = new QueryWrapper<>();
                 queryWrapper.eq("schedule_id", id);
-                tmp = rentApplyMapper.selectList(queryWrapper).get(0);
+                list = rentApplyMapper.selectList(queryWrapper);
+                if (list == null || list.isEmpty()) {
+                    continue;
+                }
+                tmp = list.get(0);
                 if (tmp != null) {
                     res.add(tmp);
                 }
-                return res;
             }
+            return res;
         }
         return null;
     }
@@ -337,7 +370,7 @@ public class HistoryService {
                 return -1;
             }
         }
-        return -1;
+        return 1;
     }
 
     /**
@@ -362,7 +395,7 @@ public class HistoryService {
             borrowHistory.setDeviceStatus(temp.getDeviceStatus());
             borrowHistory.setFinishTime(temp.getFinishTime());
             borrowHistory.setSchedule(scheduleMapper.selectScheduleById(temp.getScheduleId()));
-            borrowHistory.setCreatTime(temp.getCreatTime());
+            borrowHistory.setCreatTime(temp.getCreateTime());
             borrowHistory.setRefuseReason(temp.getRefuseReason());
             borrowHistory.setRefuser(teacherMapper.selectTeacherByUid(temp.getRefuserId()));
             borrowHistory.setInstructorPass(temp.getInstructorPass());

@@ -127,4 +127,15 @@ public interface IRentApplyService
      * @date 2022/01/19
      */
     boolean isUserAccessDevice(String uid, String id);
+
+    /**
+     * 判断用户是否可以结束使用设备
+     *
+     * @param uid uid
+     * @param id  id
+     * @return boolean
+     * @author sora
+     * @date 2022/02/16
+     */
+    boolean isUserFinishDevice(String uid, String id);
 }

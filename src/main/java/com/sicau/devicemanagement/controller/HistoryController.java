@@ -38,6 +38,8 @@ public class HistoryController {
     @GetMapping("/own/{uid}/{type}")
     public AjaxResult getOwnDeviceRentedHistory(@PathVariable("uid") String uid,
                                                 @PathVariable("type") String type,
+                                                @RequestParam("size") int size,
+                                                @RequestParam("page") int page,
                                                 @RequestHeader("Authorization") String token) {
         LoginUser loginUser = tokenService.getLoginUser(token);
         if (!uid.equals(loginUser.getUserId())) {
@@ -46,7 +48,10 @@ public class HistoryController {
         if (!loginUser.getRole().equals(Constants.TEACHER)) {
             return AjaxResult.error(HttpStatus.FORBIDDEN, "没有权限");
         }
-        return AjaxResult.success(historyService.getOwnDeviceBorrowHistory(uid, type));
+        if (pageCuttingIllegal(size, page)) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
+        }
+        return AjaxResult.success(historyService.getOwnDeviceBorrowHistory(uid, type, size, page));
     }
 
     /**
@@ -59,13 +64,19 @@ public class HistoryController {
      * @date 2022/01/26
      */
     @GetMapping("/self/{uid}")
-    public AjaxResult getSelfRentHistory(@PathVariable("uid") String uid, @RequestHeader("Authorization") String token) {
+    public AjaxResult getSelfRentHistory(@PathVariable("uid") String uid,
+                                         @RequestParam("size") int size,
+                                         @RequestParam("page") int page,
+                                         @RequestHeader("Authorization") String token) {
         // 判断身份
         LoginUser loginUser = tokenService.getLoginUser(token);
         if (!uid.equals(loginUser.getUserId())) {
             return AjaxResult.error(HttpStatus.UNAUTHORIZED, "token校验失败");
         }
-        return AjaxResult.success(historyService.getBorrowHistoryByUid(uid));
+        if (pageCuttingIllegal(size, page)) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
+        }
+        return AjaxResult.success(historyService.getBorrowHistoryByUid(uid, size, page));
     }
 
     /**
@@ -77,7 +88,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/01/26
      */
-    @GetMapping("/sub/{uid}/{name}")
+    @GetMapping("/sub/name/{uid}/{name}")
     public AjaxResult getSubordinateRentHistoryByName(@PathVariable("uid") String uid, @PathVariable("name") String name) {
         return AjaxResult.success(historyService.getSubBorrowHistoryByName(uid, name));
     }
@@ -91,9 +102,15 @@ public class HistoryController {
      * @author sora
      * @date 2022/01/26
      */
-    @GetMapping("/sub/{uid}/{type}")
-    public AjaxResult getSubordinateRentHistoryByDeviceType(@PathVariable("uid") String uid, @PathVariable("type") String type) {
-        return AjaxResult.success(historyService.getSubBorrowHistoryByDevice(uid, type));
+    @GetMapping("/sub/type/{uid}/{type}")
+    public AjaxResult getSubordinateRentHistoryByDeviceType(@PathVariable("uid") String uid,
+                                                            @PathVariable("type") String type,
+                                                            @RequestParam("size") int size,
+                                                            @RequestParam("page") int page) {
+        if (pageCuttingIllegal(size, page)) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
+        }
+        return AjaxResult.success(historyService.getSubBorrowHistoryByDevice(uid, type, size, page));
     }
 
 //    /**
@@ -118,13 +135,23 @@ public class HistoryController {
      * 按设备型号得到得到所有租赁设备的历史
      *
      * @param type 类型id
+     * @param size 大小
+     * @param page 页面
      * @return {@link AjaxResult }
      * @author sora
-     * @date 2022/01/26
+     * @date 2022/02/16
      */
     @GetMapping("/all/{type}")
-    public AjaxResult getAllRentHistoryByDevice(@PathVariable("type") String type) {
-        return AjaxResult.success(historyService.adminGetBorrowHistoryByDevice(type));
+    public AjaxResult getAllRentHistoryByDevice(@PathVariable("type") String type,
+                                                @RequestParam("size") int size,
+                                                @RequestParam("page") int page) {
+        if (pageCuttingIllegal(size, page)) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
+        }
+        if (!StringUtils.isNotEmpty(type)) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
+        }
+        return AjaxResult.success(historyService.adminGetBorrowHistoryByDevice(type, size, page));
     }
 
     /**
@@ -157,7 +184,7 @@ public class HistoryController {
                                     @RequestParam("page") int page,
                                     HttpServletResponse response) {
         if (pageCuttingIllegal(size, page)) {
-            return AjaxResult.error(HttpStatus.BAD_METHOD, "参数错误");
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         List<RentApply> rentApplies = historyService.selectDeviceByNum(id, size, page);
         ExcelUtil<RentApply> util = new ExcelUtil<RentApply>(RentApply.class);
@@ -183,7 +210,7 @@ public class HistoryController {
                                           @PathVariable("end") String end,
                                           HttpServletResponse response) {
         if (timeIllegal(begin, end)) {
-            return AjaxResult.error(HttpStatus.BAD_METHOD, "参数错误");
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         List<RentApply> rentApplies = historyService.selectDeviceByDay(id, begin, end);
         ExcelUtil<RentApply> util = new ExcelUtil<RentApply>(RentApply.class);
@@ -207,7 +234,7 @@ public class HistoryController {
                                         @PathVariable("end") String end,
                                         HttpServletResponse response) {
         if (timeIllegal(begin, end)) {
-            return AjaxResult.error(HttpStatus.BAD_METHOD, "参数错误");
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         List<RentApply> rentApplies = historyService.selectDeviceTypeByTime(id, begin, end);
         ExcelUtil<RentApply> util = new ExcelUtil<RentApply>(RentApply.class);
@@ -232,7 +259,7 @@ public class HistoryController {
                                               @RequestParam("page") int page,
                                               HttpServletResponse response) {
         if (pageCuttingIllegal(size, page)) {
-            return AjaxResult.error(HttpStatus.BAD_METHOD, "参数错误");
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         List<RentApply> rentApplies = historyService.selectDeviceTypeByNum(id, size, page);
         ExcelUtil<RentApply> util = new ExcelUtil<RentApply>(RentApply.class);
@@ -245,22 +272,25 @@ public class HistoryController {
      *
      * @param begin    开始日期 yyyy-MM-dd
      * @param end      结束
+     * @param basis  依据
+     * @param method 倒叙还是顺序
      * @param response 响应
+     * @return {@link AjaxResult }
      * @author sora
-     * @date 2022/02/10
+     * @date 2022/02/16
      */
-    @PostMapping("/excel/rent/{begin}/{end}/{basis}/{method}")
+    @GetMapping("/excel/rent/{begin}/{end}/{basis}/{method}")
     public AjaxResult exportRentHistory(@PathVariable("begin") String begin,
                                   @PathVariable("end") String end,
                                   @PathVariable("basis") String basis,
                                   @PathVariable("method") String method,
                                   HttpServletResponse response) {
         if (timeIllegal(begin, end)) {
-            return AjaxResult.error(HttpStatus.BAD_METHOD, "参数错误");
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         List<RentApply> rentApplies = historyService.selectRentApply(begin, end, basis, method);
         if (rentApplies == null) {
-            return AjaxResult.error(HttpStatus.BAD_METHOD, "参数错误");
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         ExcelUtil<RentApply> util = new ExcelUtil<RentApply>(RentApply.class);
         util.exportExcel(response, rentApplies, "导出一个时间段内的申请历史");
@@ -277,12 +307,12 @@ public class HistoryController {
      * @author sora
      * @date 2022/02/10
      */
-    @PostMapping("/excel/rent")
+    @GetMapping("/excel/rent")
     public AjaxResult exportRentHistory(@RequestParam("size") int size,
                                         @RequestParam("page") int page,
                                         HttpServletResponse response) {
         if (pageCuttingIllegal(size, page)) {
-            return AjaxResult.error(HttpStatus.BAD_METHOD, "参数错误");
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         List<RentApply> rentApplies = historyService.selectRentApply(size, page);
         if (rentApplies == null) {
@@ -323,9 +353,9 @@ public class HistoryController {
      * @date 2022/02/12
      */
     private boolean pageCuttingIllegal(int size, int page) {
-        if (size <= 10 || page <= 0) {
+        if (size < 1 || page < 1) {
             return true;
         }
-        return size >= 3000;
+        return size <= 3000;
     }
 }

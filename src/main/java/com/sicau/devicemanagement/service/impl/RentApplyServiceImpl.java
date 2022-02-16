@@ -6,6 +6,7 @@ import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.file.DateUtils;
 import com.sicau.devicemanagement.domain.*;
+import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.mapper.*;
 import com.sicau.devicemanagement.service.IRentApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,7 +118,6 @@ public class RentApplyServiceImpl implements IRentApplyService
     /**
      * 老师开始使用设备
      *
-     * @param uid uid
      * @param id  申请使用id
      * @author sora
      * @date 2022/01/19
@@ -127,7 +127,11 @@ public class RentApplyServiceImpl implements IRentApplyService
         // 发送短信提醒开始使用
         QueryWrapper<RentApply> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", id);
-        RentApply rentApply = rentApplyMapper.selectList(queryWrapper).get(0);
+        List<RentApply> rentApplyList = rentApplyMapper.selectList(queryWrapper);
+        if (rentApplyList == null || rentApplyList.isEmpty()) {
+            return;
+        }
+        RentApply rentApply = rentApplyList.get(0);
         String deviceName = deviceMapper.selectDeviceById(rentApply.getDeviceId()).getName();
         String tel = teacherMapper.selectTeacherByUid(rentApply.getApplicantsId()).getTel();
         smsService.sendStartSms(deviceName, tel);
@@ -147,7 +151,11 @@ public class RentApplyServiceImpl implements IRentApplyService
         // 发送短信提醒开始使用
         QueryWrapper<RentApply> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", id);
-        RentApply rentApply = rentApplyMapper.selectList(queryWrapper).get(0);
+        List<RentApply> rentApplyList = rentApplyMapper.selectList(queryWrapper);
+        if (rentApplyList == null || rentApplyList.isEmpty()) {
+            return;
+        }
+        RentApply rentApply = rentApplyList.get(0);
         String deviceName = deviceMapper.selectDeviceById(rentApply.getDeviceId()).getName();
         String tel = studentMapper.selectStudentByUid(rentApply.getApplicantsId()).getTel();
         smsService.sendStartSms(deviceName, tel);
@@ -262,7 +270,7 @@ public class RentApplyServiceImpl implements IRentApplyService
                     RentApply latest = new RentApply();
                     Date latestTime = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, "2000-01-01 00:00:00");
                     for (RentApply tmp : applyList) {
-                        Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, tmp.getCreatTime());
+                        Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, tmp.getCreateTime());
                         if (date.after(latestTime)) {
                             latest = tmp;
                             latestTime = date;
@@ -340,10 +348,7 @@ public class RentApplyServiceImpl implements IRentApplyService
     @Override
     public boolean isDeviceOwner(String uid, String id) {
         String ownerId = rentApplyMapper.selectOwnerById(id);
-        if (uid.equals(ownerId)) {
-            return true;
-        }
-        return false;
+        return uid.equals(ownerId);
     }
 
     /**
@@ -365,5 +370,26 @@ public class RentApplyServiceImpl implements IRentApplyService
             }
         }
         return false;
+    }
+
+    /**
+     * 判断用户是否可以结束使用设备
+     *
+     * @param uid uid
+     * @param id  id
+     * @return boolean
+     * @author sora
+     * @date 2022/02/16
+     */
+    @Override
+    public boolean isUserFinishDevice(String uid, String id) {
+        QueryWrapper<RentApply> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id).eq("applicants_id", uid).select("device_status");
+        List<RentApply> rentApplyList = rentApplyMapper.selectList(queryWrapper);
+        if (rentApplyList == null || rentApplyList.isEmpty()) {
+            return false;
+        }
+        RentApply rentApply = rentApplyList.get(0);
+        return rentApply.getDeviceStatus().equals(DeviceUsingSituation.DevcieRentStatus.DEVICE_USING.status());
     }
 }
