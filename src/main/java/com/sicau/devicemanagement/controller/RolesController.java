@@ -48,18 +48,6 @@ public class RolesController extends BaseController
     }
 
     /**
-     * 导出【请填写功能名称】列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:roles:export')")
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, Roles roles)
-    {
-        List<Roles> list = rolesService.selectRolesList(roles);
-        ExcelUtil<Roles> util = new ExcelUtil<Roles>(Roles.class);
-        util.exportExcel(response, list, "【请填写功能名称】数据");
-    }
-
-    /**
      * 获取【请填写功能名称】详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:roles:query')")
@@ -67,35 +55,5 @@ public class RolesController extends BaseController
     public AjaxResult getInfo(@PathVariable("id") String id)
     {
         return AjaxResult.success(rolesService.selectRolesById(id));
-    }
-
-    /**
-     * 新增【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:roles:add')")
-    @PostMapping
-    public AjaxResult add(@RequestBody Roles roles)
-    {
-        return toAjax(rolesService.insertRoles(roles));
-    }
-
-    /**
-     * 修改【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:roles:edit')")
-    @PutMapping
-    public AjaxResult edit(@RequestBody Roles roles)
-    {
-        return toAjax(rolesService.updateRoles(roles));
-    }
-
-    /**
-     * 删除【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:roles:remove')")
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable String[] ids)
-    {
-        return toAjax(rolesService.deleteRolesByIds(ids));
     }
 }

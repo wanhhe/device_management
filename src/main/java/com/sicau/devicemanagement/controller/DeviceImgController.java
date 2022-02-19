@@ -46,48 +46,6 @@ public class DeviceImgController extends BaseController
     }
 
     /**
-     * 导出【请填写功能名称】列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:img:export')")
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, DeviceImg deviceImg)
-    {
-        List<DeviceImg> list = deviceImgService.selectDeviceImgList(deviceImg);
-        ExcelUtil<DeviceImg> util = new ExcelUtil<DeviceImg>(DeviceImg.class);
-        util.exportExcel(response, list, "【请填写功能名称】数据");
-    }
-
-    /**
-     * 获取【请填写功能名称】详细信息
-     */
-    @PreAuthorize("@ss.hasPermi('system:img:query')")
-    @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") String id)
-    {
-        return AjaxResult.success(deviceImgService.selectDeviceImgById(id));
-    }
-
-    /**
-     * 新增【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:img:add')")
-    @PostMapping
-    public AjaxResult add(@RequestBody DeviceImg deviceImg)
-    {
-        return toAjax(deviceImgService.insertDeviceImg(deviceImg));
-    }
-
-    /**
-     * 修改【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:img:edit')")
-    @PutMapping
-    public AjaxResult edit(@RequestBody DeviceImg deviceImg)
-    {
-        return toAjax(deviceImgService.updateDeviceImg(deviceImg));
-    }
-
-    /**
      * 删除【请填写功能名称】
      */
     @PreAuthorize("@ss.hasPermi('system:img:remove')")

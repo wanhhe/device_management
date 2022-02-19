@@ -115,16 +115,6 @@ public class StudentController extends BaseController
     }
 
     /**
-     * 删除【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:student:remove')")
-	@DeleteMapping("/{uids}")
-    public AjaxResult remove(@PathVariable String[] uids)
-    {
-        return toAjax(studentService.deleteStudentByUids(uids));
-    }
-
-    /**
      * 学生修改自己账号的密码
      *
      * @param uid        uid

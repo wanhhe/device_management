@@ -70,15 +70,6 @@ public class DeviceController extends BaseController
     }
 
     /**
-     * 新增【请填写功能名称】
-     */
-    @PostMapping("/add")
-    public AjaxResult add(@RequestBody Device device)
-    {
-        return toAjax(deviceService.insertDevice(device));
-    }
-
-    /**
      * 修改【请填写功能名称】
      */
     @PutMapping("/update")

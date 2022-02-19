@@ -52,18 +52,6 @@ public class RentApplyController extends BaseController
     }
 
     /**
-     * 导出【请填写功能名称】列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:apply:export')")
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, RentApply rentApply)
-    {
-        List<RentApply> list = rentApplyService.selectRentApplyList(rentApply);
-        ExcelUtil<RentApply> util = new ExcelUtil<RentApply>(RentApply.class);
-        util.exportExcel(response, list, "【请填写功能名称】数据");
-    }
-
-    /**
      * 获取【请填写功能名称】详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:apply:query')")
@@ -71,36 +59,6 @@ public class RentApplyController extends BaseController
     public AjaxResult getInfo(@PathVariable("id") String id)
     {
         return AjaxResult.success(rentApplyService.selectRentApplyById(id));
-    }
-
-    /**
-     * 新增【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:apply:add')")
-    @PostMapping
-    public AjaxResult add(@RequestBody RentApply rentApply)
-    {
-        return toAjax(rentApplyService.insertRentApply(rentApply));
-    }
-
-    /**
-     * 修改【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:apply:edit')")
-    @PutMapping
-    public AjaxResult edit(@RequestBody RentApply rentApply)
-    {
-        return toAjax(rentApplyService.updateRentApply(rentApply));
-    }
-
-    /**
-     * 删除【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:apply:remove')")
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable String[] ids)
-    {
-        return toAjax(rentApplyService.deleteRentApplyByIds(ids));
     }
 
     /**

@@ -46,18 +46,6 @@ public class LabController extends BaseController
     }
 
     /**
-     * 导出【请填写功能名称】列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:lab:export')")
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, Lab lab)
-    {
-        List<Lab> list = labService.selectLabList(lab);
-        ExcelUtil<Lab> util = new ExcelUtil<Lab>(Lab.class);
-        util.exportExcel(response, list, "【请填写功能名称】数据");
-    }
-
-    /**
      * 获取【请填写功能名称】详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:lab:query')")
@@ -65,35 +53,5 @@ public class LabController extends BaseController
     public AjaxResult getInfo(@PathVariable("id") String id)
     {
         return AjaxResult.success(labService.selectLabById(id));
-    }
-
-    /**
-     * 新增【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:lab:add')")
-    @PostMapping
-    public AjaxResult add(@RequestBody Lab lab)
-    {
-        return toAjax(labService.insertLab(lab));
-    }
-
-    /**
-     * 修改【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:lab:edit')")
-    @PutMapping
-    public AjaxResult edit(@RequestBody Lab lab)
-    {
-        return toAjax(labService.updateLab(lab));
-    }
-
-    /**
-     * 删除【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:lab:remove')")
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable String[] ids)
-    {
-        return toAjax(labService.deleteLabByIds(ids));
     }
 }

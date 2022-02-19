@@ -47,18 +47,6 @@ public class DeviceTypeController extends BaseController
     }
 
     /**
-     * 导出【请填写功能名称】列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:type:export')")
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, DeviceType deviceType)
-    {
-        List<DeviceType> list = deviceTypeService.selectDeviceTypeList(deviceType);
-        ExcelUtil<DeviceType> util = new ExcelUtil<DeviceType>(DeviceType.class);
-        util.exportExcel(response, list, "【请填写功能名称】数据");
-    }
-
-    /**
      * 获取【请填写功能名称】详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:type:query')")

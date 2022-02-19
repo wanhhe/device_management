@@ -46,18 +46,6 @@ public class ScheduleController extends BaseController
     }
 
     /**
-     * 导出【请填写功能名称】列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:schedule:export')")
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, Schedule schedule)
-    {
-        List<Schedule> list = scheduleService.selectScheduleList(schedule);
-        ExcelUtil<Schedule> util = new ExcelUtil<Schedule>(Schedule.class);
-        util.exportExcel(response, list, "【请填写功能名称】数据");
-    }
-
-    /**
      * 获取【请填写功能名称】详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:schedule:query')")
@@ -65,35 +53,5 @@ public class ScheduleController extends BaseController
     public AjaxResult getInfo(@PathVariable("id") String id)
     {
         return AjaxResult.success(scheduleService.selectScheduleById(id));
-    }
-
-    /**
-     * 新增【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:schedule:add')")
-    @PostMapping
-    public AjaxResult add(@RequestBody Schedule schedule)
-    {
-        return toAjax(scheduleService.insertSchedule(schedule));
-    }
-
-    /**
-     * 修改【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:schedule:edit')")
-    @PutMapping
-    public AjaxResult edit(@RequestBody Schedule schedule)
-    {
-        return toAjax(scheduleService.updateSchedule(schedule));
-    }
-
-    /**
-     * 删除【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:schedule:remove')")
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable String[] ids)
-    {
-        return toAjax(scheduleService.deleteScheduleByIds(ids));
     }
 }

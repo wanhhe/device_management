@@ -84,26 +84,6 @@ public class TeacherController extends BaseController
     }
 
     /**
-     * 修改【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:teacher:edit')")
-    @PutMapping
-    public AjaxResult edit(@RequestBody Teacher teacher)
-    {
-        return toAjax(teacherService.updateTeacher(teacher));
-    }
-
-    /**
-     * 删除【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:teacher:remove')")
-	@DeleteMapping("/{uids}")
-    public AjaxResult remove(@PathVariable String[] uids)
-    {
-        return toAjax(teacherService.deleteTeacherByUids(uids));
-    }
-
-    /**
      * 老师修改自己账号的密码
      *
      * @param uid        uid
