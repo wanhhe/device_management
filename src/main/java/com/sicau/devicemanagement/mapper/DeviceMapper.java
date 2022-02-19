@@ -52,6 +52,15 @@ public interface DeviceMapper extends BaseMapper<Device>
     public int countDeviceByStatus(String status);
 
     /**
+     * 统计超时未还的设备的数目
+     *
+     * @return int
+     * @author sora
+     * @date 2022/02/19
+     */
+    public int countOvertime();
+
+    /**
      * 新增【请填写功能名称】
      * 
      * @param device 【请填写功能名称】

@@ -74,6 +74,13 @@
         limit 1
     </select>
 
+    <select id="countOvertime" resultType="java.lang.Integer">
+        select count (*)
+        from `rent_apply` as ra inner join `schedule` as sc
+        on ra.`schedule_id` = sc.`id`
+        where ra.`device_status` = '使用中' and now() > sc.`end_time`
+    </select>
+
     <insert id="insertDevice" parameterType="Device">
         insert into device
         <trim prefix="(" suffix=")" suffixOverrides=",">

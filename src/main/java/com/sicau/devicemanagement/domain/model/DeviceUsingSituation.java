@@ -19,14 +19,4 @@ public class DeviceUsingSituation {
 
     // 超时未归还的设备总数量
     private Integer overtime;
-
-    public enum DevcieRentStatus {
-        DEVICE_USING("使用中"),
-        DEVICE_RETURN("已归还"),
-        DEVICE_OVERTIME("未归还");
-
-        private final String status;
-        DevcieRentStatus(String status) {this.status = status;}
-        public String status() {return this.status;}
-    }
 }

@@ -135,7 +135,7 @@ public class RentApplyServiceImpl implements IRentApplyService
         String tel = teacherMapper.selectTeacherByUid(rentApply.getApplicantsId()).getTel();
         smsService.sendStartSms(deviceName, tel);
         // 修改申请状态
-        rentApplyMapper.updateStatus(id, "使用中");
+        rentApplyMapper.updateStatus(id, Constants.DEVICE_USING);
     }
 
     /**
@@ -158,7 +158,7 @@ public class RentApplyServiceImpl implements IRentApplyService
         String deviceName = deviceMapper.selectDeviceById(rentApply.getDeviceId()).getName();
         String tel = studentMapper.selectStudentByUid(rentApply.getApplicantsId()).getTel();
         smsService.sendStartSms(deviceName, tel);
-        rentApplyMapper.updateStatus(id, "使用中");
+        rentApplyMapper.updateStatus(id, Constants.DEVICE_USING);
     }
 
     /**
@@ -174,9 +174,9 @@ public class RentApplyServiceImpl implements IRentApplyService
         // 判断该用户是不是该设备的管理者，如果是就不用管理老师确认
         String ownerId = rentApplyMapper.selectOwnerById(id);
         if (uid.equals(ownerId)) {
-            rentApplyMapper.updateStatus(id, "已归还");
+            rentApplyMapper.updateStatus(id, Constants.DEVICE_RETURNED);
         } else {
-            rentApplyMapper.updateStatus(id, "归还中");
+            rentApplyMapper.updateStatus(id, Constants.DEVICE_RETURNING);
         }
     }
 
@@ -189,7 +189,7 @@ public class RentApplyServiceImpl implements IRentApplyService
      */
     @Override
     public void confirmReturn(String id) {
-        rentApplyMapper.updateStatus(id, DeviceUsingSituation.DevcieRentStatus.DEVICE_RETURN.status());
+        rentApplyMapper.updateStatus(id, Constants.DEVICE_RETURNED);
     }
 
     /**
@@ -389,6 +389,6 @@ public class RentApplyServiceImpl implements IRentApplyService
             return false;
         }
         RentApply rentApply = rentApplyList.get(0);
-        return rentApply.getDeviceStatus().equals(DeviceUsingSituation.DevcieRentStatus.DEVICE_USING.status());
+        return rentApply.getDeviceStatus().equals(Constants.DEVICE_USING);
     }
 }

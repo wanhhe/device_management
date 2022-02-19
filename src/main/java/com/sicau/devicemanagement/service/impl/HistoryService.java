@@ -415,8 +415,8 @@ public class HistoryService {
      */
     private void advanceUnreturn(List<BorrowHistory> list) {
         list.sort((o1, o2) -> {
-            if (o2.getDeviceStatus().equals(DeviceUsingSituation.DevcieRentStatus.DEVICE_OVERTIME.status())
-                    && o1.getDeviceStatus().equals(DeviceUsingSituation.DevcieRentStatus.DEVICE_RETURN.status())) {
+            if (o2.getDeviceStatus().equals(Constants.DEVICE_USING)
+                    && o1.getDeviceStatus().equals(Constants.DEVICE_RETURNED)) {
                 return -1;
             }
             return 0;

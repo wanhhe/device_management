@@ -122,8 +122,9 @@ public class DeviceServiceImpl implements IDeviceService
     @Override
     public DeviceUsingSituation queryDeviceTotalStatus() {
         int total = deviceMapper.countTotalDeviceNumber();
-        int using = deviceMapper.countDeviceByStatus(DeviceUsingSituation.DevcieRentStatus.DEVICE_USING.status());
-        int overtime = deviceMapper.countDeviceByStatus(DeviceUsingSituation.DevcieRentStatus.DEVICE_OVERTIME.status());
+        int using = deviceMapper.countDeviceByStatus(Constants.DEVICE_USING);
+//        int overtime = deviceMapper.countDeviceByStatus(DeviceUsingSituation.DevcieRentStatus.DEVICE_OVERTIME.status());
+        int overtime = deviceMapper.countOvertime();
         DeviceUsingSituation deviceUsingSituation = new DeviceUsingSituation();
         deviceUsingSituation.setTotal(total);
         deviceUsingSituation.setUsing(using);

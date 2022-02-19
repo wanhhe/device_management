@@ -50,6 +50,27 @@ public class Constants
      */
     public static final String DEVICE_BROKEN = "broken";
 
+    /* 下面四条是申请使用中的设备状态 */
+    /**
+     * 待使用
+     */
+    public static final String DEVICE_PREUSING = "待使用";
+
+    /**
+     * 使用中
+     */
+    public static final String DEVICE_USING = "使用中";
+
+    /**
+     * 归还中
+     */
+    public static final String DEVICE_RETURNING = "归还中";
+
+    /**
+     * 已归还
+     */
+    public static final String DEVICE_RETURNED = "已归还";
+
     /**
      * linux服务器文件上传地址
      */
