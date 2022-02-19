@@ -30,7 +30,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectLabVo"/>
         where id = #{id}
     </select>
-        
+
+    <select id="selectLabByNum" resultType="com.sicau.devicemanagement.domain.Lab">
+        select * from `lab` where `campus_id` = #{campus} and `build_num` = #{num}
+    </select>
+
     <insert id="insertLab" parameterType="Lab">
         insert into lab
         <trim prefix="(" suffix=")" suffixOverrides=",">

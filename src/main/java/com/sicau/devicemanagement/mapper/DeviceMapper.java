@@ -82,4 +82,14 @@ public interface DeviceMapper extends BaseMapper<Device>
      * @return 结果
      */
     public int deleteDeviceByIds(String[] ids);
+
+    /**
+     * 选择同一类型的空闲设备
+     *
+     * @param typeId id类型
+     * @return {@link Device }
+     * @author sora
+     * @date 2022/02/17
+     */
+    public Device selectSameTypeSpareDevice(String typeId, String id);
 }

@@ -3,7 +3,6 @@ package com.sicau.devicemanagement.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sicau.devicemanagement.common.constant.Constants;
-import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.file.DateUtils;
 import com.sicau.devicemanagement.domain.*;
 import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
@@ -190,7 +189,7 @@ public class RentApplyServiceImpl implements IRentApplyService
      */
     @Override
     public void confirmReturn(String id) {
-        rentApplyMapper.updateStatus(id, "已归还");
+        rentApplyMapper.updateStatus(id, DeviceUsingSituation.DevcieRentStatus.DEVICE_RETURN.status());
     }
 
     /**
@@ -222,7 +221,7 @@ public class RentApplyServiceImpl implements IRentApplyService
             deviceType.setInventory(deviceType.getInventory() - 1);
             deviceTypeMapper.updateDeviceType(deviceType);
             /* 通知后来的使用者该设备已损坏，查找该类设备之后的所有申请借用者 */
-            String reason = "您申请借用的设备已损坏，现暂无其它可用设备";
+            String reason = "您申请借用的设备已损坏，暂无其它可用设备";
             // 查找老师
             List<String> teacherList = rentApplyMapper.selectNowApplyTeacherTelByDeviceTypeId(deviceTypeId, DateUtils.getTime());
             // 查找学生
@@ -252,7 +251,7 @@ public class RentApplyServiceImpl implements IRentApplyService
             deviceType.setInventory(deviceType.getInventory() - 1);
             deviceTypeMapper.updateDeviceType(deviceType);
             String reason = "您申请借用的设备已损坏，请在设备维修后再次申请";
-            /* 如果设备大于等于两个，将相同时间段借用该时间段的人按借用时间进行先后排序，拒绝排名在设备数之后的申请*/
+            /* 如果设备大于等于两个，将相同时间段借用该时间段设备的人按借用时间进行先后排序，拒绝排名在设备数之后的申请*/
             // 首先找到后面的所有申请，然后进行遍历
             List<RentApply> applyList = rentApplyMapper.selectAfterNow(id);
             HashMap<String, Integer> map = new HashMap<>();

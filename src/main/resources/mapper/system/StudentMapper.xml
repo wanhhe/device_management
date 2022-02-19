@@ -51,7 +51,7 @@
     <select id="selectStudentUidByStuNumber" resultType="java.lang.String">
         select `uid`
         from `student`
-        where `stu_num` = #{stuNumber}
+        where `stu_number` = #{stuNumber}
     </select>
 
     <select id="selectTeacherId" resultType="java.lang.String">

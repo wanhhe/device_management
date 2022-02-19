@@ -93,7 +93,7 @@ public interface IDeviceService
      * @author sora
      * @date 2022/01/19
      */
-    void replaceDevice(String uid, String id);
+    Device replaceDevice(String uid, String id);
 
     /**
      * 更新设备状态

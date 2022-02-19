@@ -1,34 +1,26 @@
 package com.sicau.devicemanagement.service.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sicau.devicemanagement.common.constant.Constants;
 
-import com.sicau.devicemanagement.common.utils.file.FileUploadUtils;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.Device;
-import com.sicau.devicemanagement.domain.DeviceImg;
 import com.sicau.devicemanagement.domain.DeviceType;
 
 import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
 
 import com.sicau.devicemanagement.domain.RentApply;
-import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
-import com.sicau.devicemanagement.mapper.DeviceImgMapper;
 import com.sicau.devicemanagement.mapper.DeviceMapper;
 import com.sicau.devicemanagement.mapper.DeviceTypeMapper;
+import com.sicau.devicemanagement.mapper.RentApplyMapper;
 import com.sicau.devicemanagement.service.IDeviceService;
 import com.sicau.devicemanagement.service.IDeviceTypeService;
-import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -47,7 +39,7 @@ public class DeviceServiceImpl implements IDeviceService
     private DeviceTypeMapper deviceTypeMapper;
 
     @Autowired
-    private DeviceImgMapper deviceImgMapper;
+    private RentApplyMapper rentApplyMapper;
 
     @Autowired
     private SmsService smsService;
@@ -155,8 +147,35 @@ public class DeviceServiceImpl implements IDeviceService
     }
 
     @Override
-    public void replaceDevice(String uid, String id) {
-
+    public Device replaceDevice(String uid, String id) {
+        // 看还有没有剩余的设备
+        QueryWrapper<RentApply> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        List<RentApply> rentApplyList = rentApplyMapper.selectList(queryWrapper);
+        if (rentApplyList == null || rentApplyList.isEmpty()) {
+            return null;
+        }
+        RentApply rentApply = rentApplyList.get(0);
+//        String deviceId = rentApply.getDeviceId();
+        String type = rentApply.getDeviceTypeId();
+        return deviceMapper.selectSameTypeSpareDevice(type, id);
+//        if (deviceList.size() <= 1) {
+//            return null;
+//        } else {
+//            // 选择除掉该设备的另一个设备
+//            Device tmp = null;
+//            for (int i = 0; i < deviceList.size(); i++) {
+//                tmp = deviceList.get(0);
+//                if (!tmp.getId().equals(deviceId)) {
+//                    break;
+//                }
+//            }
+//            // 更新rentapply
+//            UpdateWrapper<RentApply> rentApplyUpdateWrapper = new UpdateWrapper<>();
+//            rentApplyUpdateWrapper.set("device_id", tmp.getId());
+//            rentApplyMapper.update(null, rentApplyUpdateWrapper);
+//            return tmp;
+//        }
     }
 
     @Override

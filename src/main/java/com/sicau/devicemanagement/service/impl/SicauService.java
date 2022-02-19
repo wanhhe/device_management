@@ -2,7 +2,9 @@ package com.sicau.devicemanagement.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.sicau.devicemanagement.common.utils.StringUtils;
+import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.Lab;
+import com.sicau.devicemanagement.domain.Schedule;
 import com.sicau.devicemanagement.domain.model.*;
 import com.sicau.devicemanagement.mapper.LabMapper;
 import com.sicau.devicemanagement.mapper.ScheduleMapper;
@@ -61,7 +63,7 @@ public class SicauService {
 
     private HttpHeaders header;
 
-    private final int obsoleteStatus = 40101;
+    private final int obsoleteStatus = 401;
 
 
     private void login() {
@@ -131,6 +133,7 @@ public class SicauService {
             return;
         }
         int status = basicResponse.getStatus();
+        System.out.println("status is "+status);
         if (status == obsoleteStatus) {
             login();
             updateClassInfo();
@@ -143,6 +146,7 @@ public class SicauService {
                 if (!"实验室".equals(tmp.getJSLXM())) {
                     continue;
                 }
+                lab.setId(IdUtils.simpleUUID());
                 lab.setCampusId(tmp.getXQH());
                 // 教室号 3-226
                 lab.setNum(tmp.getJSH());
@@ -172,8 +176,26 @@ public class SicauService {
         } else {
             // 解析resultValue
             List<GraduateClass> graduateClasses = JSONArray.parseArray(body.getResultValue(), GraduateClass.class);
+            Schedule schedule = new Schedule();
             for (GraduateClass tmp : graduateClasses) {
-
+                // 如果不是2022年的课就跳过
+                if (!"2022".equals(tmp.getKKXND())) {
+                    continue;
+                }
+                if (!"第二学期".equals(tmp.getKKXQM())) {
+                    continue;
+                }
+                schedule.setId(IdUtils.simpleUUID());
+                schedule.setTerm("");
+                // 教学班号 4-C612
+                String jxdd = tmp.getJXDD();
+                // TODO: 2022/2/18 想办法填入campus
+                Lab lab = labMapper.selectLabByNum(null, jxdd);
+                if (lab == null) {
+                    continue;
+                }
+                schedule.setLabId(lab.getId());
+                scheduleMapper.insertSchedule(schedule);
             }
         }
     }
@@ -204,8 +226,28 @@ public class SicauService {
         } else {
             // 解析resultValue
             List<UnGraduateClass> unGraduateClasses = JSONArray.parseArray(body.getResultValue(), UnGraduateClass.class);
+            Schedule schedule = new Schedule();
             for (UnGraduateClass tmp : unGraduateClasses) {
-
+                if (!"雅安".equals(tmp.getXQMC())) {
+                    continue;
+                }
+                // 开学学年度 2021-2022-2
+//                String date = tmp.getKKXND();
+                if (!"2021-2022-2".equals(tmp.getKKXND())) {
+                    continue;
+                }
+                schedule.setId(IdUtils.simpleUUID());
+                String[] zc = tmp.getZC().split("-");
+                int begin = Integer.parseInt(zc[0]);
+                int end = Integer.parseInt(zc[1]);
+                for (int i = begin; i <= end; i++) {
+                    // TODO: 2022/2/18 补全是哪一天
+                    schedule.setWeekDay(i + "this is day");
+                    // TODO: 2022/2/18 补全数据
+                    schedule.setTerm("");
+                    schedule.setLabId(null);
+                    scheduleMapper.insertSchedule(schedule);
+                }
             }
         }
     }

@@ -63,6 +63,17 @@
         where `status` = #{status}
     </select>
 
+    <select id="selectSameTypeSpareDevice" resultType="com.sicau.devicemanagement.domain.Device">
+        select d.*
+        from `device` as d
+        where d.`type_id` = #{typeId} and d.`id` not in (
+            select `device_id`
+            from `rent_apply`
+            where `schedule_id` = (select `schedule_id` from `rent_apply` where `id` = #{id}) and `device_type_id` = #{typeId}
+            )
+        limit 1
+    </select>
+
     <insert id="insertDevice" parameterType="Device">
         insert into device
         <trim prefix="(" suffix=")" suffixOverrides=",">
