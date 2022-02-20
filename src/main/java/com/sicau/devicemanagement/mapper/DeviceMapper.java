@@ -52,6 +52,15 @@ public interface DeviceMapper extends BaseMapper<Device>
     public int countDeviceByStatus(String status);
 
     /**
+     * 统计超时未还的设备的数目
+     *
+     * @return int
+     * @author sora
+     * @date 2022/02/19
+     */
+    public int countOvertime();
+
+    /**
      * 新增【请填写功能名称】
      * 
      * @param device 【请填写功能名称】
@@ -82,4 +91,14 @@ public interface DeviceMapper extends BaseMapper<Device>
      * @return 结果
      */
     public int deleteDeviceByIds(String[] ids);
+
+    /**
+     * 选择同一类型的空闲设备
+     *
+     * @param typeId id类型
+     * @return {@link Device }
+     * @author sora
+     * @date 2022/02/17
+     */
+    public Device selectSameTypeSpareDevice(String typeId, String id);
 }

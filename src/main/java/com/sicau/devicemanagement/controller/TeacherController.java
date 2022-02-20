@@ -3,14 +3,21 @@ package com.sicau.devicemanagement.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sicau.devicemanagement.common.constant.HttpStatus;
 import com.sicau.devicemanagement.common.core.controller.BaseController;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
+import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.Teacher;
+
+import com.sicau.devicemanagement.domain.model.LoginUser;
+
 import com.sicau.devicemanagement.service.ITeacherService;
+import com.sicau.devicemanagement.service.impl.TokenService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -25,6 +32,12 @@ public class TeacherController extends BaseController
 {
     @Autowired
     private ITeacherService teacherService;
+
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
     /**
      * 查询【老师】列表
@@ -64,26 +77,94 @@ public class TeacherController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody Teacher teacher)
     {
+        teacher.setUid(IdUtils.simpleUUID());
+        teacher.setIsDel(0);
+        teacher.setPassword(bCryptPasswordEncoder.encode(teacher.getPassword()));
+        teacher.setRoleId("2");
         return toAjax(teacherService.insertTeacher(teacher));
     }
 
     /**
-     * 修改【请填写功能名称】
+     * 老师修改自己账号的密码
+     *
+     * @param uid        uid
+     * @param password   密码
+     * @param verifycode 验证码
+     * @param token      令牌
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/02/15
      */
-    @PreAuthorize("@ss.hasPermi('system:teacher:edit')")
-    @PutMapping
-    public AjaxResult edit(@RequestBody Teacher teacher)
-    {
-        return toAjax(teacherService.updateTeacher(teacher));
+    @PutMapping("/password/{uid}/{password}/{verifycode}")
+    public AjaxResult updatePassword(@PathVariable("uid") String uid,
+                                     @PathVariable("password") String password,
+                                     @PathVariable("verifycode") String verifycode,
+                                     @RequestHeader("Authorization") String token) {
+        LoginUser loginUser = tokenService.getLoginUser(token);
+        if (!loginUser.getUserId().equals(uid)) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "您没有权限进行该操作");
+        }
+        return teacherService.teacherUpdatePassword(uid, bCryptPasswordEncoder.encode(password), verifycode) == -1
+                ? AjaxResult.error(HttpStatus.ACCEPTED, "验证码错误") : AjaxResult.success();
     }
 
     /**
-     * 删除【请填写功能名称】
+     * 获得更改密码的验证码
+     *
+     * @param uid   uid
+     * @param token 令牌
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/02/15
      */
-    @PreAuthorize("@ss.hasPermi('system:teacher:remove')")
-	@DeleteMapping("/{uids}")
-    public AjaxResult remove(@PathVariable String[] uids)
-    {
-        return toAjax(teacherService.deleteTeacherByUids(uids));
+    @GetMapping("/verify/password/{uid}")
+    public AjaxResult updatePasswordVerify(@PathVariable("uid") String uid, @RequestHeader("Authorization") String token) {
+        LoginUser loginUser = tokenService.getLoginUser(token);
+        if (!loginUser.getUserId().equals(uid)) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "您没有权限进行该操作");
+        }
+        return toAjax(teacherService.getPasswordVerify(uid));
+    }
+
+    /**
+     * 老师修改自己账号的绑定手机号
+     *
+     * @param uid        uid
+     * @param tel        电话
+     * @param verifycode 验证码
+     * @param token      令牌
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/02/15
+     */
+    @PutMapping("/tel/{uid}/{tel}/{verifycode}")
+    public AjaxResult updateTel(@PathVariable("uid") String uid,
+                                @PathVariable("tel") String tel,
+                                @PathVariable("verifycode") String verifycode,
+                                @RequestHeader("Authorization") String token) {
+        LoginUser loginUser = tokenService.getLoginUser(token);
+        if (!loginUser.getUserId().equals(uid)) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "您没有权限进行该操作");
+        }
+        return teacherService.teacherUpdateTel(uid, tel, verifycode) == -1
+                ? AjaxResult.error(HttpStatus.ACCEPTED, "验证码错误") : AjaxResult.success();
+    }
+
+    /**
+     * 获得更改密码的验证码
+     *
+     * @param uid   uid
+     * @param token 令牌
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/02/15
+     */
+    @GetMapping("/verify/tel/{uid}")
+    public AjaxResult updateTelVerify(@PathVariable("uid") String uid, @RequestHeader("Authorization") String token) {
+        LoginUser loginUser = tokenService.getLoginUser(token);
+        if (!loginUser.getUserId().equals(uid)) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "您没有权限进行该操作");
+        }
+        return toAjax(teacherService.getTelVerify(uid));
     }
 }

@@ -66,22 +66,20 @@ public interface IRentApplyService
     /**
      * 老师开始使用设备
      *
-     * @param uid uid
      * @param id  申请使用id
      * @author sora
      * @date 2022/01/19
      */
-    void teacherStartUsingDevice(String uid, String id);
+    void teacherStartUsingDevice(String id);
 
     /**
      * 学生开始使用设备
      *
-     * @param uid uid
      * @param id  申请使用id
      * @author sora
      * @date 2022/01/19
      */
-    void studentStartUsingDevice(String uid, String id);
+    void studentStartUsingDevice(String id);
 
     /**
      * 申请归还
@@ -134,6 +132,7 @@ public interface IRentApplyService
     boolean isUserAccessDevice(String uid, String id);
 
     /**
+<<<<<<< HEAD
      * 获取需要老师审核的申请
      * @return
      */
@@ -144,4 +143,14 @@ public interface IRentApplyService
      * @return
      */
     AjaxResult queryApplyCheckedBySuperAdmin(String  userId);
+    /*
+     * 判断用户是否可以结束使用设备
+     *
+     * @param uid uid
+     * @param id  id
+     * @return boolean
+     * @author sora
+     * @date 2022/02/16
+     */
+    boolean isUserFinishDevice(String uid, String id);
 }

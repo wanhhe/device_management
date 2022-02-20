@@ -3,15 +3,20 @@ package com.sicau.devicemanagement.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sicau.devicemanagement.common.constant.Constants;
+
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.redis.RedisCache;
 import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.bean.BeanUtils;
+
 import com.sicau.devicemanagement.common.utils.file.DateUtils;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.*;
+
 import com.sicau.devicemanagement.domain.model.ApplyForm;
 import com.sicau.devicemanagement.domain.model.LoginUser;
+
+import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.mapper.*;
 import com.sicau.devicemanagement.service.IRentApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,31 +198,48 @@ public class RentApplyServiceImpl implements IRentApplyService {
     /**
      * 老师开始使用设备
      *
-     * @param uid uid
      * @param id  申请使用id
      * @author sora
      * @date 2022/01/19
      */
     @Override
-    public void teacherStartUsingDevice(String uid, String id) {
+    public void teacherStartUsingDevice(String id) {
         // 发送短信提醒开始使用
-        smsService.sendStartSms(uid);
+        QueryWrapper<RentApply> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        List<RentApply> rentApplyList = rentApplyMapper.selectList(queryWrapper);
+        if (rentApplyList == null || rentApplyList.isEmpty()) {
+            return;
+        }
+        RentApply rentApply = rentApplyList.get(0);
+        String deviceName = deviceMapper.selectDeviceById(rentApply.getDeviceId()).getName();
+        String tel = teacherMapper.selectTeacherByUid(rentApply.getApplicantsId()).getTel();
+        smsService.sendStartSms(deviceName, tel);
         // 修改申请状态
-        rentApplyMapper.updateStatus(id, "使用中");
+        rentApplyMapper.updateStatus(id, Constants.DEVICE_USING);
     }
 
     /**
      * 学生开始使用设备
      *
-     * @param uid uid
      * @param id  申请使用id
      * @author sora
      * @date 2022/01/19
      */
     @Override
-    public void studentStartUsingDevice(String uid, String id) {
-        smsService.sendStartSms(uid);
-        rentApplyMapper.updateStatus(id, "使用中");
+    public void studentStartUsingDevice(String id) {
+        // 发送短信提醒开始使用
+        QueryWrapper<RentApply> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        List<RentApply> rentApplyList = rentApplyMapper.selectList(queryWrapper);
+        if (rentApplyList == null || rentApplyList.isEmpty()) {
+            return;
+        }
+        RentApply rentApply = rentApplyList.get(0);
+        String deviceName = deviceMapper.selectDeviceById(rentApply.getDeviceId()).getName();
+        String tel = studentMapper.selectStudentByUid(rentApply.getApplicantsId()).getTel();
+        smsService.sendStartSms(deviceName, tel);
+        rentApplyMapper.updateStatus(id, Constants.DEVICE_USING);
     }
 
     /**
@@ -233,9 +255,9 @@ public class RentApplyServiceImpl implements IRentApplyService {
         // 判断该用户是不是该设备的管理者，如果是就不用管理老师确认
         String ownerId = rentApplyMapper.selectOwnerById(id);
         if (uid.equals(ownerId)) {
-            rentApplyMapper.updateStatus(id, "已归还");
+            rentApplyMapper.updateStatus(id, Constants.DEVICE_RETURNED);
         } else {
-            rentApplyMapper.updateStatus(id, "归还中");
+            rentApplyMapper.updateStatus(id, Constants.DEVICE_RETURNING);
         }
     }
 
@@ -248,7 +270,7 @@ public class RentApplyServiceImpl implements IRentApplyService {
      */
     @Override
     public void confirmReturn(String id) {
-        rentApplyMapper.updateStatus(id, "已归还");
+        rentApplyMapper.updateStatus(id, Constants.DEVICE_RETURNED);
     }
 
     /**
@@ -280,7 +302,7 @@ public class RentApplyServiceImpl implements IRentApplyService {
             deviceType.setInventory(deviceType.getInventory() - 1);
             deviceTypeMapper.updateDeviceType(deviceType);
             /* 通知后来的使用者该设备已损坏，查找该类设备之后的所有申请借用者 */
-            String reason = "您申请借用的设备已损坏，现暂无其它可用设备";
+            String reason = "您申请借用的设备已损坏，暂无其它可用设备";
             // 查找老师
             List<String> teacherList = rentApplyMapper.selectNowApplyTeacherTelByDeviceTypeId(deviceTypeId, DateUtils.getTime());
             // 查找学生
@@ -310,7 +332,7 @@ public class RentApplyServiceImpl implements IRentApplyService {
             deviceType.setInventory(deviceType.getInventory() - 1);
             deviceTypeMapper.updateDeviceType(deviceType);
             String reason = "您申请借用的设备已损坏，请在设备维修后再次申请";
-            /* 如果设备大于等于两个，将相同时间段借用该时间段的人按借用时间进行先后排序，拒绝排名在设备数之后的申请*/
+            /* 如果设备大于等于两个，将相同时间段借用该时间段设备的人按借用时间进行先后排序，拒绝排名在设备数之后的申请*/
             // 首先找到后面的所有申请，然后进行遍历
             List<RentApply> applyList = rentApplyMapper.selectAfterNow(id);
             HashMap<String, Integer> map = new HashMap<>();
@@ -406,10 +428,7 @@ public class RentApplyServiceImpl implements IRentApplyService {
     @Override
     public boolean isDeviceOwner(String uid, String id) {
         String ownerId = rentApplyMapper.selectOwnerById(id);
-        if (uid.equals(ownerId)) {
-            return true;
-        }
-        return false;
+        return uid.equals(ownerId);
     }
 
     /**
@@ -462,6 +481,27 @@ public class RentApplyServiceImpl implements IRentApplyService {
         // 查询已经被老师审核过的申请
         List<RentApply> applies = rentApplyMapper.selectNeedCheckedBySuperAdmin(userId);
 
-        return AjaxResult.success("查询成功",applies);
+        return AjaxResult.success("查询成功", applies);
+    }
+
+    /**
+     * 判断用户是否可以结束使用设备
+     *
+     * @param uid uid
+     * @param id  id
+     * @return boolean
+     * @author sora
+     * @date 2022/02/16
+     */
+    @Override
+    public boolean isUserFinishDevice(String uid, String id) {
+        QueryWrapper<RentApply> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id).eq("applicants_id", uid).select("device_status");
+        List<RentApply> rentApplyList = rentApplyMapper.selectList(queryWrapper);
+        if (rentApplyList == null || rentApplyList.isEmpty()) {
+            return false;
+        }
+        RentApply rentApply = rentApplyList.get(0);
+        return rentApply.getDeviceStatus().equals(Constants.DEVICE_USING);
     }
 }

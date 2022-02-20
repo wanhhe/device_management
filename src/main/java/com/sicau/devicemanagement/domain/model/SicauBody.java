@@ -6,7 +6,6 @@ import lombok.Data;
 public class SicauBody {
 
     private BasicResponse basicResponse;
-
     /**
      * 获取或受影响数据量
      */

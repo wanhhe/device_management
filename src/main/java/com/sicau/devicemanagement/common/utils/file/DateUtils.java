@@ -175,7 +175,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     }
 
     public static boolean dateStrIsValid(String rawDateStr) {
-        return dateStrIsValid(rawDateStr, "yyyy-MM-dd");
+        return dateStrIsValid(rawDateStr, DateUtils.YYYY_MM_DD);
     }
 
     /**
@@ -189,7 +189,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
      * @date 2022/02/12
      */
     public static boolean before(String date1, String date2, String pattern) {
-        return DateUtils.dateTime(date1, pattern).before(DateUtils.dateTime(date2, pattern));
+        return DateUtils.dateTime(pattern, date1).before(DateUtils.dateTime(pattern, date2));
     }
 
     /**

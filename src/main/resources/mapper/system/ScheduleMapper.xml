@@ -40,7 +40,7 @@
     <select id="queryIdBetweenDay" resultType="java.lang.String">
         select `id`
         from `schedule`
-        where `day` between #{begin} and #{end}
+        where `begin_time` between #{begin} and #{end}
     </select>
 
     <insert id="insertSchedule" parameterType="Schedule">

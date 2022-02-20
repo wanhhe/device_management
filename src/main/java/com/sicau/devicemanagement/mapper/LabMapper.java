@@ -21,6 +21,17 @@ public interface LabMapper
     public Lab selectLabById(String id);
 
     /**
+     * 根据教室号选择实验室
+     *
+     * @param campus 校区号
+     * @param num    全国矿工工会
+     * @return {@link Lab }
+     * @author sora
+     * @date 2022/02/18
+     */
+    public Lab selectLabByNum(String campus, String num);
+
+    /**
      * 查询【请填写功能名称】列表
      * 
      * @param lab 【请填写功能名称】

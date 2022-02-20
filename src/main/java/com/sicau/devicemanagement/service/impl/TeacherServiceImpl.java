@@ -1,11 +1,22 @@
 package com.sicau.devicemanagement.service.impl;
 
 import java.util.List;
+
+import java.util.concurrent.TimeUnit;
+
+
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.sicau.devicemanagement.common.core.redis.RedisCache;
+import com.sicau.devicemanagement.common.utils.VerifyCodeUtils;
+import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
+import com.sicau.devicemanagement.domain.Device;
+import com.sicau.devicemanagement.domain.Student;
 import com.sicau.devicemanagement.domain.Teacher;
 import com.sicau.devicemanagement.mapper.DeviceMapper;
 import com.sicau.devicemanagement.mapper.StudentMapper;
 import com.sicau.devicemanagement.mapper.TeacherMapper;
 import com.sicau.devicemanagement.service.ITeacherService;
+import io.lettuce.core.RedisClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +40,12 @@ public class TeacherServiceImpl implements ITeacherService
 
     @Autowired
     private DeviceMapper deviceMapper;
+
+    @Autowired
+    private SmsService smsService;
+
+    @Autowired
+    private RedisCache redisCache;
 
     /**
      * 查询【请填写功能名称】
@@ -103,16 +120,76 @@ public class TeacherServiceImpl implements ITeacherService
     }
 
     /**
-     * 删除学生账号
+     * 学生修改自己账号的密码
      *
-     * @param sid sid
-     * @return boolean
+     * @param uid      uid
+     * @param password 密码
+     * @return int
      * @author sora
-     * @date 2022/01/19
+     * @date 2022/02/14
      */
     @Override
-    public void banStudent(String sid) {
-
+    public int teacherUpdatePassword(String uid, String password, String verify) {
+        String code = redisCache.getCacheObject("update_password/" + uid);
+        if (code == null || "".equals(code)) {
+            return -1;
+        }
+        // 如果有缓存，更新
+        if (!code.equals(verify)) {
+            return -1;
+        }
+        UpdateWrapper<Teacher> teacherUpdateWrapper = new UpdateWrapper<>();
+        teacherUpdateWrapper.eq("uid", uid).set("password", password);
+        return teacherMapper.update(null, teacherUpdateWrapper);
     }
 
+    /**
+     * 生成更改密码的验证码
+     *
+     * @param uid uid
+     * @author sora
+     * @date 2022/02/15
+     */
+    @Override
+    public boolean getPasswordVerify(String uid) {
+        Teacher teacher = teacherMapper.selectTeacherByUid(uid);
+        if (teacher == null) {
+            return false;
+        }
+        String code = VerifyCodeUtils.generateVerifyCode(6);
+        // 存redis
+        redisCache.setCacheObject("update_password/"+uid, code, 5, TimeUnit.MINUTES);
+        // 发短信
+        String res = smsService.sendUpdatePasswordVerifyCode(teacher.getTel(), code);
+        return "OK".equals(res.substring(0, 2));
+    }
+
+    @Override
+    public int teacherUpdateTel(String uid, String tel, String verify) {
+        String code = redisCache.getCacheObject("update_tel/" + uid);
+        if (code == null || "".equals(code)) {
+            return -1;
+        }
+        // 如果有缓存，更新
+        if (!code.equals(verify)) {
+            return -1;
+        }
+        UpdateWrapper<Teacher> teacherUpdateWrapper = new UpdateWrapper<>();
+        teacherUpdateWrapper.eq("uid", uid).set("tel", tel);
+        return teacherMapper.update(null, teacherUpdateWrapper);
+    }
+
+    @Override
+    public boolean getTelVerify(String uid) {
+        Teacher teacher = teacherMapper.selectTeacherByUid(uid);
+        if (teacher == null) {
+            return false;
+        }
+        String code = VerifyCodeUtils.generateVerifyCode(6);
+        // 存redis
+        redisCache.setCacheObject("update_tel/"+uid, code, 5, TimeUnit.MINUTES);
+        // 发短信
+        String res = smsService.sendUpdateTelVerifyCode(teacher.getTel(), code);
+        return "OK".equals(res.substring(0, 2));
+    }
 }

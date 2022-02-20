@@ -7,7 +7,6 @@ public class UnGraduateClass {
 
 //    - 课程号 KCH `string`
 //            - 开课学年度 KKXND `string`
-//            - 周学时 ZHXS `int`
 //            - 周次 ZC `string`
 //            - 教学地点 JXDD `string`
 //            - 上课时间 SKSJ `string`
@@ -22,8 +21,6 @@ public class UnGraduateClass {
 
     private String KKXND;
 
-    private int ZHXS;
-
     private String ZC;
 
     private String JXDD;
@@ -31,4 +28,6 @@ public class UnGraduateClass {
     private String SKSJ;
 
     private String XQMC;
+
+    private String KCKSDW;
 }
