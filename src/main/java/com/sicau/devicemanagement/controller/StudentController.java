@@ -132,7 +132,7 @@ public class StudentController extends BaseController
         // 判断是不是下属学生或是不是管理员
         LoginUser loginUser = tokenService.getLoginUser(token);
         // TODO: 2022/1/28 区分管理员和普通老师的常量
-        if (loginUser.getRole().equals(Constants.TEACHER)) {
+        if (loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
             // 如果是普通老师的话要判断该账号是不是其下属账号
             boolean flag = studentService.isStudentMaster(loginUser.getUserId(), sid);
             if (!flag) {
@@ -178,7 +178,7 @@ public class StudentController extends BaseController
         // 判断是不是下属学生或是不是管理员
         LoginUser loginUser = tokenService.getLoginUser(token);
         // TODO: 2022/1/28 区分管理员和普通老师的常量
-        if (loginUser.getRole().equals(Constants.TEACHER)) {
+        if (loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
             // 如果是普通老师的话要判断该账号是不是其下属账号
             boolean flag = studentService.isStudentMaster(loginUser.getUserId(), sid);
             if (!flag && del == 1) {

@@ -20,12 +20,12 @@
         select uid,
                employee_id,
                name,
-               password,
                tel,
                college,
                major,
                role_id,
-               is_del
+               is_del,
+               has_device
         from teacher
     </sql>
 
@@ -34,12 +34,12 @@
         <where>
             <if test="employeeId != null  and employeeId != ''">and employee_id = #{employeeId}</if>
             <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
-            <if test="password != null  and password != ''">and password = #{password}</if>
             <if test="tel != null  and tel != ''">and tel = #{tel}</if>
-            <if test="college != null  and college != ''">and college = #{college}</if>
-            <if test="major != null  and major != ''">and major = #{major}</if>
+            <if test="college != null  and college != ''">and college like concat('%',#{college},'%') </if>
+            <if test="major != null  and major != ''">and major like concat('%',#{major},'%') </if>
             <if test="roleId != null  and roleId != ''">and role_id = #{roleId}</if>
             <if test="isDel != null ">and is_del = #{isDel}</if>
+            <if test="hasDevice != null ">and has_device = #{hasDevice}</if>
         </where>
     </select>
 

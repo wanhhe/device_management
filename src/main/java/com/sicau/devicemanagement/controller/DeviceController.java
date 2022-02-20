@@ -1,9 +1,7 @@
 package com.sicau.devicemanagement.controller;
 
-import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.sicau.devicemanagement.common.constant.Constants;
@@ -13,13 +11,11 @@ import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
 import com.sicau.devicemanagement.domain.Device;
-import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.service.IDeviceService;
 import com.sicau.devicemanagement.service.impl.TokenService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -90,7 +86,6 @@ public class DeviceController extends BaseController
     /**
      * 删除【请填写功能名称】
      */
-    @PreAuthorize("@ss.hasPermi('system:device:remove')")
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable String[] ids)
     {

@@ -1,5 +1,6 @@
 package com.sicau.devicemanagement.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.sicau.devicemanagement.common.annotation.Excel;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -36,8 +37,10 @@ public class Device
 
     /* ==== 不对应数据库字段 ==== */
     // 上限
+    @TableField(exist = false)
     private Integer priceU;
     // 下限
+    @TableField(exist = false)
     private Integer priceD;
     /* ==== 不对应数据库字段 ==== */
 

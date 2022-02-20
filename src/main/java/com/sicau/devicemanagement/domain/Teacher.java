@@ -2,6 +2,7 @@ package com.sicau.devicemanagement.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.sicau.devicemanagement.common.annotation.Excel;
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @date 2022-01-15
  */
 @TableName("teacher")
+@Data
 public class Teacher extends User
 {
     private static final long serialVersionUID = 1L;
@@ -51,6 +53,8 @@ public class Teacher extends User
     /** 是否删除，0为删除 */
     @Excel(name = "是否删除，0为删除")
     private Integer isDel;
+    /** 是否拥有设备 true 为拥有 默认为 true*/
+    private Boolean hasDevice = true;
 
     public void setUid(String uid) 
     {

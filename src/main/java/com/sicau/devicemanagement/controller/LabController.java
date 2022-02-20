@@ -34,9 +34,8 @@ public class LabController extends BaseController
     private ILabService labService;
 
     /**
-     * 查询【请填写功能名称】列表
+     * 查询【实验室】列表
      */
-    @PreAuthorize("@ss.hasPermi('system:lab:list')")
     @GetMapping("/list")
     public TableDataInfo list(Lab lab)
     {

@@ -22,6 +22,13 @@ public interface IScheduleService
     public Schedule selectScheduleById(String id);
 
     /**
+     * 查询【设备的使用情况】
+     * @param schedule
+     * @return 【使用情况集合】
+     */
+    public List<Schedule> selectDeviceSchedule(Schedule schedule);
+
+    /**
      * 查询【请填写功能名称】列表
      * 
      * @param schedule 【请填写功能名称】

@@ -8,7 +8,6 @@ import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
 import com.sicau.devicemanagement.domain.Teacher;
-import com.sicau.devicemanagement.domain.model.TeacherQuery;
 import com.sicau.devicemanagement.service.ITeacherService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class TeacherController extends BaseController
      * 查询【老师】列表
      */
     @GetMapping("/list")
-    public TableDataInfo list(TeacherQuery teacher)
+    public TableDataInfo list(Teacher teacher)
     {
         startPage();
         List<Teacher> list = teacherService.selectTeacherList(teacher);
@@ -42,7 +41,7 @@ public class TeacherController extends BaseController
      * 导出【请填写功能名称】列表
      */
     @PostMapping("/export")
-    public void export(HttpServletResponse response, TeacherQuery teacher)
+    public void export(HttpServletResponse response, Teacher teacher)
     {
         List<Teacher> list = teacherService.selectTeacherList(teacher);
         ExcelUtil<Teacher> util = new ExcelUtil<Teacher>(Teacher.class);

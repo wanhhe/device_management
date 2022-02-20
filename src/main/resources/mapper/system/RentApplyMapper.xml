@@ -1,50 +1,77 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sicau.devicemanagement.mapper.RentApplyMapper">
-    
+
     <resultMap type="RentApply" id="RentApplyResult">
-        <result property="id"    column="id"    />
-        <result property="deviceTypeId"    column="device_type_id"    />
-        <result property="applicantsId"    column="applicants_id"    />
-        <result property="applicantsType"    column="applicants_type"    />
-        <result property="deviceStatus"    column="device_status"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="scheduleId"    column="schedule_id"    />
-        <result property="deviceId"    column="device_id"    />
-        <result property="refuseReason"    column="refuse_reason"    />
-        <result property="refuserId"    column="refuser_id"    />
-        <result property="instructorPass"    column="instructor_pass"    />
-        <result property="administratorPass"    column="administrator_pass"    />
-        <result property="ownerPass"    column="owner_pass"    />
-        <result property="auditStatus"    column="audit_status"    />
-        <result property="isDel"    column="is_del"    />
+        <result property="id" column="id"/>
+        <result property="deviceTypeId" column="device_type_id"/>
+        <result property="applicantsId" column="applicants_id"/>
+        <result property="applicantsType" column="applicants_type"/>
+        <result property="deviceStatus" column="device_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="scheduleId" column="schedule_id"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="refuseReason" column="refuse_reason"/>
+        <result property="refuserId" column="refuser_id"/>
+        <result property="instructorPass" column="instructor_pass"/>
+        <result property="administratorPass" column="administrator_pass"/>
+        <result property="ownerPass" column="owner_pass"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="isDel" column="is_del"/>
+        <result property="instructorId" column="instructor_id"/>
+        <result property="administratorId" column="administrator_id"/>
+        <result property="ownerId" column="owner_id"/>
+        <result property="failed" column="failed"/>
     </resultMap>
 
     <sql id="selectRentApplyVo">
-        select id, device_type_id, applicants_id, applicants_type, device_status, create_time, schedule_id, device_id, refuse_reason, refuser_id, instructor_pass, administrator_pass, owner_pass, audit_status, is_del from rent_apply
+        select id,
+               device_type_id,
+               applicants_id,
+               applicants_type,
+               device_status,
+               create_time,
+               schedule_id,
+               device_id,
+               refuse_reason,
+               refuser_id,
+               instructor_pass,
+               administrator_pass,
+               owner_pass,
+               audit_status,
+               is_del,
+               instructor_id,
+               administrator_id,
+               owner_id,
+               failed
+        from rent_apply
     </sql>
 
     <select id="selectRentApplyList" parameterType="RentApply" resultMap="RentApplyResult">
         <include refid="selectRentApplyVo"/>
-        <where>  
-            <if test="deviceTypeId != null  and deviceTypeId != ''"> and device_type_id = #{deviceTypeId}</if>
-            <if test="applicantsId != null  and applicantsId != ''"> and applicants_id = #{applicantsId}</if>
-            <if test="applicantsType != null  and applicantsType != ''"> and applicants_type = #{applicantsType}</if>
-            <if test="deviceStatus != null  and deviceStatus != ''"> and device_status = #{deviceStatus}</if>
-            <if test="scheduleId != null  and scheduleId != ''"> and schedule_id = #{scheduleId}</if>
-            <if test="deviceId != null  and deviceId != ''"> and device_id = #{deviceId}</if>
-            <if test="refuseReason != null  and refuseReason != ''"> and refuse_reason = #{refuseReason}</if>
-            <if test="refuserId != null  and refuserId != ''"> and refuser_id = #{refuserId}</if>
-            <if test="instructorPass != null "> and instructor_pass = #{instructorPass}</if>
-            <if test="administratorPass != null "> and administrator_pass = #{administratorPass}</if>
-            <if test="ownerPass != null "> and owner_pass = #{ownerPass}</if>
-            <if test="auditStatus != null "> and audit_status = #{auditStatus}</if>
-            <if test="isDel != null "> and is_del = #{isDel}</if>
+        <where>
+            <if test="deviceTypeId != null  and deviceTypeId != ''">and device_type_id = #{deviceTypeId}</if>
+            <if test="applicantsId != null  and applicantsId != ''">and applicants_id = #{applicantsId}</if>
+            <if test="applicantsType != null  and applicantsType != ''">and applicants_type = #{applicantsType}</if>
+            <if test="deviceStatus != null  and deviceStatus != ''">and device_status = #{deviceStatus}</if>
+            <if test="scheduleId != null  and scheduleId != ''">and schedule_id = #{scheduleId}</if>
+            <if test="deviceId != null  and deviceId != ''">and device_id = #{deviceId}</if>
+            <if test="refuseReason != null  and refuseReason != ''">and refuse_reason = #{refuseReason}</if>
+            <if test="refuserId != null  and refuserId != ''">and refuser_id = #{refuserId}</if>
+            <if test="instructorPass != null ">and instructor_pass = #{instructorPass}</if>
+            <if test="administratorPass != null ">and administrator_pass = #{administratorPass}</if>
+            <if test="ownerPass != null ">and owner_pass = #{ownerPass}</if>
+            <if test="auditStatus != null ">and audit_status = #{auditStatus}</if>
+            <if test="isDel != null ">and is_del = #{isDel}</if>
+            <if test="instructorId != null ">and instructor_id = #{instructorId}</if>
+            <if test="administrator_id != null ">and administrator_id = #{administratorId}</if>
+            <if test="owner_id != null ">and owner_id = #{ownerId}</if>
+            <if test="failed != null ">and failed = #{failed}</if>
         </where>
     </select>
-    
+
     <select id="selectRentApplyById" parameterType="String" resultMap="RentApplyResult">
         <include refid="selectRentApplyVo"/>
         where id = #{id}
@@ -52,16 +79,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectUserAccessApply" resultType="java.lang.String">
         select `id`
-        from `rent_apply` as ra inner join `schedule` as s
-        on ra.`schedule_id` = s.`id`
-        where ra.`device_status` = '待使用' and ra.`applicants_id` = #{uid}
+        from `rent_apply` as ra
+                 inner join `schedule` as s
+                            on ra.`schedule_id` = s.`id`
+        where ra.`device_status` = '待使用'
+          and ra.`applicants_id` = #{uid}
           and #{time} between s.`begin_time` and `end_time`
     </select>
 
     <select id="selectOwnerById" resultType="java.lang.String">
         select d.`manager_id`
-        from `rent_apply` as ra inner join `device` as d
-        on ra.`device_id` = d.`id`
+        from `rent_apply` as ra
+                 inner join `device` as d
+                            on ra.`device_id` = d.`id`
         where ra.`id` = #{id}
     </select>
 
@@ -70,9 +100,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from `teacher` as t
         where t.`uid` in (
             select ra.`applicants_id`
-            from `rent_apply` as ra inner join `schedule` as s
-            on ra.`schedule_id` = s.id
-            where ra.`device_type_id` = #{typeId} and s.`begin_time` > #{time}
+            from `rent_apply` as ra
+                     inner join `schedule` as s
+                                on ra.`schedule_id` = s.id
+            where ra.`device_type_id` = #{typeId}
+              and s.`begin_time` > #{time}
         )
     </select>
 
@@ -81,45 +113,82 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from `student` as stu
         where stu.`uid` in (
             select ra.`applicants_id`
-            from `rent_apply` as ra inner join `schedule` as s
-            on ra.`schedule_id` = s.id
-            where ra.`device_type_id` = #{typeId} and s.`begin_time` > #{time}
+            from `rent_apply` as ra
+                     inner join `schedule` as s
+                                on ra.`schedule_id` = s.id
+            where ra.`device_type_id` = #{typeId}
+              and s.`begin_time` > #{time}
         )
     </select>
 
     <select id="selectAfterNow" resultType="com.sicau.devicemanagement.domain.RentApply">
         select *
-        from `rent_apply` as ra inner join `schedule` as sc
-        on ra.`schedule_id` = sc.`id`
+        from `rent_apply` as ra
+                 inner join `schedule` as sc
+                            on ra.`schedule_id` = sc.`id`
         where sc.`begin_time` > (
             select sc.`end_time`
-            from `rent_apply` as ra inner join `schedule` as sc
-            on ra.`schedule_id` = sc.`id`
+            from `rent_apply` as ra
+                     inner join `schedule` as sc
+                                on ra.`schedule_id` = sc.`id`
             where ra.`id` = #{id}
-        ) and ra.`device_type_id` = (select `device_type_id` from `rent_apply` where `id` = #{id})
+        )
+          and ra.`device_type_id` = (select `device_type_id` from `rent_apply` where `id` = #{id})
     </select>
 
     <select id="querySubStuApplyByName" resultType="com.sicau.devicemanagement.domain.RentApply">
         select ra.*
-        from `rent_apply` as ra inner join `student` as stu
-        on ra.`applicants_id` = stu.`uid`
-        where stu.`name` = #{name} and stu.`teacher_id` = #{uid}
+        from `rent_apply` as ra
+                 inner join `student` as stu
+                            on ra.`applicants_id` = stu.`uid`
+        where stu.`name` = #{name}
+          and stu.`teacher_id` = #{uid}
         order by stu.`name` asc
     </select>
 
     <select id="querySubStuApplyByDevice" resultType="com.sicau.devicemanagement.domain.RentApply">
         select ra.*
-        from `rent_apply` as ra inner join `student` as stu
-        on ra.`applicants_id` = stu.`uid`
-        where ra.`device_type_id` = #{typeId} and stu.`teacher_id` = #{uid}
+        from `rent_apply` as ra
+                 inner join `student` as stu
+                            on ra.`applicants_id` = stu.`uid`
+        where ra.`device_type_id` = #{typeId}
+          and stu.`teacher_id` = #{uid}
     </select>
 
     <select id="queryOwnDeviceHistory" resultType="com.sicau.devicemanagement.domain.RentApply">
         select ra.*
-        from `rent_apply` as ra inner join `device` as de
-        on ra.`device_type_id` = de.`type_id`
-        where de.`manager_id` = #{uid} and ra.`device_type_id` = #{typeId}
+        from `rent_apply` as ra
+                 inner join `device` as de
+                            on ra.`device_type_id` = de.`type_id`
+        where de.`manager_id` = #{uid}
+          and ra.`device_type_id` = #{typeId}
         order by de.`name` asc
+    </select>
+    <select id="selectApplyByStudent" resultType="com.sicau.devicemanagement.domain.RentApply"
+            parameterType="String">
+        select ra.*
+        from rent_appply ra
+        where ra.instructor_id = #{userId}
+          and is_del != 0
+          and failed = 0
+    </select>
+    <select id="selectApplyBorrowDevice" resultType="com.sicau.devicemanagement.domain.RentApply"
+            parameterType="String">
+        select ra.*
+        from rent_apply ra
+        where ra.administrator_pass = 1
+          and ra.is_del != 0
+          and ra.failed = 0
+          and owner_id = #{userId}
+    </select>
+    <select id="selectNeedCheckedBySuperAdmin" resultType="com.sicau.devicemanagement.domain.RentApply"
+            parameterType="string">
+        select ra.*
+        from rent_apply ra
+        where ra.administrator_pass isnull
+            and   ra.is_del != 0
+            and   ra.failed = 0
+            and   ra.administrator_id = #{userId}
     </select>
 
     <insert id="insertRentApply" parameterType="RentApply">
@@ -140,7 +209,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="ownerPass != null">owner_pass,</if>
             <if test="auditStatus != null">audit_status,</if>
             <if test="isDel != null">is_del,</if>
-         </trim>
+            <if test="instructorId != null">instructor_id,</if>
+            <if test="administratorId != null">administrator_id,</if>
+            <if test="ownerId != null">owner_id,</if>
+            <if test="failed != null">failed,</if>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
             <if test="deviceTypeId != null and deviceTypeId != ''">#{deviceTypeId},</if>
@@ -157,7 +230,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="ownerPass != null">#{ownerPass},</if>
             <if test="auditStatus != null">#{auditStatus},</if>
             <if test="isDel != null">#{isDel},</if>
-         </trim>
+            <if test="instructorId != null">#{instructorId},</if>
+            <if test="administratorId != null">#{administratorId},</if>
+            <if test="ownerId != null">#{ownerId},</if>
+            <if test="failed != null">#{failed},</if>
+        </trim>
     </insert>
 
     <update id="updateRentApply" parameterType="RentApply">
@@ -188,11 +265,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteRentApplyById" parameterType="String">
-        delete from rent_apply where id = #{id}
+        delete
+        from rent_apply
+        where id = #{id}
     </delete>
 
     <delete id="deleteRentApplyByIds" parameterType="String">
-        delete from rent_apply where id in 
+        delete from rent_apply where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

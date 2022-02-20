@@ -13,15 +13,22 @@ import java.util.Locale;
 public class Constants
 {
 
+
+
     /**
      * 老师
      */
-    public static final  String TEACHER = "teacher";
+    public static final  String ROLE_TEACHER = "teacher";
 
     /**
      * 学生
      */
-    public static final  String STUDENT = "student";
+    public static final  String ROLE_STUDENT = "student";
+
+    public static final String ROLE_ADMIN = "admin";
+
+    public static final String ROLE_SUPER_ADMIN = "superAdmin";
+
 
     /* 下面三个用于数据库中的逻辑删除 */
     /**
@@ -123,6 +130,11 @@ public class Constants
      * 登录用户 redis key
      */
     public static final String LOGIN_TOKEN_KEY = "login_tokens:";
+
+    /**
+     * 申请设备使用的临时 ScheduleId
+     * */
+    public static final String TEMP_SCHEDULE_ID = "temporary_ScheduleIds:";
 
 
 

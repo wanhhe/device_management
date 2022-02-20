@@ -1,32 +1,22 @@
 package com.sicau.devicemanagement.service.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sicau.devicemanagement.common.constant.Constants;
 
-import com.sicau.devicemanagement.common.utils.file.FileUploadUtils;
 import com.sicau.devicemanagement.domain.Device;
-import com.sicau.devicemanagement.domain.DeviceImg;
 import com.sicau.devicemanagement.domain.DeviceType;
 
 import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
 
-import com.sicau.devicemanagement.domain.RentApply;
-import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.mapper.DeviceImgMapper;
 import com.sicau.devicemanagement.mapper.DeviceMapper;
 import com.sicau.devicemanagement.mapper.DeviceTypeMapper;
 import com.sicau.devicemanagement.service.IDeviceService;
 import com.sicau.devicemanagement.service.IDeviceTypeService;
-import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 
 /**

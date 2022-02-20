@@ -3,9 +3,15 @@ package com.sicau.devicemanagement.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sicau.devicemanagement.common.constant.Constants;
+import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
+import com.sicau.devicemanagement.common.core.redis.RedisCache;
 import com.sicau.devicemanagement.common.utils.StringUtils;
+import com.sicau.devicemanagement.common.utils.bean.BeanUtils;
 import com.sicau.devicemanagement.common.utils.file.DateUtils;
+import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.*;
+import com.sicau.devicemanagement.domain.model.ApplyForm;
+import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.mapper.*;
 import com.sicau.devicemanagement.service.IRentApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +22,12 @@ import java.util.*;
 
 /**
  * 【请填写功能名称】Service业务层处理
- * 
+ *
  * @author ruoyi
  * @date 2022-01-15
  */
 @Service
-public class RentApplyServiceImpl implements IRentApplyService
-{
+public class RentApplyServiceImpl implements IRentApplyService {
     @Autowired
     private RentApplyMapper rentApplyMapper;
 
@@ -41,76 +46,147 @@ public class RentApplyServiceImpl implements IRentApplyService
     @Autowired
     private SmsService smsService;
 
+    @Autowired
+    private ScheduleMapper scheduleMapper;
+
+    @Autowired
+    private RedisCache redisCache;
+
+
     /**
      * 查询【请填写功能名称】
-     * 
+     *
      * @param id 【请填写功能名称】主键
      * @return 【请填写功能名称】
      */
     @Override
-    public RentApply selectRentApplyById(String id)
-    {
+    public RentApply selectRentApplyById(String id) {
         return rentApplyMapper.selectRentApplyById(id);
     }
 
     /**
      * 查询【请填写功能名称】列表
-     * 
+     *
      * @param rentApply 【请填写功能名称】
      * @return 【请填写功能名称】
      */
     @Override
-    public List<RentApply> selectRentApplyList(RentApply rentApply)
-    {
+    public List<RentApply> selectRentApplyList(RentApply rentApply) {
         return rentApplyMapper.selectRentApplyList(rentApply);
     }
 
     /**
      * 新增【借用申请】
-     * 
-     * @param rentApply 【借用申请】
+     *
+     * @param applyForm 【借用申请】
      * @return 结果
      */
     @Override
-    public int insertRentApply(RentApply rentApply)
-    {
-        rentApply.setCreateTime(DateUtils.getNowDate());
-        return rentApplyMapper.insertRentApply(rentApply);
+    public AjaxResult insertRentApply(ApplyForm applyForm, LoginUser loginUser) {
+        if(StringUtils.equals(loginUser.getRole(),Constants.ROLE_ADMIN)){
+            return AjaxResult.error("您的身份不能申请，请联系管理员！");
+        }
+        applyForm =  createApplyRecord(applyForm,loginUser);
+
+        synchronized (this) {
+            Schedule schedule = new Schedule();
+            BeanUtils.copyProperties(applyForm, schedule);
+            List<Schedule> schedules = scheduleMapper.selectScheduleList(schedule);
+            if (schedules.size() > 0) {
+                return AjaxResult.error("该时间段被占用");
+            }
+            rentApplyMapper.insertRentApply(applyForm);
+            return AjaxResult.success("申请成功！管理员审核后即可使用");
+        }
+    }
+
+    /**
+     * 完善 申请表单
+     *
+     * @param applyForm
+     * @param loginUser
+     * @return
+     */
+    private ApplyForm createApplyRecord(ApplyForm applyForm, LoginUser loginUser) {
+        //产生临时 scheduleId
+        String tempScheduleId = IdUtils.simpleUUID();
+        // 将labId缓存进redis 审核流程完成后从缓存中移除
+        redisCache.setCacheObject(Constants.TEMP_SCHEDULE_ID + loginUser.getUserId(), tempScheduleId);
+        applyForm.setId(IdUtils.simpleUUID());
+        applyForm.setScheduleId(tempScheduleId);
+        applyForm.setId(IdUtils.simpleUUID());
+        applyForm.setCreateTime(DateUtils.getTime());
+        applyForm.setDeviceStatus("审核中");
+        applyForm.setApplicantsId(loginUser.getUserId());
+        applyForm.setApplicantsType(loginUser.getRole());
+        if (StringUtils.equals(loginUser.getRole(), Constants.ROLE_STUDENT)) {
+            // 查询学生老师的id
+            Student student =
+                    studentMapper
+                            .selectById(loginUser.getUserId());
+            applyForm.setInstructorId(student.getTeacherId());
+            // 查询设备拥有者的id
+            Device device = deviceMapper.selectById(applyForm.getDeviceId());
+            applyForm.setOwnerId(device.getManagerId());
+            // 查询管理员id
+            List<Teacher> superAdmins =
+                    teacherMapper.selectList(new QueryWrapper<Teacher>().
+                            eq("role_id", 4));
+            applyForm.setAdministratorId(superAdmins.get(0).getUid());
+
+        } else if (StringUtils.equals(loginUser.getRole(), Constants.ROLE_TEACHER)) {
+            // 查询设备拥有者id
+            Device device =
+                    deviceMapper.selectById(applyForm.getDeviceId());
+            applyForm.setOwnerId(device.getManagerId());
+            // 判断是否是自己的设备
+            if (StringUtils.equals(device.getManagerId(), loginUser.getUserId())) {
+                applyForm.setOwnerPass(1);
+            }
+            //查询管理员id
+            List<Teacher> superAdmins = teacherMapper.selectList(new QueryWrapper<Teacher>().
+                    eq("role_id", 4));
+            applyForm.setAdministratorId(superAdmins.get(0).getUid());
+        } else if (StringUtils.equals(loginUser.getRole(), Constants.ROLE_SUPER_ADMIN)) {
+            applyForm.setAdministratorPass(1);
+            // 查询设备拥有者id
+            Device device = deviceMapper.selectById(applyForm.getDeviceId());
+            // 设置管理员id
+            applyForm.setOwnerId(device.getManagerId());
+        }
+        return applyForm;
     }
 
     /**
      * 修改【请填写功能名称】
-     * 
+     *
      * @param rentApply 【请填写功能名称】
      * @return 结果
      */
     @Override
-    public int updateRentApply(RentApply rentApply)
-    {
+    public int updateRentApply(RentApply rentApply) {
         return rentApplyMapper.updateRentApply(rentApply);
     }
 
     /**
      * 批量删除【请填写功能名称】
-     * 
+     *
      * @param ids 需要删除的【请填写功能名称】主键
      * @return 结果
      */
     @Override
-    public int deleteRentApplyByIds(String[] ids)
-    {
+    public int deleteRentApplyByIds(String[] ids) {
         return rentApplyMapper.deleteRentApplyByIds(ids);
     }
 
     /**
      * 删除【请填写功能名称】信息
-     * 
+     *
      * @param id 【请填写功能名称】主键
      * @return 结果
      */
     @Override
-    public int deleteRentApplyById(String id)
-    {
+    public int deleteRentApplyById(String id) {
         return rentApplyMapper.deleteRentApplyById(id);
     }
 
@@ -240,7 +316,7 @@ public class RentApplyServiceImpl implements IRentApplyService
             HashMap<String, Integer> map = new HashMap<>();
             for (RentApply tmp : applyList) {
                 int num = map.getOrDefault(tmp.getScheduleId(), 0);
-                map.put(tmp.getScheduleId(), num+1);
+                map.put(tmp.getScheduleId(), num + 1);
             }
             // 遍历整个map看是否有超出的
             for (String key : map.keySet()) {
@@ -252,15 +328,15 @@ public class RentApplyServiceImpl implements IRentApplyService
                     RentApply latest = new RentApply();
                     Date latestTime = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, "2000-01-01 00:00:00");
                     for (RentApply tmp : applyList) {
-                        Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, tmp.getCreatTime());
+                        Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, tmp.getCreateTime());
                         if (date.after(latestTime)) {
                             latest = tmp;
                             latestTime = date;
                         }
                     }
-                    if (latest.getApplicantsType().equals(Constants.STUDENT)) {
+                    if (latest.getApplicantsType().equals(Constants.ROLE_STUDENT)) {
                         stu.add(latest.getApplicantsId());
-                    } else if (latest.getApplicantsType().equals(Constants.TEACHER)) {
+                    } else if (latest.getApplicantsType().equals(Constants.ROLE_TEACHER)) {
                         teacher.add(latest.getApplicantsId());
                     }
                     // 找出了最小的
@@ -303,7 +379,7 @@ public class RentApplyServiceImpl implements IRentApplyService
                 tmp.setAdministratorPass(0);
                 tmp.setOwnerPass(0);
                 // 判断是学生还是老师
-                if (tmp.getApplicantsType().equals(Constants.STUDENT)) {
+                if (tmp.getApplicantsType().equals(Constants.ROLE_STUDENT)) {
                     // TODO: 2022/1/25 审核管理员id
                 }
             } else if (status == 3) {
@@ -355,5 +431,37 @@ public class RentApplyServiceImpl implements IRentApplyService
             }
         }
         return false;
+    }
+
+
+    /**
+     * 获取需要老师审核的申请
+     * @return
+     */
+    @Override
+    public AjaxResult queryApplyCheckedByTeacher(LoginUser loginUser) {
+
+        //查询学生的申请
+        List<RentApply> rentApplies = rentApplyMapper.selectApplyByStudent(loginUser.getUserId());
+        // 查询需要借用自己设备的申请
+        List<RentApply> rentApplies1 = rentApplyMapper.selectApplyBorrowDevice(loginUser.getUserId());
+
+        AjaxResult result = new AjaxResult();
+        result.put("msg","查询成功");
+        result.put("xsdApply",rentApplies);
+        result.put("jysbApply",rentApplies1);
+        return result;
+    }
+
+    /**
+     * 获取需要superAdmin 省核的申请
+     * @return
+     */
+    @Override
+    public AjaxResult queryApplyCheckedBySuperAdmin(String userId) {
+        // 查询已经被老师审核过的申请
+        List<RentApply> applies = rentApplyMapper.selectNeedCheckedBySuperAdmin(userId);
+
+        return AjaxResult.success("查询成功",applies);
     }
 }

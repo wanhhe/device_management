@@ -1,14 +1,20 @@
 package com.sicau.devicemanagement.controller;
 
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.common.constant.HttpStatus;
 import com.sicau.devicemanagement.common.core.controller.BaseController;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
+import com.sicau.devicemanagement.common.utils.StringUtils;
+import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.RentApply;
+import com.sicau.devicemanagement.domain.model.ApplyForm;
+import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.service.IDeviceService;
 import com.sicau.devicemanagement.service.IRentApplyService;
 import com.sicau.devicemanagement.service.impl.TokenService;
@@ -39,7 +45,6 @@ public class RentApplyController extends BaseController
     /**
      * 查询【请填写功能名称】列表
      */
-    @PreAuthorize("@ss.hasPermi('system:apply:list')")
     @GetMapping("/list")
     public TableDataInfo list(RentApply rentApply)
     {
@@ -63,7 +68,6 @@ public class RentApplyController extends BaseController
     /**
      * 获取【请填写功能名称】详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:apply:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") String id)
     {
@@ -71,19 +75,40 @@ public class RentApplyController extends BaseController
     }
 
     /**
-     * 新增【请填写功能名称】
+     * 新增【设备申请】
      */
-    @PreAuthorize("@ss.hasPermi('system:apply:add')")
-    @PostMapping
-    public AjaxResult add(@RequestBody RentApply rentApply)
+    @PostMapping("/add")
+    public AjaxResult add(@RequestBody ApplyForm applyForm, HttpServletRequest request)
     {
-        return toAjax(rentApplyService.insertRentApply(rentApply));
+        LoginUser loginUser = tokenService.getLoginUser(request);
+        return rentApplyService.insertRentApply(applyForm,loginUser);
+    }
+
+    /**
+     * 获取需要审核申请
+     */
+    @GetMapping("/hqsq")
+    public AjaxResult getApplyList(HttpServletRequest request){
+        LoginUser loginUser = tokenService.getLoginUser(request);
+        if(StringUtils.equals(loginUser.getRole(), Constants.ROLE_TEACHER)){
+           return rentApplyService.queryApplyCheckedByTeacher(loginUser);
+        }else if(StringUtils.equals(loginUser.getUserId(),Constants.ROLE_SUPER_ADMIN)){
+            return rentApplyService.queryApplyCheckedBySuperAdmin(loginUser.getUserId());
+        }
+        return AjaxResult.error("未知错误请联系管理员！");
+    }
+
+    /**
+     * 处理申请
+     */
+    @PostMapping("/handle")
+    public AjaxResult handleApply(){
+        return null;
     }
 
     /**
      * 修改【请填写功能名称】
      */
-    @PreAuthorize("@ss.hasPermi('system:apply:edit')")
     @PutMapping
     public AjaxResult edit(@RequestBody RentApply rentApply)
     {

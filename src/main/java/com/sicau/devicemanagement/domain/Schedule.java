@@ -32,17 +32,17 @@ public class Schedule
     private String weekDay;
 
     /** 第几节课 */
-    @Excel(name = "第几节课")
-    private Integer lesson;
+    @Excel(name = "课程节数，如 1，2，3")
+    private String lesson;
 
     /** 这节课开始的时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "这节课开始的时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
+    @Excel(name = "这节课开始的时间", width = 30, dateFormat = "yyyy-MM-dd hh:mm")
     private Date beginTime;
 
     /** 这节课结束的时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "这节课结束的时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
+    @Excel(name = "这节课结束的时间", width = 30, dateFormat = "yyyy-MM-dd hh:mm")
     private Date endTime;
 
     public void setId(String id) 
@@ -81,12 +81,12 @@ public class Schedule
     {
         return weekDay;
     }
-    public void setLesson(Integer lesson) 
+    public void setLesson(String lesson)
     {
         this.lesson = lesson;
     }
 
-    public Integer getLesson() 
+    public String getLesson()
     {
         return lesson;
     }

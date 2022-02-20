@@ -145,7 +145,7 @@ public class SicauService {
                 }
                 lab.setCampusId(tmp.getXQH());
                 // 教室号 3-226
-                lab.setNum(tmp.getJSH());
+                lab.setBuildNum(tmp.getJSH());
                 labMapper.insertLab(lab);
             }
         }

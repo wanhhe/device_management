@@ -49,7 +49,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         String type = usernameAndType[1];
         username = usernameAndType[0];
         /* teacher */
-        if (StringUtils.equals(Constants.TEACHER, type)) {
+        if (StringUtils.equals(Constants.ROLE_TEACHER, type)) {
             Teacher teacher = teacherMapper.selectOne(new QueryWrapper<Teacher>()
                     .eq("name", username));
             check(teacher, username);
@@ -84,7 +84,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("用户不存在");
         }
 
-        else if (user.getIsDel()==0) {
+        else if (user.getIsDel()==1) {
             log.info("登录用户：{} 已被删除.", username);
             throw new UsernameNotFoundException("用户被删除");
         }

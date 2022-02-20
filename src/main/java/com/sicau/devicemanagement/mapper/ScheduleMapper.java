@@ -2,6 +2,7 @@ package com.sicau.devicemanagement.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sicau.devicemanagement.domain.Schedule;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2022-01-15
  */
+@Mapper
 public interface ScheduleMapper extends BaseMapper<Schedule>
 {
     /**

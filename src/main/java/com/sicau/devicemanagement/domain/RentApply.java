@@ -46,7 +46,7 @@ public class RentApply
     /** 申请时间 */
     // TODO mingming
     @Excel(name = "申请时间")
-    private String creatTime;
+    private String createTime;
 
     @Excel(name = "结束流程时间")
     private String finishTime;
@@ -67,13 +67,28 @@ public class RentApply
     @Excel(name = "指导老师是否通过，1为通过")
     private Integer instructorPass;
 
+    /**
+     * 指导老师id
+     */
+    private String instructorId;
+
     /** 管理老师是否通过，1为通过 */
     @Excel(name = "管理老师是否通过，1为通过")
     private Integer administratorPass;
 
+    /**
+     * 管理员老师id
+     */
+    private String administratorId;
+
     /** 拥有老师是否通过，1为通过 */
     @Excel(name = "拥有老师是否通过，1为通过")
     private Integer ownerPass;
+
+    /**
+     * 设备拥有者id
+     */
+    private String ownerId;
 
     /** 审核到第几阶段 */
     @Excel(name = "审核到第几阶段")
@@ -82,6 +97,13 @@ public class RentApply
     /** 是否逻辑删除，0为删除 */
     @Excel(name = "是否逻辑删除，0为删除")
     private Integer isDel;
+
+
+
+    /**
+     * 是否失败 1 为失败 0为进行中
+     */
+    private Boolean failed;
 
     
     @Override
@@ -104,6 +126,5 @@ public class RentApply
             .toString();
     }
 
-    public void setCreateTime(Date nowDate) {
-    }
+
 }

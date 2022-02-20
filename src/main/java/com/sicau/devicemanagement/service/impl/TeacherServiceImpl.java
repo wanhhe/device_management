@@ -1,12 +1,7 @@
 package com.sicau.devicemanagement.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.sicau.devicemanagement.domain.Device;
 import com.sicau.devicemanagement.domain.Teacher;
-import com.sicau.devicemanagement.domain.model.TeacherQuery;
 import com.sicau.devicemanagement.mapper.DeviceMapper;
 import com.sicau.devicemanagement.mapper.StudentMapper;
 import com.sicau.devicemanagement.mapper.TeacherMapper;
@@ -54,22 +49,9 @@ public class TeacherServiceImpl implements ITeacherService
      * @return 【请填写功能名称】
      */
     @Override
-    public List<Teacher> selectTeacherList(TeacherQuery teacher)
+    public List<Teacher> selectTeacherList(Teacher teacher)
     {
-        List<Object>  list = null;
-        if(teacher.getIsBelongDev())
-        {
-           list = deviceMapper.selectObjs(new QueryWrapper<Device>().select("manager_id").eq("is_del", 1));
-            assert list != null;
-            ArrayList<Teacher> res = new ArrayList<>();
-            list.forEach(item->{
-                Teacher teacher1 = teacherMapper.selectTeacherByUid(item.toString());
-                res.add(teacher1);
-            });
-            return res;
-        }
         return teacherMapper.selectTeacherList(teacher);
-
     }
 
     /**

@@ -2,7 +2,6 @@ package com.sicau.devicemanagement.service;
 
 
 import com.sicau.devicemanagement.domain.Teacher;
-import com.sicau.devicemanagement.domain.model.TeacherQuery;
 
 import java.util.List;
 
@@ -28,7 +27,7 @@ public interface ITeacherService
      * @param teacher 【请填写功能名称】
      * @return 【请填写功能名称】集合
      */
-    public List<Teacher> selectTeacherList(TeacherQuery teacher);
+    public List<Teacher> selectTeacherList(Teacher teacher);
 
     /**
      * 新增【请填写功能名称】

@@ -1,7 +1,10 @@
 package com.sicau.devicemanagement.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.sicau.devicemanagement.domain.RentApply;
+import com.sicau.devicemanagement.domain.model.LoginUser;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
@@ -11,6 +14,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2022-01-15
  */
+@Mapper
 public interface RentApplyMapper extends BaseMapper<RentApply>
 {
     /**
@@ -156,4 +160,20 @@ public interface RentApplyMapper extends BaseMapper<RentApply>
      * @date 2022/01/27
      */
     public List<RentApply> queryOwnDeviceHistory(String uid, String typeId);
+
+    /**
+     *
+     * @param userId 用户id
+     * @return
+     */
+    public List<RentApply> selectApplyByStudent(String userId);
+
+    /**
+     *
+     * @param userId 用户id
+     * @return
+     */
+    public List<RentApply> selectApplyBorrowDevice(String userId);
+
+    public List<RentApply> selectNeedCheckedBySuperAdmin(String userId);
 }

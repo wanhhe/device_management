@@ -1,74 +1,52 @@
 package com.sicau.devicemanagement.domain;
 
 import com.sicau.devicemanagement.common.annotation.Excel;
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * 【请填写功能名称】对象 lab
+ * 【实验室】对象 lab
  *
+ * @author Mr.xin
  * @date 2022-01-15
  */
-public class Lab
-{
+@Data
+public class Lab {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /**
+     * 主键
+     */
     private String id;
 
-    /** 校区名 */
+    /**
+     * 校区名
+     */
     @Excel(name = "校区名")
     private String campusId;
 
-    /** 管理老师id */
+    /**
+     * 管理老师id
+     */
     @Excel(name = "管理老师id")
     private String managerId;
 
-    private String num;
+    /**
+     * 教学楼编号
+     */
+    @Excel(name = "教学楼编号")
+    private String buildNum;
 
-    public void setId(String id) 
-    {
-        this.id = id;
-    }
+    /**
+     * 　门牌号
+     */
+    @Excel(name = "门牌号")
+    private String number;
 
-    public String getId() 
-    {
-        return id;
-    }
-    public void setCampusId(String campusId) 
-    {
-        this.campusId = campusId;
-    }
-
-    public String getCampusId() 
-    {
-        return campusId;
-    }
-    public void setManagerId(String managerId) 
-    {
-        this.managerId = managerId;
-    }
-
-    public String getManagerId() 
-    {
-        return managerId;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("campusId", getCampusId())
-            .append("managerId", getManagerId())
-            .append("num", getNum())
-            .toString();
-    }
-
-    public String getNum() {
-        return num;
-    }
-
-    public void setNum(String num) {
-        this.num = num;
-    }
+    /**
+     * 是否拥有设备
+     */
+    @Excel(name = "是否拥有设备")
+    private Boolean hasDevice;
 }

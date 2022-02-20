@@ -1,6 +1,9 @@
 package com.sicau.devicemanagement.service;
 
+import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.domain.RentApply;
+import com.sicau.devicemanagement.domain.model.ApplyForm;
+import com.sicau.devicemanagement.domain.model.LoginUser;
 
 import java.util.List;
 
@@ -31,10 +34,10 @@ public interface IRentApplyService
     /**
      * 新增【请填写功能名称】
      * 
-     * @param rentApply 【请填写功能名称】
+     * @param applyForm 【申请表单】
      * @return 结果
      */
-    public int insertRentApply(RentApply rentApply);
+    public AjaxResult insertRentApply(ApplyForm applyForm, LoginUser loginUser);
 
     /**
      * 修改【请填写功能名称】
@@ -129,4 +132,16 @@ public interface IRentApplyService
      * @date 2022/01/19
      */
     boolean isUserAccessDevice(String uid, String id);
+
+    /**
+     * 获取需要老师审核的申请
+     * @return
+     */
+    AjaxResult queryApplyCheckedByTeacher(LoginUser loginUser);
+
+    /**
+     * 获取需要superAdmin 省核的申请
+     * @return
+     */
+    AjaxResult queryApplyCheckedBySuperAdmin(String  userId);
 }

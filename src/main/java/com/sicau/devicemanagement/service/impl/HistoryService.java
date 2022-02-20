@@ -354,15 +354,15 @@ public class HistoryService {
             BorrowHistory borrowHistory = new BorrowHistory();
             borrowHistory.setId(temp.getId());
             borrowHistory.setDevice(deviceMapper.selectDeviceById(temp.getDeviceId()));
-            if (temp.getApplicantsType().equals(Constants.TEACHER)) {
+            if (temp.getApplicantsType().equals(Constants.ROLE_TEACHER)) {
                 borrowHistory.setTeacher(teacherMapper.selectTeacherByUid(temp.getApplicantsId()));
-            } else if (temp.getApplicantsType().equals(Constants.STUDENT)) {
+            } else if (temp.getApplicantsType().equals(Constants.ROLE_STUDENT)) {
                 borrowHistory.setStudent(studentMapper.selectStudentByUid(temp.getApplicantsId()));
             }
             borrowHistory.setDeviceStatus(temp.getDeviceStatus());
             borrowHistory.setFinishTime(temp.getFinishTime());
             borrowHistory.setSchedule(scheduleMapper.selectScheduleById(temp.getScheduleId()));
-            borrowHistory.setCreatTime(temp.getCreatTime());
+            borrowHistory.setCreatTime(temp.getCreateTime());
             borrowHistory.setRefuseReason(temp.getRefuseReason());
             borrowHistory.setRefuser(teacherMapper.selectTeacherByUid(temp.getRefuserId()));
             borrowHistory.setInstructorPass(temp.getInstructorPass());

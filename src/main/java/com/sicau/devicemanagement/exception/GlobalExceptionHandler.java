@@ -92,7 +92,7 @@ public class GlobalExceptionHandler
     {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生未知异常{}.", requestURI, e.getMessage());
-        return AjaxResult.error(e.getMessage());
+        return AjaxResult.error("发生未知异常: "+e.getMessage());
     }
 
     /**

@@ -26,7 +26,7 @@ public class LoginController  extends BaseController {
      */
     @PostMapping("/login")
     public AjaxResult login(@RequestBody LoginBody loginBody) throws CaptchaException {
-        if(!loginBody.getType().equals(Constants.TEACHER)&&!loginBody.getType().equals(Constants.STUDENT)){
+        if(!loginBody.getType().equals(Constants.ROLE_TEACHER)&&!loginBody.getType().equals(Constants.ROLE_STUDENT)){
            return error("用户类型错误");
         }
         // 生成令牌

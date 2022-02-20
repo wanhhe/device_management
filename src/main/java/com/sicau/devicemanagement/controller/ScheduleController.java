@@ -36,7 +36,6 @@ public class ScheduleController extends BaseController
     /**
      * 查询【请填写功能名称】列表
      */
-    @PreAuthorize("@ss.hasPermi('system:schedule:list')")
     @GetMapping("/list")
     public TableDataInfo list(Schedule schedule)
     {
@@ -48,7 +47,6 @@ public class ScheduleController extends BaseController
     /**
      * 导出【请填写功能名称】列表
      */
-    @PreAuthorize("@ss.hasPermi('system:schedule:export')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, Schedule schedule)
     {
@@ -60,7 +58,6 @@ public class ScheduleController extends BaseController
     /**
      * 获取【请填写功能名称】详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:schedule:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") String id)
     {
@@ -68,10 +65,19 @@ public class ScheduleController extends BaseController
     }
 
     /**
+     *
+     * 获取 【教室】已经占用的时间表
+     */
+    @GetMapping(value = "/byLabId")
+    public AjaxResult getDeviceSchedule(Schedule schedule)
+    {
+        return AjaxResult.success(scheduleService.selectDeviceSchedule(schedule));
+    }
+
+    /**
      * 新增【请填写功能名称】
      */
-    @PreAuthorize("@ss.hasPermi('system:schedule:add')")
-    @PostMapping
+    @PostMapping("/add")
     public AjaxResult add(@RequestBody Schedule schedule)
     {
         return toAjax(scheduleService.insertSchedule(schedule));
@@ -80,8 +86,7 @@ public class ScheduleController extends BaseController
     /**
      * 修改【请填写功能名称】
      */
-    @PreAuthorize("@ss.hasPermi('system:schedule:edit')")
-    @PutMapping
+    @PutMapping("/update")
     public AjaxResult edit(@RequestBody Schedule schedule)
     {
         return toAjax(scheduleService.updateSchedule(schedule));
@@ -90,7 +95,6 @@ public class ScheduleController extends BaseController
     /**
      * 删除【请填写功能名称】
      */
-    @PreAuthorize("@ss.hasPermi('system:schedule:remove')")
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable String[] ids)
     {

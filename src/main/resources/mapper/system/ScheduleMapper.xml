@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sicau.devicemanagement.mapper.ScheduleMapper">
-    
+
     <resultMap type="Schedule" id="ScheduleResult">
-        <result property="id"    column="id"    />
-        <result property="labId"    column="lab_id"    />
-        <result property="term"    column="term"    />
-        <result property="weekDay"    column="week_day"    />
-        <result property="lesson"    column="lesson"    />
-        <result property="beginTime"    column="begin_time"    />
-        <result property="endTime"    column="end_time"    />
+        <result property="id" column="id"/>
+        <result property="labId" column="lab_id"/>
+        <result property="term" column="term"/>
+        <result property="weekDay" column="week_day"/>
+        <result property="lesson" column="lesson"/>
+        <result property="beginTime" column="begin_time"/>
+        <result property="endTime" column="end_time"/>
     </resultMap>
 
     <sql id="selectScheduleVo">
-        select id, lab_id, term, week_day, lesson, begin_time, end_time from schedule
+        select id, lab_id, term, week_day, lesson, begin_time, end_time
+        from schedule
     </sql>
 
     <select id="selectScheduleList" parameterType="Schedule" resultMap="ScheduleResult">
         <include refid="selectScheduleVo"/>
-        <where>  
-            <if test="labId != null  and labId != ''"> and lab_id = #{labId}</if>
-            <if test="term != null  and term != ''"> and term = #{term}</if>
-            <if test="weekDay != null  and weekDay != ''"> and week_day = #{weekDay}</if>
-            <if test="lesson != null "> and lesson = #{lesson}</if>
-            <if test="beginTime != null "> and begin_time = #{beginTime}</if>
-            <if test="endTime != null "> and end_time = #{endTime}</if>
+        <where>
+            <if test="labId != null  and labId != ''">and lab_id = #{labId}</if>
+            <if test="term != null  and term != ''">and term = #{term}</if>
+            <if test="weekDay != null  and weekDay != ''">and week_day = #{weekDay}</if>
+            <if test="lesson != null ">and lesson like concat('%s', #{lesson},'%s')</if>
+            <if test="beginTime != null ">and begin_time = #{beginTime}</if>
+            <if test="endTime != null ">and end_time = #{endTime}</if>
         </where>
+        order by lesson
     </select>
-    
+
     <select id="selectScheduleById" parameterType="String" resultMap="ScheduleResult">
         <include refid="selectScheduleVo"/>
         where id = #{id}
@@ -51,7 +53,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="lesson != null">lesson,</if>
             <if test="beginTime != null">begin_time,</if>
             <if test="endTime != null">end_time,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
             <if test="labId != null and labId != ''">#{labId},</if>
@@ -60,7 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="lesson != null">#{lesson},</if>
             <if test="beginTime != null">#{beginTime},</if>
             <if test="endTime != null">#{endTime},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateSchedule" parameterType="Schedule">
@@ -69,7 +71,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="labId != null and labId != ''">lab_id = #{labId},</if>
             <if test="term != null and term != ''">term = #{term},</if>
             <if test="weekDay != null and weekDay != ''">week_day = #{weekDay},</if>
-            <if test="lesson != null">lesson = #{lesson},</if>
+            <if test="lesson != null">lesson  =  #{lesson},</if>
             <if test="beginTime != null">begin_time = #{beginTime},</if>
             <if test="endTime != null">end_time = #{endTime},</if>
         </trim>
@@ -77,11 +79,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteScheduleById" parameterType="String">
-        delete from schedule where id = #{id}
+        delete
+        from schedule
+        where id = #{id}
     </delete>
 
     <delete id="deleteScheduleByIds" parameterType="String">
-        delete from schedule where id in 
+        delete from schedule where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

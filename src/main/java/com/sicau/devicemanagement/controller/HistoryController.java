@@ -43,7 +43,7 @@ public class HistoryController {
         if (!uid.equals(loginUser.getUserId())) {
             return AjaxResult.error(HttpStatus.UNAUTHORIZED, "token校验失败");
         }
-        if (!loginUser.getRole().equals(Constants.TEACHER)) {
+        if (!loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
             return AjaxResult.error(HttpStatus.FORBIDDEN, "没有权限");
         }
         return AjaxResult.success(historyService.getOwnDeviceBorrowHistory(uid, type));

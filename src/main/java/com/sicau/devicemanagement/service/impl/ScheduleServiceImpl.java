@@ -41,6 +41,16 @@ public class ScheduleServiceImpl implements IScheduleService
     }
 
     /**
+     *
+     * @param schedule
+     * @return  【使用情况集合】
+     */
+    @Override
+    public List<Schedule> selectDeviceSchedule(Schedule schedule) {
+        return scheduleMapper.selectScheduleList(schedule);
+    }
+
+    /**
      * 查询【请填写功能名称】列表
      * 
      * @param schedule 【请填写功能名称】
