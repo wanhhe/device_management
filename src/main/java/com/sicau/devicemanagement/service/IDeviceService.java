@@ -124,4 +124,16 @@ public interface IDeviceService
     int addDevice(Device device);
 
     int addDevice(List<Device> list);
+
+    /**
+     * 检查前端传入的设备是否非法
+     *
+     * @param device 设备
+     * @return {@link List<String> }
+     * @author sora
+     * @date 2022/02/20
+     */
+    List<String> deviceIllegal(Device device);
+
+    void addData(List<Device> devices);
 }

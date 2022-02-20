@@ -71,5 +71,5 @@ public interface IDeviceTypeService
      * @author sora
      * @date 2022/02/09
      */
-    public int[] addDeviceType(DeviceType deviceType, MultipartFile[] files);
+    public int addDeviceType(DeviceType deviceType, MultipartFile[] files);
 }

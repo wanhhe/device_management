@@ -1,15 +1,12 @@
 package com.sicau.devicemanagement.controller;
 
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
 
 import com.sicau.devicemanagement.common.constant.HttpStatus;
 import com.sicau.devicemanagement.common.core.controller.BaseController;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
-import com.sicau.devicemanagement.common.utils.ExcelUtil;
 import com.sicau.devicemanagement.domain.DeviceType;
-import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.service.IDeviceTypeService;
 import com.sicau.devicemanagement.service.impl.TokenService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,9 +28,6 @@ public class DeviceTypeController extends BaseController
     @Autowired
     private IDeviceTypeService deviceTypeService;
 
-    @Autowired
-    private TokenService tokenService;
-
     /**
      * 查询【请填写功能名称】列表
      */
@@ -54,16 +48,6 @@ public class DeviceTypeController extends BaseController
     public AjaxResult getInfo(@PathVariable("id") String id)
     {
         return AjaxResult.success(deviceTypeService.selectDeviceTypeById(id));
-    }
-
-    /**
-     * 新增【请填写功能名称】
-     */
-    @PreAuthorize("@ss.hasPermi('system:type:add')")
-    @PostMapping
-    public AjaxResult add(@RequestBody DeviceType deviceType)
-    {
-        return toAjax(deviceTypeService.insertDeviceType(deviceType));
     }
 
     /**
@@ -96,10 +80,10 @@ public class DeviceTypeController extends BaseController
      * @date 2022/02/09
      */
     @PostMapping("/type")
-    public AjaxResult addDeviceType(@RequestBody DeviceType deviceType, MultipartFile[] files) {
-        int[] ints = deviceTypeService.addDeviceType(deviceType, files);
-        if (ints == null) {
-            return AjaxResult.error(HttpStatus.ERROR, "添加失败");
+    public AjaxResult addDeviceType(DeviceType deviceType, MultipartFile[] files) {
+        int ints = deviceTypeService.addDeviceType(deviceType, files);
+        if (ints == -1) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "已有重名设备");
         }
         return AjaxResult.success(ints);
     }

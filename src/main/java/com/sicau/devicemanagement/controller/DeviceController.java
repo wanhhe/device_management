@@ -1,7 +1,6 @@
 package com.sicau.devicemanagement.controller;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import javax.servlet.http.HttpServletResponse;
 
 import com.sicau.devicemanagement.common.constant.Constants;
@@ -10,10 +9,10 @@ import com.sicau.devicemanagement.common.core.controller.BaseController;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
+import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.Device;
 import com.sicau.devicemanagement.service.IDeviceService;
 import com.sicau.devicemanagement.service.impl.TokenService;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,9 +29,6 @@ public class DeviceController extends BaseController
 {
     @Autowired
     private IDeviceService deviceService;
-
-    @Autowired
-    private TokenService tokenService;
 
     /**
      * 查询【通过金额查询】列表
@@ -126,7 +122,14 @@ public class DeviceController extends BaseController
      */
     @PostMapping("/device")
     public AjaxResult addDevice(@RequestBody Device device) {
-        // TODO: 2022/2/13 判断结构体中的字段是否合法 
+        List<String> illegal = deviceService.deviceIllegal(device);
+        if (illegal.size() != 0) {
+            return AjaxResult.error("参数错误", illegal);
+        }
+        device.setId(IdUtils.simpleUUID());
+        device.setStatus(Constants.DEVICE_NATURAL);
+        device.setUseTimes((long)0);
+        device.setIsDel(Constants.NATURAL);
         List<Device> list = new LinkedList<>();
         list.add(device);
         return addDevices(list);
@@ -142,6 +145,17 @@ public class DeviceController extends BaseController
      */
     @PostMapping("/devices")
     public AjaxResult addDevices(@RequestBody List<Device> devices) {
+        List<String> illegal;
+        Device tmp;
+        for (int i = 0; i < devices.size(); i++) {
+            tmp = devices.get(i);
+            illegal = deviceService.deviceIllegal(tmp);
+            if (illegal.size() > 0) {
+                illegal.add(String.valueOf(i+1));
+                return AjaxResult.error("参数错误", illegal);
+            }
+        }
+        deviceService.addData(devices);
         int ints = deviceService.addDevice(devices);
         if (ints == 0) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "请上传相同类型的设备");

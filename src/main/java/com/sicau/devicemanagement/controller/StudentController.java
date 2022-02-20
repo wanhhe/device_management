@@ -1,7 +1,5 @@
 package com.sicau.devicemanagement.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,7 +13,6 @@ import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.file.DateUtils;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.Student;
-import com.sicau.devicemanagement.domain.Teacher;
 import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.service.IStudentService;
 import com.sicau.devicemanagement.service.impl.TokenService;
@@ -83,7 +80,7 @@ public class StudentController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:student:add')")
     @PostMapping
-    public AjaxResult add(@RequestBody Student student)
+    public AjaxResult add(@RequestBody Student student, @RequestHeader("Authorization") String token)
     {
         String expire = student.getExpirationDate();
         if (!StringUtils.isNotEmpty(expire)) {
@@ -95,9 +92,17 @@ public class StudentController extends BaseController
         if (time > (long) 2*365*24*60*60*1000 || time <= 0) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "账号有效期错误");
         }
+        if (student.getTel().length() != 11) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "请输入正确的手机号");
+        }
+        LoginUser loginUser = tokenService.getLoginUser(token);
+        student.setTeacherId(loginUser.getUserId());
+        student.setCollegeId("水利水电学院");
         student.setUid(IdUtils.simpleUUID());
         student.setPassword(bCryptPasswordEncoder.encode(student.getStuNumber()));
+        // TODO: 2022/2/20 看有没有role常量
         student.setRoleId("1");
+        student.setIsDel(Constants.NATURAL);
         return toAjax(studentService.insertStudent(student));
     }
 

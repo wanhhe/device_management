@@ -3,16 +3,15 @@ package com.sicau.devicemanagement.service.impl;
 import java.io.IOException;
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.common.utils.file.FileUploadUtils;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
-import com.sicau.devicemanagement.domain.Device;
 import com.sicau.devicemanagement.domain.DeviceImg;
 import com.sicau.devicemanagement.domain.DeviceType;
 import com.sicau.devicemanagement.mapper.DeviceImgMapper;
 import com.sicau.devicemanagement.mapper.DeviceTypeMapper;
 import com.sicau.devicemanagement.service.IDeviceTypeService;
-import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -116,17 +115,20 @@ public class DeviceTypeServiceImpl implements IDeviceTypeService
      * @date 2022/02/09
      */
     @Override
-    public int[] addDeviceType(DeviceType deviceType, MultipartFile[] files) {
+    public int addDeviceType(DeviceType deviceType, MultipartFile[] files) {
+        // 判断是否已有重名
+        QueryWrapper<DeviceType> deviceTypeQueryWrapper = new QueryWrapper<>();
+        deviceTypeQueryWrapper.select("id").eq("name", deviceType.getName());
+        int name = deviceTypeMapper.selectCount(deviceTypeQueryWrapper);
+        if (name == 1) {
+            return -1;
+        }
         // 生成uuid
         String uuid = IdUtils.simpleUUID();
         deviceType.setId(uuid);
-        // TODO: 2022/2/13 判断逻辑外键
-        int count = deviceTypeMapper.insertDeviceType(deviceType);
         deviceType.setInventory(0);
         deviceType.setTotal(0);
-        if (count < 1) {
-            return null;
-        }
+        deviceTypeMapper.insertDeviceType(deviceType);
         // 上传图片
         DeviceImg img = new DeviceImg();
         int flag = 0;
@@ -138,6 +140,7 @@ public class DeviceTypeServiceImpl implements IDeviceTypeService
                 } catch (FileSizeLimitExceededException | IOException e) {
                     e.printStackTrace();
                 }
+                img.setId(IdUtils.simpleUUID());
                 img.setDeviceTypeId(uuid);
                 img.setUrl(filename);
                 if (deviceImgMapper.insertDeviceImg(img) < 1) {
@@ -145,6 +148,6 @@ public class DeviceTypeServiceImpl implements IDeviceTypeService
                 }
             }
         }
-        return new int[]{count, flag};
+        return flag;
     }
 }

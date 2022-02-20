@@ -8,15 +8,12 @@ import java.util.concurrent.TimeUnit;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sicau.devicemanagement.common.core.redis.RedisCache;
 import com.sicau.devicemanagement.common.utils.VerifyCodeUtils;
-import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
-import com.sicau.devicemanagement.domain.Device;
-import com.sicau.devicemanagement.domain.Student;
 import com.sicau.devicemanagement.domain.Teacher;
 import com.sicau.devicemanagement.mapper.DeviceMapper;
+import com.sicau.devicemanagement.mapper.LabMapper;
 import com.sicau.devicemanagement.mapper.StudentMapper;
 import com.sicau.devicemanagement.mapper.TeacherMapper;
 import com.sicau.devicemanagement.service.ITeacherService;
-import io.lettuce.core.RedisClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,12 +31,6 @@ public class TeacherServiceImpl implements ITeacherService
 {
     @Autowired
     private TeacherMapper teacherMapper;
-
-    @Resource
-    private StudentMapper studentMapper;
-
-    @Autowired
-    private DeviceMapper deviceMapper;
 
     @Autowired
     private SmsService smsService;
@@ -78,9 +69,10 @@ public class TeacherServiceImpl implements ITeacherService
      * @return 结果
      */
     @Override
-    public int insertTeacher(Teacher teacher)
+    public boolean insertTeacher(Teacher teacher)
     {
-        return teacherMapper.insertTeacher(teacher);
+        String s = smsService.sendTeacherCreatedSms(teacher.getTel(), teacher.getName());
+        return teacherMapper.insertTeacher(teacher) > 0 && "OK".equals(s.substring(0, 2));
     }
 
     /**

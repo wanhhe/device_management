@@ -1,6 +1,7 @@
 package com.sicau.devicemanagement.service;
 
 
+import com.sicau.devicemanagement.domain.Device;
 import com.sicau.devicemanagement.domain.Teacher;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public interface ITeacherService
      * @param teacher 【请填写功能名称】
      * @return 结果
      */
-    public int insertTeacher(Teacher teacher);
+    public boolean insertTeacher(Teacher teacher);
 
     /**
      * 修改【请填写功能名称】
