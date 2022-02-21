@@ -184,4 +184,32 @@ public class SmsService {
         String register = "验证码：%，您正在进行注册操作，验证码5分钟内有效，请勿向他人泄露。";
         return sendVerifyCode(register, tel, verifyCode);
     }
+
+    /**
+     * 给学生发送账号创建成功短信
+     *
+     * @param tel
+     * @param name 学生名字
+     * @return {@link String }
+     * @author sora
+     * @date 2022/02/20
+     */
+    public String sendStudentCreatedSms(String tel, String name) {
+        String register = name + "同学您好！您的账号已注册成功，登录账号和初始密码为您的学号，登录成功后请尽快修改密码！";
+        return sendSms(register, tel);
+    }
+
+    /**
+     * 给老师发送账号创建成功短信
+     *
+     * @param tel  电话
+     * @param name 老师名字
+     * @return {@link String }
+     * @author sora
+     * @date 2022/02/20
+     */
+    public String sendTeacherCreatedSms(String tel, String name) {
+        String register = name + "老师您好！您的账号已注册成功，登录账号和初始密码为您的工号，登录成功后请尽快修改密码！";
+        return sendSms(register, tel);
+    }
 }

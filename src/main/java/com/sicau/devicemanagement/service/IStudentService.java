@@ -35,7 +35,7 @@ public interface IStudentService
      * @param student 【请填写功能名称】
      * @return 结果
      */
-    public int insertStudent(Student student);
+    public boolean insertStudent(Student student);
 
     /**
      * 修改【请填写功能名称】

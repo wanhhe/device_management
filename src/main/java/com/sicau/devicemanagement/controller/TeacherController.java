@@ -3,11 +3,13 @@ package com.sicau.devicemanagement.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.common.constant.HttpStatus;
 import com.sicau.devicemanagement.common.core.controller.BaseController;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
+import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.Teacher;
 
@@ -77,10 +79,23 @@ public class TeacherController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody Teacher teacher)
     {
+        if (teacher.getTel().length() != 11) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "请输入正确的手机号");
+        }
+        if (StringUtils.isEmpty(teacher.getEmployeeId())) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "请输入正确的工号");
+        }
+        if (StringUtils.isEmpty(teacher.getMajor())) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "请输入正确的专业");
+        }
+        if (StringUtils.isEmpty(teacher.getName())) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "请输入正确的姓名");
+        }
         teacher.setUid(IdUtils.simpleUUID());
-        teacher.setIsDel(0);
-        teacher.setPassword(bCryptPasswordEncoder.encode(teacher.getPassword()));
+        teacher.setIsDel(Constants.NATURAL);
+        teacher.setPassword(bCryptPasswordEncoder.encode(teacher.getEmployeeId()));
         teacher.setRoleId("2");
+        teacher.setCollege("水利水电学院");
         return toAjax(teacherService.insertTeacher(teacher));
     }
 

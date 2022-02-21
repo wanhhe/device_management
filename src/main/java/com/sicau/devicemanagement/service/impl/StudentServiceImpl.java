@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.common.core.redis.RedisCache;
 import com.sicau.devicemanagement.common.utils.VerifyCodeUtils;
 import com.sicau.devicemanagement.common.utils.file.DateUtils;
@@ -66,10 +67,10 @@ public class StudentServiceImpl implements IStudentService
      * @return 结果
      */
     @Override
-    public int insertStudent(Student student)
+    public boolean insertStudent(Student student)
     {
-        // TODO: 2022/2/14 发送短信给学生提醒账号创建生成成功，并告知其初始密码为其学号，提醒其修改初始密码
-        return studentMapper.insertStudent(student);
+        String s = smsService.sendStudentCreatedSms(student.getTel(), student.getName());
+        return studentMapper.insertStudent(student) > 0 && "OK".equals(s.substring(0, 2));
     }
 
     /**
@@ -213,8 +214,7 @@ public class StudentServiceImpl implements IStudentService
         UpdateWrapper<Student> studentUpdateWrapper = new UpdateWrapper<>();
         int count = 0;
         for (String id : uids) {
-            // TODO: 2022/2/14 思考未封禁状态是null还是其它整型
-            studentUpdateWrapper.eq("uid", id).set("is_del", null);
+            studentUpdateWrapper.eq("uid", id).set("is_del", Constants.NATURAL);
             if (studentMapper.update(null, studentUpdateWrapper) > 0) {
                 count++;
             }

@@ -8,21 +8,33 @@ package com.sicau.devicemanagement.common.constant;
 public class Constants
 {
 
+    /**
+     * 学生
+     */
+    public static final  String ROLE_STUDENT = "student";
 
+    public static final String ROLE_STUDENT_ID = "1";
 
     /**
      * 老师
      */
     public static final  String ROLE_TEACHER = "teacher";
 
-    /**
-     * 学生
-     */
-    public static final  String ROLE_STUDENT = "student";
+    public static final String ROLE_TEACHER_ID = "2";
 
+    /**
+     * 管理员
+     */
     public static final String ROLE_ADMIN = "admin";
 
+    public static final String ROLE_ADMIN_ID = "3";
+
+    /**
+     * 拥有审核权限的管理员
+     */
     public static final String ROLE_SUPER_ADMIN = "superAdmin";
+
+    public static final String ROLE_SUPER_ADMIN_ID = "4";
 
 
     /* 下面三个用于数据库中的逻辑删除 */

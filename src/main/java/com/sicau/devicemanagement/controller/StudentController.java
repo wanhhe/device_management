@@ -1,7 +1,5 @@
 package com.sicau.devicemanagement.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,7 +13,6 @@ import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.file.DateUtils;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.Student;
-import com.sicau.devicemanagement.domain.Teacher;
 import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.service.IStudentService;
 import com.sicau.devicemanagement.service.impl.TokenService;
@@ -83,7 +80,7 @@ public class StudentController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:student:add')")
     @PostMapping
-    public AjaxResult add(@RequestBody Student student)
+    public AjaxResult add(@RequestBody Student student, @RequestHeader("Authorization") String token)
     {
         String expire = student.getExpirationDate();
         if (!StringUtils.isNotEmpty(expire)) {
@@ -95,9 +92,16 @@ public class StudentController extends BaseController
         if (time > (long) 2*365*24*60*60*1000 || time <= 0) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "账号有效期错误");
         }
+        if (student.getTel().length() != 11) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "请输入正确的手机号");
+        }
+        LoginUser loginUser = tokenService.getLoginUser(token);
+        student.setTeacherId(loginUser.getUserId());
+        student.setCollegeId("水利水电学院");
         student.setUid(IdUtils.simpleUUID());
         student.setPassword(bCryptPasswordEncoder.encode(student.getStuNumber()));
-        student.setRoleId("1");
+        student.setRoleId(Constants.ROLE_STUDENT_ID);
+        student.setIsDel(Constants.NATURAL);
         return toAjax(studentService.insertStudent(student));
     }
 
@@ -216,10 +220,8 @@ public class StudentController extends BaseController
         }
         // 判断是不是下属学生或是不是管理员
         LoginUser loginUser = tokenService.getLoginUser(token);
-
-        // TODO: 2022/1/28 区分管理员和普通老师的常量
-        if (loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
-
+        String role = loginUser.getRole();
+        if (role.equals(Constants.ROLE_TEACHER)) {
             // 如果是普通老师的话要判断该账号是不是其下属账号
             boolean flag = studentService.isStudentMaster(loginUser.getUserId(), sid);
             if (!flag) {
@@ -251,14 +253,15 @@ public class StudentController extends BaseController
                                  @RequestHeader("Authorization") String token) {
         // 判断是不是下属学生或是不是管理员
         LoginUser loginUser = tokenService.getLoginUser(token);
-        // TODO: 2022/1/28 区分管理员和普通老师的常量
         if (loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
             // 如果是普通老师的话要判断该账号是不是其下属账号
             boolean flag = studentService.isStudentMaster(loginUser.getUserId(), sid);
-            if (!flag && del == 1) {
-                return AjaxResult.error(HttpStatus.FORBIDDEN, "您没有权限封禁该账号");
-            } else if (!flag && del == 0) {
-                return AjaxResult.error(HttpStatus.FORBIDDEN, "您没有权限删除该账号");
+            if (!flag) {
+                if (del == 1) {
+                    return AjaxResult.error(HttpStatus.FORBIDDEN, "您没有权限封禁该账号");
+                } else if (del == 0) {
+                    return AjaxResult.error(HttpStatus.FORBIDDEN, "您没有权限删除该账号");
+                }
             }
         }
         if (del == 0) {
@@ -283,15 +286,17 @@ public class StudentController extends BaseController
     @PutMapping("/teacher")
     public AjaxResult teacherCancelBan(@RequestBody String[] ids, @RequestHeader("Authorization") String token) {
         // 判断是不是下属学生或是不是管理员
-//        LoginUser loginUser = tokenService.getLoginUser(token);
-//        // TODO: 2022/1/28 区分管理员和普通老师的常量
-//        if (loginUser.getRole().equals(Constants.TEACHER)) {
-//            // 如果是普通老师的话要判断该账号是不是其下属账号
-//            boolean flag = studentService.isStudentMaster(loginUser.getUserId(), sid);
-//            if (!flag) {
-//                return AjaxResult.error(HttpStatus.FORBIDDEN, "您没有权限解封该账号");
-//            }
-//        }
+        LoginUser loginUser = tokenService.getLoginUser(token);
+        if (loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
+            // 如果是普通老师的话要判断该账号是不是其下属账号
+            boolean flag;
+            for (String sid : ids) {
+                flag = studentService.isStudentMaster(loginUser.getUserId(), sid);
+                if (!flag) {
+                    return AjaxResult.error(HttpStatus.FORBIDDEN, "您没有权限解封账号");
+                }
+            }
+        }
         return AjaxResult.success(studentService.cancelBanStudentByUids(ids));
     }
 }

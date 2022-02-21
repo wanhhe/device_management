@@ -1,5 +1,6 @@
 package com.sicau.devicemanagement.service.impl;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,19 +8,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.sicau.devicemanagement.common.constant.Constants;
 
+import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
-
 import com.sicau.devicemanagement.domain.Device;
 import com.sicau.devicemanagement.domain.DeviceType;
 
+import com.sicau.devicemanagement.domain.Teacher;
 import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
 
-
 import com.sicau.devicemanagement.domain.RentApply;
-
-import com.sicau.devicemanagement.mapper.DeviceMapper;
-import com.sicau.devicemanagement.mapper.DeviceTypeMapper;
-import com.sicau.devicemanagement.mapper.RentApplyMapper;
+import com.sicau.devicemanagement.mapper.*;
 import com.sicau.devicemanagement.service.IDeviceService;
 import com.sicau.devicemanagement.service.IDeviceTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +41,12 @@ public class DeviceServiceImpl implements IDeviceService
 
     @Autowired
     private RentApplyMapper rentApplyMapper;
+
+    @Autowired
+    private TeacherMapper teacherMapper;
+
+    @Autowired
+    private LabMapper labMapper;
 
     @Autowired
     private SmsService smsService;
@@ -244,5 +248,55 @@ public class DeviceServiceImpl implements IDeviceService
         deviceType.setInventory(deviceType.getInventory() + list.size());
         deviceTypeMapper.updateDeviceType(deviceType);
         return count;
+    }
+
+    @Override
+    public List<String> deviceIllegal(Device device) {
+        device.setStatus(Constants.DEVICE_NATURAL);
+        device.setId(IdUtils.simpleUUID());
+        device.setIsDel(Constants.NATURAL);
+        device.setUseTimes((long)0);
+        List<String> res = new ArrayList<>();
+        if (StringUtils.isEmpty(device.getName())) {
+            res.add("name");
+        }
+        if (StringUtils.isEmpty(device.getTypeId())) {
+            res.add("typeId");
+        }
+        if (StringUtils.isEmpty(device.getManagerId())) {
+            res.add("managerId");
+        } else {
+            // 判断有没有该manager
+            QueryWrapper<Teacher> teacherQueryWrapper = new QueryWrapper<>();
+            teacherQueryWrapper.eq("uid", device.getManagerId());
+            Integer count = teacherMapper.selectCount(teacherQueryWrapper);
+            if (count == 0) {
+                res.add("managerId");
+            }
+        }
+        if (StringUtils.isEmpty(device.getBelongLabId())) {
+            res.add("belongLabId");
+        } else {
+            if (labMapper.selectLabById(device.getBelongLabId()) == null) {
+                res.add("belongLabId");
+            }
+        }
+        if (StringUtils.isEmpty(device.getBelongMajor())) {
+            res.add("belongMajor");
+        }
+        if (device.getPrice() < 0){
+            res.add("price");
+        }
+        return res;
+    }
+
+    @Override
+    public void addData(List<Device> devices) {
+        for (Device tmp : devices) {
+            tmp.setId(IdUtils.simpleUUID());
+            tmp.setStatus(Constants.DEVICE_NATURAL);
+            tmp.setUseTimes((long)0);
+            tmp.setIsDel(Constants.NATURAL);
+        }
     }
 }
