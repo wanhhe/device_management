@@ -132,7 +132,6 @@ public interface IRentApplyService
     boolean isUserAccessDevice(String uid, String id);
 
     /**
-<<<<<<< HEAD
      * 获取需要老师审核的申请
      * @return
      */
@@ -153,4 +152,15 @@ public interface IRentApplyService
      * @date 2022/02/16
      */
     boolean isUserFinishDevice(String uid, String id);
+
+    /**
+     * 处理请求
+     * @param rid 请求记录的id
+     * @param res 处理的结果 true or false
+     * @param reason 拒绝的原因
+     * @param loginUser 用户信息
+     * @return
+     */
+    AjaxResult handleApply(String rid, Integer res,String reason,LoginUser loginUser);
+
 }

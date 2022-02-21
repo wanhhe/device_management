@@ -27,14 +27,13 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * 【请填写功能名称】Controller
- * 
+ *
  * @author ruoyi
  * @date 2022-01-15
  */
 @RestController
 @RequestMapping("/system/apply")
-public class RentApplyController extends BaseController
-{
+public class RentApplyController extends BaseController {
     @Autowired
     private IRentApplyService rentApplyService;
 
@@ -48,8 +47,7 @@ public class RentApplyController extends BaseController
      * 查询【请填写功能名称】列表
      */
     @GetMapping("/list")
-    public TableDataInfo list(RentApply rentApply)
-    {
+    public TableDataInfo list(RentApply rentApply) {
         startPage();
         List<RentApply> list = rentApplyService.selectRentApplyList(rentApply);
         return getDataTable(list);
@@ -59,31 +57,29 @@ public class RentApplyController extends BaseController
      * 获取【请填写功能名称】详细信息
      */
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") String id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") String id) {
         return AjaxResult.success(rentApplyService.selectRentApplyById(id));
     }
 
     /**
-<<<<<<< HEAD
+     *
      * 新增【设备申请】
      */
     @PostMapping("/add")
-    public AjaxResult add(@RequestBody ApplyForm applyForm, HttpServletRequest request)
-    {
+    public AjaxResult add(@RequestBody ApplyForm applyForm, HttpServletRequest request) {
         LoginUser loginUser = tokenService.getLoginUser(request);
-        return rentApplyService.insertRentApply(applyForm,loginUser);
+        return rentApplyService.insertRentApply(applyForm, loginUser);
     }
 
     /**
      * 获取需要审核申请
      */
     @GetMapping("/hqsq")
-    public AjaxResult getApplyList(HttpServletRequest request){
+    public AjaxResult getApplyList(HttpServletRequest request) {
         LoginUser loginUser = tokenService.getLoginUser(request);
-        if(StringUtils.equals(loginUser.getRole(), Constants.ROLE_TEACHER)){
-           return rentApplyService.queryApplyCheckedByTeacher(loginUser);
-        }else if(StringUtils.equals(loginUser.getUserId(),Constants.ROLE_SUPER_ADMIN)){
+        if (StringUtils.equals(loginUser.getRole(), Constants.ROLE_TEACHER)) {
+            return rentApplyService.queryApplyCheckedByTeacher(loginUser);
+        } else if (StringUtils.equals(loginUser.getRole(), Constants.ROLE_SUPER_ADMIN)) {
             return rentApplyService.queryApplyCheckedBySuperAdmin(loginUser.getUserId());
         }
         return AjaxResult.error("未知错误请联系管理员！");
@@ -92,17 +88,17 @@ public class RentApplyController extends BaseController
     /**
      * 处理申请
      */
-    @PostMapping("/handle")
-    public AjaxResult handleApply(){
-        return null;
+    @PostMapping("/handle/{rid}")
+    public AjaxResult handleApply(@PathVariable String rid, Integer res, String reason, HttpServletRequest request) {
+        LoginUser loginUser = tokenService.getLoginUser(request);
+        return rentApplyService.handleApply(rid, res, reason, loginUser);
     }
 
     /**
      * 修改【请填写功能名称】
      */
     @PutMapping
-    public AjaxResult edit(@RequestBody RentApply rentApply)
-    {
+    public AjaxResult edit(@RequestBody RentApply rentApply) {
         return toAjax(rentApplyService.updateRentApply(rentApply));
     }
 
@@ -110,15 +106,12 @@ public class RentApplyController extends BaseController
      * 删除【请填写功能名称】
      */
     @PreAuthorize("@ss.hasPermi('system:apply:remove')")
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable String[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable String[] ids) {
         return toAjax(rentApplyService.deleteRentApplyByIds(ids));
     }
 
     /**
-=======
->>>>>>> 5195cb2f4d09b6860036d49840d0b5ca079cd62e
      * 确认开始使用设备
      *
      * @param id 申请使用id
@@ -134,7 +127,7 @@ public class RentApplyController extends BaseController
         if (loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
             uid = loginUser.getUserId();
             // 判断是否能够使用设备
-            access = rentApplyService.isUserAccessDevice(uid,id);
+            access = rentApplyService.isUserAccessDevice(uid, id);
             if (!access) {
                 return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
             }
@@ -214,11 +207,12 @@ public class RentApplyController extends BaseController
     @GetMapping("/damage/before/{id}")
     public AjaxResult hasDamagedBeforeUseDevice(@PathVariable("id") String id, @RequestHeader("Authorization") String token) {
         LoginUser loginUser = tokenService.getLoginUser(token);
-        String uid= loginUser.getUserId();;
+        String uid = loginUser.getUserId();
+        ;
         boolean access;
         if (loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
             // 判断是否能够使用设备
-            access = rentApplyService.isUserAccessDevice(uid,id);
+            access = rentApplyService.isUserAccessDevice(uid, id);
             if (!access) {
                 return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
             }
@@ -252,7 +246,7 @@ public class RentApplyController extends BaseController
         if (loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
             uid = loginUser.getUserId();
             // 判断是否能够使用设备
-            access = rentApplyService.isUserAccessDevice(uid,id);
+            access = rentApplyService.isUserAccessDevice(uid, id);
             if (!access) {
                 return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
             }

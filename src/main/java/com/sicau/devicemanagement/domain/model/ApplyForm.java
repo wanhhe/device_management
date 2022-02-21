@@ -19,5 +19,5 @@ public class ApplyForm extends RentApply {
     /** 周/星期几 */
     private String weekDay;
     /** 第几节课 */
-    private Integer lesson;
+    private String lesson;
 }

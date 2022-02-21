@@ -1,6 +1,7 @@
 package com.sicau.devicemanagement.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.sicau.devicemanagement.common.annotation.Excel;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -18,6 +19,7 @@ public class Student extends User
     private static final long serialVersionUID = 1L;
 
     /** 主键 */
+    @TableId
     private String uid;
 
     /** 学号 */

@@ -57,6 +57,11 @@ public class Constants
      */
     public static final String DEVICE_BROKEN = "broken";
 
+    public static final String DEVICE_APPLY_SUCCESS = "审核通过";
+    public static final String DEVICE_APPLY_FAIL = "拒绝使用";
+    public static final String DEVICE_APPLY_AUDITING = "审核中";
+
+
     /* 下面四条是申请使用中的设备状态 */
     /**
      * 待使用

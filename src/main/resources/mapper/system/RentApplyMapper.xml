@@ -170,10 +170,11 @@
     <select id="selectApplyByStudent" resultType="com.sicau.devicemanagement.domain.RentApply"
             parameterType="String">
         select ra.*
-        from rent_appply ra
+        from rent_apply ra
         where ra.instructor_id = #{userId}
           and is_del != 0
           and failed = 0
+          and instructor_pass is null
     </select>
     <select id="selectApplyBorrowDevice" resultType="com.sicau.devicemanagement.domain.RentApply"
             parameterType="String">
@@ -188,7 +189,7 @@
             parameterType="string">
         select ra.*
         from rent_apply ra
-        where ra.administrator_pass isnull
+        where ra.administrator_pass is null
             and   ra.is_del != 0
             and   ra.failed = 0
             and   ra.administrator_id = #{userId}

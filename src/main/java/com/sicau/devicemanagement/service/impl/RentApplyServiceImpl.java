@@ -88,10 +88,10 @@ public class RentApplyServiceImpl implements IRentApplyService {
      */
     @Override
     public AjaxResult insertRentApply(ApplyForm applyForm, LoginUser loginUser) {
-        if(StringUtils.equals(loginUser.getRole(),Constants.ROLE_ADMIN)){
+        if (StringUtils.equals(loginUser.getRole(), Constants.ROLE_ADMIN)) {
             return AjaxResult.error("您的身份不能申请，请联系管理员！");
         }
-        applyForm =  createApplyRecord(applyForm,loginUser);
+        applyForm = createApplyRecord(applyForm, loginUser);
 
         synchronized (this) {
             Schedule schedule = new Schedule();
@@ -115,13 +115,16 @@ public class RentApplyServiceImpl implements IRentApplyService {
     private ApplyForm createApplyRecord(ApplyForm applyForm, LoginUser loginUser) {
         //产生临时 scheduleId
         String tempScheduleId = IdUtils.simpleUUID();
-        // 将labId缓存进redis 审核流程完成后从缓存中移除
-        redisCache.setCacheObject(Constants.TEMP_SCHEDULE_ID + loginUser.getUserId(), tempScheduleId);
+        Schedule schedule = new Schedule();
+        BeanUtils.copyProperties(applyForm, schedule);
+        // 将schedule缓存进redis 审核流程完成后从缓存中存入数据库
+        redisCache.setCacheObject(Constants.TEMP_SCHEDULE_ID + tempScheduleId, schedule);
         applyForm.setId(IdUtils.simpleUUID());
         applyForm.setScheduleId(tempScheduleId);
         applyForm.setId(IdUtils.simpleUUID());
         applyForm.setCreateTime(DateUtils.getTime());
         applyForm.setDeviceStatus("审核中");
+        applyForm.setAuditStatus(0);
         applyForm.setApplicantsId(loginUser.getUserId());
         applyForm.setApplicantsType(loginUser.getRole());
         if (StringUtils.equals(loginUser.getRole(), Constants.ROLE_STUDENT)) {
@@ -140,6 +143,8 @@ public class RentApplyServiceImpl implements IRentApplyService {
             applyForm.setAdministratorId(superAdmins.get(0).getUid());
 
         } else if (StringUtils.equals(loginUser.getRole(), Constants.ROLE_TEACHER)) {
+            //会跳过老师审核的阶段
+            applyForm.setAuditStatus(1);
             // 查询设备拥有者id
             Device device =
                     deviceMapper.selectById(applyForm.getDeviceId());
@@ -147,12 +152,16 @@ public class RentApplyServiceImpl implements IRentApplyService {
             // 判断是否是自己的设备
             if (StringUtils.equals(device.getManagerId(), loginUser.getUserId())) {
                 applyForm.setOwnerPass(1);
+                //是自己的设备 不需要自己审核
+                applyForm.setAuditStatus(2);
             }
             //查询管理员id
             List<Teacher> superAdmins = teacherMapper.selectList(new QueryWrapper<Teacher>().
                     eq("role_id", 4));
             applyForm.setAdministratorId(superAdmins.get(0).getUid());
         } else if (StringUtils.equals(loginUser.getRole(), Constants.ROLE_SUPER_ADMIN)) {
+            // 不需要老师 和 管理员审核
+            applyForm.setAuditStatus(2);
             applyForm.setAdministratorPass(1);
             // 查询设备拥有者id
             Device device = deviceMapper.selectById(applyForm.getDeviceId());
@@ -198,7 +207,7 @@ public class RentApplyServiceImpl implements IRentApplyService {
     /**
      * 老师开始使用设备
      *
-     * @param id  申请使用id
+     * @param id 申请使用id
      * @author sora
      * @date 2022/01/19
      */
@@ -222,7 +231,7 @@ public class RentApplyServiceImpl implements IRentApplyService {
     /**
      * 学生开始使用设备
      *
-     * @param id  申请使用id
+     * @param id 申请使用id
      * @author sora
      * @date 2022/01/19
      */
@@ -455,6 +464,7 @@ public class RentApplyServiceImpl implements IRentApplyService {
 
     /**
      * 获取需要老师审核的申请
+     *
      * @return
      */
     @Override
@@ -466,14 +476,15 @@ public class RentApplyServiceImpl implements IRentApplyService {
         List<RentApply> rentApplies1 = rentApplyMapper.selectApplyBorrowDevice(loginUser.getUserId());
 
         AjaxResult result = new AjaxResult();
-        result.put("msg","查询成功");
-        result.put("xsdApply",rentApplies);
-        result.put("jysbApply",rentApplies1);
+        result.put("msg", "查询成功");
+        result.put("xsdApply", rentApplies);
+        result.put("jysbApply", rentApplies1);
         return result;
     }
 
     /**
      * 获取需要superAdmin 省核的申请
+     *
      * @return
      */
     @Override
@@ -503,5 +514,77 @@ public class RentApplyServiceImpl implements IRentApplyService {
         }
         RentApply rentApply = rentApplyList.get(0);
         return rentApply.getDeviceStatus().equals(Constants.DEVICE_USING);
+    }
+
+    /**
+     * 处理请求
+     *
+     * @param rid       请求记录的id
+     * @param res       处理的结果 true or false
+     * @param reason    拒绝的原因 可为空
+     * @param loginUser 用户信息
+     * @return
+     */
+    // TODO 接口校验问题
+    @Override
+    public AjaxResult handleApply(String rid, Integer res, String reason, LoginUser loginUser) {
+        String role = loginUser.getRole();
+        //先查出原来的数据
+        RentApply updatedApply = rentApplyMapper.selectRentApplyById(rid);
+        String instructorId = updatedApply.getInstructorId();
+        String administratorId = updatedApply.getAdministratorId();
+        String ownerId = updatedApply.getOwnerId();
+        String userId = loginUser.getUserId();
+        // 判断是否有资格审核
+        if (!userId.equals(instructorId) &&
+                !userId.equals(administratorId) &&
+                !userId.equals(ownerId)){
+            return AjaxResult.error("你没有资格审核该申请");
+        }
+        // 拒绝
+        if (res == 0) {
+                updatedApply.setRefuseReason(reason);
+                updatedApply.setRefuserId(loginUser.getUserId());
+                updatedApply.setFailed(true);
+                updatedApply.setDeviceStatus(Constants.DEVICE_APPLY_FAIL);
+                rentApplyMapper.updateRentApply(updatedApply);
+                return AjaxResult.success();
+            }
+
+        // 审核者是老师
+        if (StringUtils.equals(role, Constants.ROLE_TEACHER)) {
+            // 申请者是学生 且没处理过请求
+            if (StringUtils.equals(updatedApply.getApplicantsType(), Constants.ROLE_STUDENT)
+                    && updatedApply.getInstructorPass() == null) {
+                updatedApply.setInstructorPass(res);
+                // 更新阶段
+                Integer auditStatus = updatedApply.getAuditStatus();
+                updatedApply.setAuditStatus(++auditStatus);
+
+            }
+            // 审核使用自己的设备
+            if(ownerId.equals(userId)){
+                updatedApply.setOwnerPass(res);
+                Integer auditStatus = updatedApply.getAuditStatus();
+                updatedApply.setAuditStatus(++auditStatus);
+            }
+            // 审核者是 超级管理员
+        } else if (StringUtils.equals(role, Constants.ROLE_SUPER_ADMIN)) {
+            updatedApply.setAdministratorPass(res);
+            Integer auditStatus = updatedApply.getAuditStatus();
+            updatedApply.setAuditStatus(++auditStatus);
+        }
+        // 更改申请的状态
+        if (updatedApply.getAuditStatus() >= 3) {
+            updatedApply.setDeviceStatus(Constants.DEVICE_APPLY_SUCCESS);
+            String scheduleId = updatedApply.getScheduleId();
+            Schedule sc = (Schedule) redisCache.getCacheObject(Constants.TEMP_SCHEDULE_ID + scheduleId);
+            // 通过后借用时间段保存
+            sc.setId(scheduleId);
+            scheduleMapper.insert(sc);
+            redisCache.deleteObject(Constants.TEMP_SCHEDULE_ID + scheduleId);
+        }
+        rentApplyMapper.updateRentApply(updatedApply);
+        return AjaxResult.success();
     }
 }
