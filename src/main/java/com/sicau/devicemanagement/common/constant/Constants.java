@@ -15,6 +15,8 @@ public class Constants
 
     public static final String ROLE_STUDENT_ID = "1";
 
+    public static final String ROLE_PREFIX = "ROLE_";
+
     /**
      * 老师
      */

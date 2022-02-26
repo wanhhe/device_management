@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 【请填写功能名称】Controller
+ * 【实验室】Controller
  * 
- * @author ruoyi
+ * @author
  * @date 2022-01-15
  */
 @RestController
@@ -36,6 +36,7 @@ public class LabController extends BaseController
     /**
      * 查询【实验室】列表
      */
+    @PreAuthorize("hasRole('admin','teacher','student',superAdmin)")
     @GetMapping("/list")
     public TableDataInfo list(Lab lab)
     {
@@ -47,7 +48,6 @@ public class LabController extends BaseController
     /**
      * 获取【请填写功能名称】详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:lab:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") String id)
     {

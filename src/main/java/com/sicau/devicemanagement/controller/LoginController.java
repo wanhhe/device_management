@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class LoginController  extends BaseController {
+public class LoginController extends BaseController {
 
 
     @Autowired
@@ -26,15 +26,15 @@ public class LoginController  extends BaseController {
      */
     @PostMapping("/login")
     public AjaxResult login(@RequestBody LoginBody loginBody) throws CaptchaException {
-        if(!loginBody.getType().equals(Constants.ROLE_TEACHER)&&!loginBody.getType().equals(Constants.ROLE_STUDENT)){
-           return error("用户类型错误");
+        if (!(Constants.ROLE_PREFIX + loginBody.getType())
+                .equals(Constants.ROLE_TEACHER) &&
+                !(Constants.ROLE_PREFIX + loginBody.getType())
+                        .equals(Constants.ROLE_STUDENT)) {
+            return error("用户类型错误");
         }
         // 生成令牌
-        String token = loginService.login(loginBody.getName(), loginBody.getPassword(), loginBody.getCode(),
-                loginBody.getUuid(),loginBody.getType());
-        AjaxResult ajax = success();
-        ajax.put(Constants.TOKEN, token);
-        return ajax;
+        return loginService.login(loginBody.getName(), loginBody.getPassword(), loginBody.getCode(),
+                loginBody.getUuid(), loginBody.getType());
     }
 
 }

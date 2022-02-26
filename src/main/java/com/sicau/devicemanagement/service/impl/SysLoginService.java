@@ -2,6 +2,7 @@ package com.sicau.devicemanagement.service.impl;
 
 
 import com.sicau.devicemanagement.common.constant.Constants;
+import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.common.core.redis.RedisCache;
 import com.sicau.devicemanagement.exception.CaptchaException;
@@ -39,7 +40,7 @@ public class SysLoginService {
      * @param type     用户类型
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid, String type) throws CaptchaException {
+    public AjaxResult login(String username, String password, String code, String uuid, String type) throws CaptchaException {
         /* 验证码校验 */
         validateCaptcha(code, uuid);
         username = username + "::" + "ROLE_" + type;
@@ -52,7 +53,9 @@ public class SysLoginService {
 
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         // 生成token
-        return tokenService.createToken(loginUser);
+
+        String token = tokenService.createToken(loginUser);
+        return AjaxResult.success("登录成功").put("role",loginUser.getRole()).put(Constants.TOKEN,token);
     }
 
     /**

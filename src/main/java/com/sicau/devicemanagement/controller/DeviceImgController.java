@@ -36,7 +36,6 @@ public class DeviceImgController extends BaseController
     /**
      * 查询【请填写功能名称】列表
      */
-    @PreAuthorize("@ss.hasPermi('system:img:list')")
     @GetMapping("/list")
     public TableDataInfo list(DeviceImg deviceImg)
     {
@@ -48,7 +47,6 @@ public class DeviceImgController extends BaseController
     /**
      * 删除【请填写功能名称】
      */
-    @PreAuthorize("@ss.hasPermi('system:img:remove')")
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable String[] ids)
     {

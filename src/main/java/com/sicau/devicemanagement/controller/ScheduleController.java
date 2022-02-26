@@ -57,8 +57,6 @@ public class ScheduleController extends BaseController
     }
 
     /**
-=======
->>>>>>> 5195cb2f4d09b6860036d49840d0b5ca079cd62e
      * 获取【请填写功能名称】详细信息
      */
     @GetMapping(value = "/{id}")
@@ -71,6 +69,7 @@ public class ScheduleController extends BaseController
      *
      * 获取 【教室】已经占用的时间表
      */
+    @PreAuthorize("hasAnyRole('teacher','student','admin','superAdmin')")
     @GetMapping(value = "/byLabId")
     public AjaxResult getDeviceSchedule(Schedule schedule)
     {
@@ -79,6 +78,7 @@ public class ScheduleController extends BaseController
 
     /**
      * 新增【请填写功能名称】
+     * // fixme 未使用
      */
     @PostMapping("/add")
     public AjaxResult add(@RequestBody Schedule schedule)
@@ -88,6 +88,9 @@ public class ScheduleController extends BaseController
 
     /**
      * 修改【请填写功能名称】
+     *
+     * fixme 未使用
+     *
      */
     @PutMapping("/update")
     public AjaxResult edit(@RequestBody Schedule schedule)
@@ -97,6 +100,8 @@ public class ScheduleController extends BaseController
 
     /**
      * 删除【请填写功能名称】
+     *
+     * fixme 未使用
      */
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable String[] ids)

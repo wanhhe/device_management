@@ -36,8 +36,9 @@ public class RolesController extends BaseController
     private TokenService tokenService;
 
     /**
-     * 查询【请填写功能名称】列表
+     * 查询【角色】列表
      */
+    @PreAuthorize("hasAnyRole('superAdmin')")
     @GetMapping("/list")
     public TableDataInfo list(Roles roles)
     {
@@ -48,6 +49,8 @@ public class RolesController extends BaseController
 
     /**
      * 获取【请填写功能名称】详细信息
+     *
+     *  // fixme 未使用
      */
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") String id)

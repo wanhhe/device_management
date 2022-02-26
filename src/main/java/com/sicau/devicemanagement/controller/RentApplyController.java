@@ -45,6 +45,7 @@ public class RentApplyController extends BaseController {
 
     /**
      * 查询【请填写功能名称】列表
+     * // todo 该接口暂时未使用
      */
     @GetMapping("/list")
     public TableDataInfo list(RentApply rentApply) {
@@ -55,6 +56,8 @@ public class RentApplyController extends BaseController {
 
     /**
      * 获取【请填写功能名称】详细信息
+     *
+     * //todo 该接口暂时未使用
      */
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") String id) {
@@ -65,6 +68,7 @@ public class RentApplyController extends BaseController {
      *
      * 新增【设备申请】
      */
+    @PreAuthorize("hasAnyRole('teacher','student','admin','superAdmin')")
     @PostMapping("/add")
     public AjaxResult add(@RequestBody ApplyForm applyForm, HttpServletRequest request) {
         LoginUser loginUser = tokenService.getLoginUser(request);
@@ -74,6 +78,7 @@ public class RentApplyController extends BaseController {
     /**
      * 获取需要审核申请
      */
+    @PreAuthorize("hasAnyRole('teacher','superAdmin')")
     @GetMapping("/hqsq")
     public AjaxResult getApplyList(HttpServletRequest request) {
         LoginUser loginUser = tokenService.getLoginUser(request);
@@ -88,6 +93,7 @@ public class RentApplyController extends BaseController {
     /**
      * 处理申请
      */
+    @PreAuthorize("hasAnyRole('teacher','superAdmin')")
     @PostMapping("/handle/{rid}")
     public AjaxResult handleApply(@PathVariable String rid, Integer res, String reason, HttpServletRequest request) {
         LoginUser loginUser = tokenService.getLoginUser(request);
@@ -96,16 +102,20 @@ public class RentApplyController extends BaseController {
 
     /**
      * 修改【请填写功能名称】
+     *
+     *
+     * todo 暂时未使用
      */
-    @PutMapping
+    @PutMapping("edit")
     public AjaxResult edit(@RequestBody RentApply rentApply) {
         return toAjax(rentApplyService.updateRentApply(rentApply));
     }
 
     /**
      * 删除【请填写功能名称】
+     *
+     *  // todo 暂时未使用
      */
-    @PreAuthorize("@ss.hasPermi('system:apply:remove')")
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable String[] ids) {
         return toAjax(rentApplyService.deleteRentApplyByIds(ids));

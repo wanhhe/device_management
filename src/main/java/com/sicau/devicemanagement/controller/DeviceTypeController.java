@@ -31,7 +31,6 @@ public class DeviceTypeController extends BaseController
     /**
      * 查询【请填写功能名称】列表
      */
-    @PreAuthorize("@ss.hasPermi('system:type:list')")
     @GetMapping("/list")
     public TableDataInfo list(DeviceType deviceType)
     {
@@ -43,7 +42,6 @@ public class DeviceTypeController extends BaseController
     /**
      * 获取【请填写功能名称】详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:type:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") String id)
     {
@@ -53,8 +51,7 @@ public class DeviceTypeController extends BaseController
     /**
      * 修改【请填写功能名称】
      */
-    @PreAuthorize("@ss.hasPermi('system:type:edit')")
-    @PutMapping
+    @PutMapping("/update")
     public AjaxResult edit(@RequestBody DeviceType deviceType)
     {
         return toAjax(deviceTypeService.updateDeviceType(deviceType));
@@ -63,7 +60,6 @@ public class DeviceTypeController extends BaseController
     /**
      * 删除【请填写功能名称】
      */
-    @PreAuthorize("@ss.hasPermi('system:type:remove')")
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable String[] ids)
     {

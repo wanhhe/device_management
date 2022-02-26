@@ -34,7 +34,6 @@ public class DeviceController extends BaseController
     /**
      * 查询【通过金额查询】列表
      */
-    @PreAuthorize("hasAnyRole('teacher','student','admin','superAdmin')")
     @GetMapping("/list")
     public TableDataInfo list(Device device)
     {
