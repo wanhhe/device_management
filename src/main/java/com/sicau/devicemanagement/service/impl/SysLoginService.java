@@ -42,7 +42,7 @@ public class SysLoginService {
     public String login(String username, String password, String code, String uuid, String type) throws CaptchaException {
         /* 验证码校验 */
         validateCaptcha(code, uuid);
-        username = username + "::" + type;
+        username = username + "::" + "ROLE_" + type;
         // 用户验证
         Authentication authentication = null;
 

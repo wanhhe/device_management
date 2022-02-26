@@ -61,8 +61,8 @@ public class Device
     private String belongLabId;
 
     /** 是否逻辑删除，0为删除 */
-    @Excel(name = "是否逻辑删除，0为删除")
-    private Integer isDel = 1;
+    @Excel(name = "是否逻辑删除，1为删除")
+    private Integer isDel = 0;
 
     public void setId(String id) 
     {

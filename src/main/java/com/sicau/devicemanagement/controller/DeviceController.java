@@ -14,6 +14,7 @@ import com.sicau.devicemanagement.domain.Device;
 import com.sicau.devicemanagement.service.IDeviceService;
 import com.sicau.devicemanagement.service.impl.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -33,6 +34,7 @@ public class DeviceController extends BaseController
     /**
      * 查询【通过金额查询】列表
      */
+    @PreAuthorize("hasAnyRole('teacher','student','admin','superAdmin')")
     @GetMapping("/list")
     public TableDataInfo list(Device device)
     {

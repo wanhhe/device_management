@@ -6,8 +6,11 @@ import com.sicau.devicemanagement.domain.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 
@@ -19,7 +22,7 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LoginUser implements UserDetails {
+public class LoginUser implements UserDetails, Serializable {
     private static final long serialVersionUID = 1214213423L;
 
     /**
@@ -110,6 +113,8 @@ public class LoginUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        ArrayList<SimpleGrantedAuthority> roles = new ArrayList<>();
+        roles.add(new SimpleGrantedAuthority(this.role));
+        return roles;
     }
 }
