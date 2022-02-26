@@ -148,6 +148,25 @@ public class HistoryService {
     }
 
     /**
+     * 获得所有设备的借用历史
+     *
+     * @param size 大小
+     * @param page 页面
+     * @return {@link List<BorrowHistory> }
+     * @author sora
+     * @date 2022/02/26
+     */
+    public List<BorrowHistory> getAllBorrowHistory(int size, int page) {
+        QueryWrapper<RentApply> queryWrapper = new QueryWrapper<>();
+        int offset = size * (page - 1);
+        queryWrapper.last("limit "+offset+", "+size);
+        List<RentApply> rentApplyList = rentApplyMapper.selectList(queryWrapper);
+        List<BorrowHistory> borrowHistories = applyToBorrow(rentApplyList);
+        // 按设备的先后使用顺序排序
+        return borrowHistories;
+    }
+
+    /**
      * 老师查找自己外借设备的历史
      *
      * @param uid    uid

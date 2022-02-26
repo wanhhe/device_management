@@ -129,6 +129,7 @@ public class StudentController extends BaseController
      * @author sora
      * @date 2022/02/15
      */
+    @PreAuthorize("hasAnyRole('student')")
     @PutMapping("/password/{uid}/{password}/{verifycode}")
     public AjaxResult updatePassword(@PathVariable("uid") String uid,
                                      @PathVariable("password") String password,
@@ -151,6 +152,7 @@ public class StudentController extends BaseController
      * @author sora
      * @date 2022/02/15
      */
+    @PreAuthorize("hasAnyRole('student')")
     @GetMapping("/verify/password/{uid}")
     public AjaxResult updatePasswordVerify(@PathVariable("uid") String uid, @RequestHeader("Authorization") String token) {
         LoginUser loginUser = tokenService.getLoginUser(token);
@@ -171,6 +173,7 @@ public class StudentController extends BaseController
      * @author sora
      * @date 2022/02/15
      */
+    @PreAuthorize("hasAnyRole('student')")
     @PutMapping("/tel/{uid}/{tel}/{verifycode}")
     public AjaxResult updateTel(@PathVariable("uid") String uid,
                                 @PathVariable("tel") String tel,
@@ -185,7 +188,7 @@ public class StudentController extends BaseController
     }
 
     /**
-     * 获得更改密码的验证码
+     * 获得更改手机号的验证码
      *
      * @param uid   uid
      * @param token 令牌
@@ -193,6 +196,7 @@ public class StudentController extends BaseController
      * @author sora
      * @date 2022/02/15
      */
+    @PreAuthorize("hasAnyRole('student')")
     @GetMapping("/verify/tel/{uid}")
     public AjaxResult updateTelVerify(@PathVariable("uid") String uid, @RequestHeader("Authorization") String token) {
         LoginUser loginUser = tokenService.getLoginUser(token);
@@ -211,6 +215,7 @@ public class StudentController extends BaseController
      * @author sora
      * @date 2022/01/28
      */
+    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
     @PutMapping("/teacher/{sid}/{week}")
     public AjaxResult teacherExtend(@PathVariable("sid") String sid,
                                     @PathVariable("week") int week,
@@ -247,6 +252,7 @@ public class StudentController extends BaseController
      * @author sora
      * @date 2022/01/28
      */
+    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
     @DeleteMapping("/teacher/{sid}/{del}")
     public AjaxResult teacherBan(@PathVariable("sid") String sid,
                                  @PathVariable("del") int del,
@@ -283,6 +289,7 @@ public class StudentController extends BaseController
      * @author sora
      * @date 2022/02/14
      */
+    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
     @PutMapping("/teacher")
     public AjaxResult teacherCancelBan(@RequestBody String[] ids, @RequestHeader("Authorization") String token) {
         // 判断是不是下属学生或是不是管理员

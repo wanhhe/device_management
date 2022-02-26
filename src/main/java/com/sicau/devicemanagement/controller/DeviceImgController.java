@@ -63,6 +63,7 @@ public class DeviceImgController extends BaseController
      * @author sora
      * @date 2022/02/08
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @DeleteMapping("/type/{type}")
     public AjaxResult delByType(@PathVariable String type) {
         return toAjax(deviceImgService.deleteDeviceImgByType(type));

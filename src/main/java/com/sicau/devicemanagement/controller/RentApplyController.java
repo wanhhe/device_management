@@ -119,6 +119,7 @@ public class RentApplyController extends BaseController {
      * @author sora
      * @date 2022/01/18
      */
+    @PreAuthorize("hasAnyRole('student','teacher','admin','superAdmin')")
     @GetMapping("/start")
     public AjaxResult confirmStartUseDevice(@RequestParam("id") String id, @RequestHeader("Authorization") String token) {
         LoginUser loginUser = tokenService.getLoginUser(token);
@@ -152,6 +153,7 @@ public class RentApplyController extends BaseController {
      * @author sora
      * @date 2022/01/18
      */
+    @PreAuthorize("hasAnyRole('student','teacher','admin','superAdmin')")
     @GetMapping("/return/{id}")
     public AjaxResult applyRetrunDevice(@PathVariable("id") String id, @RequestHeader("Authorization") String token) {
         String uid = tokenService.getLoginUser(token).getUserId();
@@ -174,6 +176,7 @@ public class RentApplyController extends BaseController {
      * @author sora
      * @date 2022/02/16
      */
+    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
     @GetMapping("/return/confirm/{id}/{broken}")
     public AjaxResult confirmReturnDevice(@PathVariable("id") String id,
                                           @PathVariable("broken") int broken,
@@ -204,6 +207,7 @@ public class RentApplyController extends BaseController {
      * @author sora
      * @date 2022/01/19
      */
+    @PreAuthorize("hasAnyRole('student','teacher','admin','superAdmin')")
     @GetMapping("/damage/before/{id}")
     public AjaxResult hasDamagedBeforeUseDevice(@PathVariable("id") String id, @RequestHeader("Authorization") String token) {
         LoginUser loginUser = tokenService.getLoginUser(token);
@@ -237,6 +241,7 @@ public class RentApplyController extends BaseController {
      * @author sora
      * @date 2022/01/21
      */
+    @PreAuthorize("hasAnyRole('student','teacher','admin','superAdmin')")
     @GetMapping("/damage/replacement/{id}")
     public AjaxResult replaceDeviceBecauseDamage(@PathVariable("id") String id, @RequestHeader("Authorization") String token) {
         LoginUser loginUser = tokenService.getLoginUser(token);

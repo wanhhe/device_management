@@ -2,6 +2,7 @@ package com.sicau.devicemanagement.service;
 
 
 import com.sicau.devicemanagement.domain.Roles;
+import com.sicau.devicemanagement.domain.Teacher;
 
 import java.util.List;
 
@@ -60,4 +61,55 @@ public interface IRolesService
      * @return 结果
      */
     public int deleteRolesById(String id);
+
+    /**
+     * 获得管理员
+     *
+     * @return {@link List<Teacher> }
+     * @author sora
+     * @date 2022/02/25
+     */
+    public List<Teacher> getAdmin();
+
+    /**
+     * 检查某个用户是否是该权限
+     *
+     * @param id   id
+     * @param role 角色
+     * @return boolean
+     * @author sora
+     * @date 2022/02/25
+     */
+    public boolean checkRole(String id, String role);
+
+    /**
+     * 添加管理员
+     *
+     * @param id id
+     * @return int
+     * @author sora
+     * @date 2022/02/25
+     */
+    public int addAdmin(String id);
+
+    /**
+     * 更新超级管理员
+     *
+     * @param sid sid
+     * @param id  id
+     * @return int
+     * @author sora
+     * @date 2022/02/25
+     */
+    public int updateSuperAdmin(String sid, String id);
+
+    /**
+     * 取消管理员
+     *
+     * @param id id
+     * @return int
+     * @author sora
+     * @date 2022/02/25
+     */
+    public int cancelAdmin(String id);
 }

@@ -11,6 +11,7 @@ import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.service.impl.HistoryService;
 import com.sicau.devicemanagement.service.impl.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +36,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/01/26
      */
+    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
     @GetMapping("/own/{uid}/{type}")
     public AjaxResult getOwnDeviceRentedHistory(@PathVariable("uid") String uid,
                                                 @PathVariable("type") String type,
@@ -63,6 +65,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/01/26
      */
+    @PreAuthorize("hasAnyRole('student','teacher','admin','superAdmin')")
     @GetMapping("/self/{uid}")
     public AjaxResult getSelfRentHistory(@PathVariable("uid") String uid,
                                          @RequestParam("size") int size,
@@ -88,6 +91,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/01/26
      */
+    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
     @GetMapping("/sub/name/{uid}/{name}")
     public AjaxResult getSubordinateRentHistoryByName(@PathVariable("uid") String uid, @PathVariable("name") String name) {
         return AjaxResult.success(historyService.getSubBorrowHistoryByName(uid, name));
@@ -102,6 +106,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/01/26
      */
+    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
     @GetMapping("/sub/type/{uid}/{type}")
     public AjaxResult getSubordinateRentHistoryByDeviceType(@PathVariable("uid") String uid,
                                                             @PathVariable("type") String type,
@@ -123,6 +128,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/02/16
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @GetMapping("/all/{type}")
     public AjaxResult getAllRentHistoryByDevice(@PathVariable("type") String type,
                                                 @RequestParam("size") int size,
@@ -136,6 +142,15 @@ public class HistoryController {
         return AjaxResult.success(historyService.adminGetBorrowHistoryByDevice(type, size, page));
     }
 
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
+    @GetMapping("/all/{size}/{page}")
+    public AjaxResult getAllRentHistory(@PathVariable("size") int size, @PathVariable("page") int page) {
+        if (pageCuttingIllegal(size, page)) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
+        }
+        return AjaxResult.success(historyService.getAllBorrowHistory(size, page));
+    }
+
     /**
      * 获得某台设备的租用历史
      *
@@ -144,6 +159,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/01/18
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @GetMapping("/{id}")
     public AjaxResult getRentHistory(@PathVariable("id") String id) {
         return AjaxResult.success(historyService.adminGetBorrowHistoryByDeviceId(id));
@@ -160,6 +176,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/02/19
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @GetMapping("/excel/device/{id}/{filename}")
     public void exportDeviceHistory(@PathVariable("id") String id, @PathVariable("filename") String filename,
                                     @RequestParam("size") int size,
@@ -187,6 +204,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/02/19
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @GetMapping("/excel/device/{id}/{begin}/{end}/{filename}")
     public void exportDeviceHistory(@PathVariable("id") String id,
                                     @PathVariable("begin") String begin,
@@ -215,6 +233,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/02/19
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @GetMapping("/excel/type/{id}/{begin}/{end}/{filename}")
     public void exportDeviceTypeHistory(@PathVariable("id") String id,
                                         @PathVariable("begin") String begin,
@@ -243,6 +262,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/02/19
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @GetMapping("/excel/type/{id}/{filename}")
     public void exportDeviceTypeHistory(@PathVariable("id") String id,
                                               @PathVariable("filename") String filename,
@@ -272,6 +292,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/02/19
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @GetMapping("/excel/rent/{begin}/{end}/{basis}/{method}/{filename}")
     public void exportRentHistory(@PathVariable("begin") String begin,
                                   @PathVariable("end") String end,
@@ -303,6 +324,7 @@ public class HistoryController {
      * @author sora
      * @date 2022/02/19
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @GetMapping("/excel/rent/{filename}")
     public void exportRentHistory(@PathVariable("filename") String filename,
                                   @RequestParam("size") int size,

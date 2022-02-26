@@ -79,6 +79,7 @@ public class DeviceTypeController extends BaseController
      * @author sora
      * @date 2022/02/09
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @PostMapping("/type")
     public AjaxResult addDeviceType(DeviceType deviceType, MultipartFile[] files) {
         int ints = deviceTypeService.addDeviceType(deviceType, files);

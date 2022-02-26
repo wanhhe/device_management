@@ -1,8 +1,13 @@
 package com.sicau.devicemanagement.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.domain.Roles;
+import com.sicau.devicemanagement.domain.Teacher;
 import com.sicau.devicemanagement.mapper.RolesMapper;
+import com.sicau.devicemanagement.mapper.TeacherMapper;
 import com.sicau.devicemanagement.service.IRolesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +26,9 @@ public class RolesServiceImpl implements IRolesService
 {
     @Autowired
     private RolesMapper rolesMapper;
+
+    @Autowired
+    private TeacherMapper teacherMapper;
 
     /**
      * 查询【请填写功能名称】
@@ -58,6 +66,13 @@ public class RolesServiceImpl implements IRolesService
         return rolesMapper.insertRoles(roles);
     }
 
+    @Override
+    public List<Teacher> getAdmin() {
+        QueryWrapper<Teacher> teacherQueryWrapper = new QueryWrapper<>();
+        teacherQueryWrapper.eq("role_id", Constants.ROLE_ADMIN_ID).or().eq("role_id", Constants.ROLE_SUPER_ADMIN_ID);
+        return teacherMapper.selectList(teacherQueryWrapper);
+    }
+
     /**
      * 修改【请填写功能名称】
      * 
@@ -92,5 +107,38 @@ public class RolesServiceImpl implements IRolesService
     public int deleteRolesById(String id)
     {
         return rolesMapper.deleteRolesById(id);
+    }
+
+    @Override
+    public boolean checkRole(String id, String role) {
+        QueryWrapper<Teacher> teacherQueryWrapper = new QueryWrapper<>();
+        teacherQueryWrapper.eq("uid", id).eq("role_id", role);
+        Integer count = teacherMapper.selectCount(teacherQueryWrapper);
+        return count > 0;
+    }
+
+    @Override
+    public int addAdmin(String id) {
+        return updateRole(id, Constants.ROLE_ADMIN_ID);
+    }
+
+    @Override
+    public int updateSuperAdmin(String sid, String id) {
+        int i = updateRole(id, Constants.ROLE_SUPER_ADMIN_ID);
+        if (i < 1) {
+            return -1;
+        }
+        return updateRole(sid, Constants.ROLE_ADMIN_ID);
+    }
+
+    @Override
+    public int cancelAdmin(String id) {
+        return updateRole(id, Constants.ROLE_TEACHER_ID);
+    }
+
+    private int updateRole(String id, String roleId) {
+        UpdateWrapper<Teacher> teacherUpdateWrapper = new UpdateWrapper<>();
+        teacherUpdateWrapper.set("role_id", roleId).eq("uid", id);
+        return teacherMapper.update(null, teacherUpdateWrapper);
     }
 }

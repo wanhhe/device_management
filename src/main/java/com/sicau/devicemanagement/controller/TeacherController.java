@@ -110,6 +110,7 @@ public class TeacherController extends BaseController
      * @author sora
      * @date 2022/02/15
      */
+    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
     @PutMapping("/password/{uid}/{password}/{verifycode}")
     public AjaxResult updatePassword(@PathVariable("uid") String uid,
                                      @PathVariable("password") String password,
@@ -132,6 +133,7 @@ public class TeacherController extends BaseController
      * @author sora
      * @date 2022/02/15
      */
+    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
     @GetMapping("/verify/password/{uid}")
     public AjaxResult updatePasswordVerify(@PathVariable("uid") String uid, @RequestHeader("Authorization") String token) {
         LoginUser loginUser = tokenService.getLoginUser(token);
@@ -152,6 +154,7 @@ public class TeacherController extends BaseController
      * @author sora
      * @date 2022/02/15
      */
+    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
     @PutMapping("/tel/{uid}/{tel}/{verifycode}")
     public AjaxResult updateTel(@PathVariable("uid") String uid,
                                 @PathVariable("tel") String tel,
@@ -174,6 +177,7 @@ public class TeacherController extends BaseController
      * @author sora
      * @date 2022/02/15
      */
+    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
     @GetMapping("/verify/tel/{uid}")
     public AjaxResult updateTelVerify(@PathVariable("uid") String uid, @RequestHeader("Authorization") String token) {
         LoginUser loginUser = tokenService.getLoginUser(token);

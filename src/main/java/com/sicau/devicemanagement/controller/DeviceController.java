@@ -54,6 +54,7 @@ public class DeviceController extends BaseController
         util.exportExcel(response, list, "【请填写功能名称】数据");
     }
 
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @GetMapping("/export/{size}/{page}")
     public void export(@PathVariable("size") int size, @PathVariable("page") int page,
                         HttpServletResponse response) {
@@ -100,6 +101,7 @@ public class DeviceController extends BaseController
      * @author sora
      * @date 2022/01/18
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @GetMapping("/view")
     public AjaxResult getSituation() {
         return AjaxResult.success(deviceService.queryDeviceTotalStatus());
@@ -113,6 +115,7 @@ public class DeviceController extends BaseController
      * @author sora
      * @date 2022/01/18
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @PutMapping("/{id}/{status}")
     public AjaxResult updateDeviceStatus(@PathVariable("id") String id, @PathVariable("status") String status) {
         if (status.equals(Constants.DEVICE_NATURAL) || status.equals(Constants.DEVICE_REPAIR)) {
@@ -133,6 +136,7 @@ public class DeviceController extends BaseController
      * @author sora
      * @date 2022/02/08
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @PostMapping("/device")
     public AjaxResult addDevice(@RequestBody Device device) {
         List<String> illegal = deviceService.deviceIllegal(device);
@@ -156,6 +160,7 @@ public class DeviceController extends BaseController
      * @author sora
      * @date 2022/02/08
      */
+    @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @PostMapping("/devices")
     public AjaxResult addDevices(@RequestBody List<Device> devices) {
         List<String> illegal;
