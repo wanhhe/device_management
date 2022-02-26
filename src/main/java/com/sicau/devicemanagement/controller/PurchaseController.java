@@ -6,6 +6,7 @@ import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
 import com.sicau.devicemanagement.common.utils.PageUtils;
 import com.sicau.devicemanagement.common.utils.StringUtils;
+import com.sicau.devicemanagement.common.utils.file.DateUtils;
 import com.sicau.devicemanagement.domain.Purchase;
 import com.sicau.devicemanagement.service.impl.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,10 @@ public class PurchaseController extends BaseController {
         if (StringUtils.isEmpty(purchase.getName())) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
-        if (purchase.getCount() <= 0) {
+        if (purchase.getCount() <= 0 || purchase.getPrice() <= 0) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
+        }
+        if (DateUtils.dateStrIsValid(purchase.getSupposePurchaseTime())) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         return toAjax(purchaseService.create(purchase));
@@ -68,9 +72,12 @@ public class PurchaseController extends BaseController {
      * @date 2022/02/26
      */
     @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
-    @GetMapping("/num/{id}")
-    public AjaxResult add(@PathVariable("id") String id) {
-        return toAjax(purchaseService.add(id));
+    @GetMapping("/num/{id}/{num}")
+    public AjaxResult add(@PathVariable("id") String id, @PathVariable("num") int num) {
+        if (num <= 0 || num >= 15) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
+        }
+        return toAjax(purchaseService.add(id, num));
     }
 
     /**

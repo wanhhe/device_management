@@ -45,9 +45,9 @@ public class PurchaseService {
         return purchaseMapper.update(null, purchaseUpdateWrapper);
     }
 
-    public int add(String id) {
+    public int add(String id, int num) {
         UpdateWrapper<Purchase> purchaseUpdateWrapper = new UpdateWrapper<>();
-        purchaseUpdateWrapper.setSql("count = count + 1").eq("id", id);
+        purchaseUpdateWrapper.setSql("count = count + "+num).eq("id", id);
         return purchaseMapper.update(null, purchaseUpdateWrapper);
     }
 
@@ -68,7 +68,6 @@ public class PurchaseService {
         purchase.setWant(1);
         String time = DateUtils.dateTime();
         purchase.setCreateTime(time);
-        purchase.setUpdateTime(time);
         return purchaseMapper.insert(purchase);
     }
 
