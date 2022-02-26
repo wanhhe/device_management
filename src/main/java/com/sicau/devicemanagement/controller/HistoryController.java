@@ -4,6 +4,7 @@ import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.common.constant.HttpStatus;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.utils.ExcelUtil;
+import com.sicau.devicemanagement.common.utils.PageUtils;
 import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.file.DateUtils;
 import com.sicau.devicemanagement.domain.RentApply;
@@ -50,7 +51,7 @@ public class HistoryController {
         if (!loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
             return AjaxResult.error(HttpStatus.FORBIDDEN, "没有权限");
         }
-        if (pageCuttingIllegal(size, page)) {
+        if (PageUtils.pageCuttingIllegal(size, page)) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         return AjaxResult.success(historyService.getOwnDeviceBorrowHistory(uid, type, size, page));
@@ -76,7 +77,7 @@ public class HistoryController {
         if (!uid.equals(loginUser.getUserId())) {
             return AjaxResult.error(HttpStatus.UNAUTHORIZED, "token校验失败");
         }
-        if (pageCuttingIllegal(size, page)) {
+        if (PageUtils.pageCuttingIllegal(size, page)) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         return AjaxResult.success(historyService.getBorrowHistoryByUid(uid, size, page));
@@ -112,7 +113,7 @@ public class HistoryController {
                                                             @PathVariable("type") String type,
                                                             @RequestParam("size") int size,
                                                             @RequestParam("page") int page) {
-        if (pageCuttingIllegal(size, page)) {
+        if (PageUtils.pageCuttingIllegal(size, page)) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         return AjaxResult.success(historyService.getSubBorrowHistoryByDevice(uid, type, size, page));
@@ -133,7 +134,7 @@ public class HistoryController {
     public AjaxResult getAllRentHistoryByDevice(@PathVariable("type") String type,
                                                 @RequestParam("size") int size,
                                                 @RequestParam("page") int page) {
-        if (pageCuttingIllegal(size, page)) {
+        if (PageUtils.pageCuttingIllegal(size, page)) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         if (!StringUtils.isNotEmpty(type)) {
@@ -145,7 +146,7 @@ public class HistoryController {
     @PreAuthorize("hasAnyRole('admin','superAdmin')")
     @GetMapping("/all/{size}/{page}")
     public AjaxResult getAllRentHistory(@PathVariable("size") int size, @PathVariable("page") int page) {
-        if (pageCuttingIllegal(size, page)) {
+        if (PageUtils.pageCuttingIllegal(size, page)) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         return AjaxResult.success(historyService.getAllBorrowHistory(size, page));
@@ -182,7 +183,7 @@ public class HistoryController {
                                     @RequestParam("size") int size,
                                     @RequestParam("page") int page,
                                     HttpServletResponse response) {
-        if (pageCuttingIllegal(size, page)) {
+        if (PageUtils.pageCuttingIllegal(size, page)) {
             return;
         }
         if (!StringUtils.isNotEmpty(filename)) {
@@ -211,7 +212,7 @@ public class HistoryController {
                                     @PathVariable("end") String end,
                                     @PathVariable("filename") String filename,
                                           HttpServletResponse response) {
-        if (timeIllegal(begin, end)) {
+        if (PageUtils.timeIllegal(begin, end)) {
             return;
         }
         if (!StringUtils.isNotEmpty(filename)) {
@@ -240,7 +241,7 @@ public class HistoryController {
                                         @PathVariable("end") String end,
                                         @PathVariable("filename") String filename,
                                         HttpServletResponse response) {
-        if (timeIllegal(begin, end)) {
+        if (PageUtils.timeIllegal(begin, end)) {
             return;
         }
         if (!StringUtils.isNotEmpty(filename)) {
@@ -269,7 +270,7 @@ public class HistoryController {
                                               @RequestParam("size") int size,
                                               @RequestParam("page") int page,
                                               HttpServletResponse response) {
-        if (pageCuttingIllegal(size, page)) {
+        if (PageUtils.pageCuttingIllegal(size, page)) {
             return;
         }
         if (!StringUtils.isNotEmpty(filename)) {
@@ -300,7 +301,7 @@ public class HistoryController {
                                   @PathVariable("method") String method,
                                   @PathVariable("filename") String filename,
                                   HttpServletResponse response) {
-        if (timeIllegal(begin, end)) {
+        if (PageUtils.timeIllegal(begin, end)) {
             return;
         }
         if (!StringUtils.isNotEmpty(filename)) {
@@ -330,7 +331,7 @@ public class HistoryController {
                                   @RequestParam("size") int size,
                                   @RequestParam("page") int page,
                                   HttpServletResponse response) {
-        if (pageCuttingIllegal(size, page)) {
+        if (PageUtils.pageCuttingIllegal(size, page)) {
             return;
         }
         if (!StringUtils.isNotEmpty(filename)) {
@@ -342,41 +343,5 @@ public class HistoryController {
         }
         ExcelUtil<RentApply> util = new ExcelUtil<RentApply>(RentApply.class);
         util.exportExcel(response, rentApplies, "导出一个时间段内的申请历史");
-    }
-
-    /**
-     * 检查时间参数是否非法
-     *
-     * @param begin 开始
-     * @param end   结束
-     * @return boolean
-     * @author sora
-     * @date 2022/02/12
-     */
-    private boolean timeIllegal(String begin, String end) {
-        if (!StringUtils.isNotEmpty(begin) || !StringUtils.isNotEmpty(end)) {
-            return true;
-        }
-        if (!DateUtils.dateStrIsValid(begin) || !DateUtils.dateStrIsValid(end)) {
-            return true;
-        }
-        // 比较 begin 是否在 end 前面
-        return !DateUtils.before(begin, end, DateUtils.YYYY_MM_DD);
-    }
-
-    /**
-     * 检查分页参数是否非法
-     *
-     * @param size 大小
-     * @param page 页面
-     * @return boolean
-     * @author sora
-     * @date 2022/02/12
-     */
-    private boolean pageCuttingIllegal(int size, int page) {
-        if (size < 1 || page < 1) {
-            return true;
-        }
-        return size > 3000;
     }
 }
