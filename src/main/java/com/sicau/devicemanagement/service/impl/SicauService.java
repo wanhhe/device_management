@@ -70,7 +70,7 @@ public class SicauService {
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.APPLICATION_JSON);
         header.add("Authorization", auth);
-
+        System.out.println("enter login");
         HttpEntity<OauthLogin> login = new HttpEntity<>(new OauthLogin(), header);
         ResponseEntity<Oauth> responseEntity = restTemplate.postForEntity(oauthUrl, login, Oauth.class);
         Oauth body = responseEntity.getBody();
@@ -90,6 +90,7 @@ public class SicauService {
     public void updateRent(int size, int page) {
         HttpHeaders header = getHeader();
         HttpEntity<PostEntity> post = new HttpEntity<>(new PostEntity(size, page), header);
+        System.out.println("enter rent");
         ResponseEntity<SicauBody> responseEntity = restTemplate.postForEntity(classRentUrl, post, SicauBody.class);
         SicauBody body = responseEntity.getBody();
         if (body == null) {
@@ -120,12 +121,14 @@ public class SicauService {
     public void updateClassInfo(int size, int page) {
         HttpHeaders header = getHeader();
         HttpEntity<PostEntity> post = new HttpEntity<>(new PostEntity(size, page), header);
+        System.out.println("enter info");
         ResponseEntity<SicauBody> responseEntity = restTemplate.postForEntity(classRentUrl, post, SicauBody.class);
         SicauBody body = responseEntity.getBody();
         if (body == null) {
             System.out.println("updateClass body is null");
             return;
         }
+        System.out.println(body);
         int total = body.getTotal();
         BasicResponse basicResponse = body.getBasicResponse();
         if (basicResponse == null) {

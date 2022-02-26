@@ -18,6 +18,7 @@ public class SicauController {
 
     @GetMapping("/lab/{size}/{page}")
     public AjaxResult updateLab(@PathVariable("size") int size, @PathVariable("page") int page) {
+        System.out.println("enter lab");
         sicauService.updateClassInfo(size, page);
         return AjaxResult.success();
     }

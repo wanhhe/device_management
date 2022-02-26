@@ -136,4 +136,6 @@ public interface IDeviceService
     List<String> deviceIllegal(Device device);
 
     void addData(List<Device> devices);
+
+    List<Device> exportSize(int size, int page);
 }

@@ -4,23 +4,20 @@ import com.google.code.kaptcha.Producer;
 import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.redis.RedisCache;
+import com.sicau.devicemanagement.common.utils.sign.Base64;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -67,7 +64,8 @@ public class CommonController {
             return AjaxResult.error(e.getMessage());
         }
         ajax.put("uuid",uuid);
-        ajax.put("img", new BASE64Encoder().encode(os.toByteArray()));
+//        ajax.put("img", new BASE64Encoder().encode(os.toByteArray()));
+        ajax.put("img", Base64.encode(os.toByteArray()));
         return ajax;
     }
 }

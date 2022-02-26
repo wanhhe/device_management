@@ -54,6 +54,17 @@ public class DeviceController extends BaseController
         util.exportExcel(response, list, "【请填写功能名称】数据");
     }
 
+    @GetMapping("/export/{size}/{page}")
+    public void export(@PathVariable("size") int size, @PathVariable("page") int page,
+                        HttpServletResponse response) {
+        if (size < 1 || page < 1) {
+            return;
+        }
+        List<Device> list = deviceService.exportSize(size, page);
+        ExcelUtil<Device> util = new ExcelUtil<Device>(Device.class);
+        util.exportExcel(response, list, "【请填写功能名称】数据");
+    }
+
     /**
      * 获取【请填写功能名称】详细信息
      */

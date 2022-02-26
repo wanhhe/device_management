@@ -299,4 +299,12 @@ public class DeviceServiceImpl implements IDeviceService
             tmp.setIsDel(Constants.NATURAL);
         }
     }
+
+    @Override
+    public List<Device> exportSize(int size, int page) {
+        int offset = size * (page-1);
+        QueryWrapper<Device> deviceQueryWrapper = new QueryWrapper<>();
+        deviceQueryWrapper.last("limit "+offset + ", "+size);
+        return deviceMapper.selectList(deviceQueryWrapper);
+    }
 }
