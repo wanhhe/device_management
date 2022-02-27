@@ -61,6 +61,12 @@
         where r.name = "admin"
     </select>
 
+    <select id="selectNameByUid" resultType="java.lang.String">
+        select `name`
+        from `teacher` as t
+        where t.`uid` = #{uid}
+    </select>
+
     <insert id="insertTeacher" parameterType="Teacher">
         insert into teacher
         <trim prefix="values (" suffix=")" suffixOverrides=",">

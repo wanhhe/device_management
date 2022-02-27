@@ -22,24 +22,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 【实验室】Controller
- * 
+ *
  * @author
  * @date 2022-01-15
  */
 @RestController
 @RequestMapping("/system/lab")
-public class LabController extends BaseController
-{
+public class LabController extends BaseController {
     @Autowired
     private ILabService labService;
 
     /**
      * 查询【实验室】列表
      */
-    @PreAuthorize("hasRole('admin','teacher','student',superAdmin)")
+    @PreAuthorize("hasAnyRole('admin','teacher','student','superAdmin')")
     @GetMapping("/list")
-    public TableDataInfo list(Lab lab)
-    {
+    public TableDataInfo list(Lab lab) {
         startPage();
         List<Lab> list = labService.selectLabList(lab);
         return getDataTable(list);
@@ -49,8 +47,7 @@ public class LabController extends BaseController
      * 获取【请填写功能名称】详细信息
      */
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") String id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") String id) {
         return AjaxResult.success(labService.selectLabById(id));
     }
 }

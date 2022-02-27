@@ -82,4 +82,6 @@ public interface TeacherMapper extends BaseMapper<Teacher>
      * @return 结果
      */
     public int deleteTeacherByUids(String[] uids);
+
+    public String selectNameByUid(String uid);
 }

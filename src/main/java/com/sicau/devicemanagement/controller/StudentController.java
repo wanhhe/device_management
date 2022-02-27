@@ -55,7 +55,6 @@ public class StudentController extends BaseController
     /**
      * 导出【请填写功能名称】列表
      */
-    @PreAuthorize("@ss.hasPermi('system:student:export')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, Student student)
     {
@@ -67,7 +66,6 @@ public class StudentController extends BaseController
     /**
      * 获取【请填写功能名称】详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:student:query')")
     @GetMapping(value = "/{uid}")
     public AjaxResult getInfo(@PathVariable("uid") String uid)
     {
@@ -77,8 +75,7 @@ public class StudentController extends BaseController
     /**
      * 新增【请填写功能名称】
      */
-    @PreAuthorize("@ss.hasPermi('system:student:add')")
-    @PostMapping
+    @PostMapping("/add")
     public AjaxResult add(@RequestBody Student student, @RequestHeader("Authorization") String token)
     {
         String expire = student.getExpirationDate();
@@ -107,8 +104,7 @@ public class StudentController extends BaseController
     /**
      * 修改【请填写功能名称】
      */
-    @PreAuthorize("@ss.hasPermi('system:student:edit')")
-    @PutMapping
+    @PutMapping("edit")
     public AjaxResult edit(@RequestBody Student student)
     {
         if (!StringUtils.isNotEmpty(student.getPassword())) {
