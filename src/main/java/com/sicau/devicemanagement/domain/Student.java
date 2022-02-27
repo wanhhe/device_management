@@ -2,6 +2,9 @@ package com.sicau.devicemanagement.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sicau.devicemanagement.common.annotation.Excel;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -14,6 +17,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @date 2022-01-15
  */
 @Data
+//@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties({"isDel","password"})
 public class Student extends User
 {
     private static final long serialVersionUID = 1L;

@@ -1,6 +1,5 @@
 package com.sicau.devicemanagement.common.utils;
 
-import com.sun.xml.internal.ws.util.UtilException;
 import com.sicau.devicemanagement.common.annotation.Excels;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.text.Convert;
@@ -284,7 +283,7 @@ public class ExcelUtil<T>
         catch (Exception e)
         {
             log.error("导出Excel异常{}", e.getMessage());
-            throw new UtilException("导出Excel失败，请联系网站管理员！");
+            throw new RuntimeException("导出Excel失败，请联系网站管理员！");
         }
         finally
         {

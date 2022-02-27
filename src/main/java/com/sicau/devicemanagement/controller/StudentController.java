@@ -44,7 +44,6 @@ public class StudentController extends BaseController
     /**
      * 查询【请填写功能名称】列表
      */
-    @PreAuthorize("@ss.hasPermi('system:student:list')")
     @GetMapping("/list")
     public TableDataInfo list(Student student)
     {

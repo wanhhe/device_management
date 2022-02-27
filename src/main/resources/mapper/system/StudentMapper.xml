@@ -20,7 +20,6 @@
         select uid,
                stu_number,
                name,
-               password,
                tel,
                teacher_id,
                college_id,
