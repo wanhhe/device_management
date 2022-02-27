@@ -1,5 +1,6 @@
 package com.sicau.devicemanagement.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.sicau.devicemanagement.common.annotation.Excel;
 import lombok.Data;
 
@@ -7,6 +8,12 @@ import lombok.Data;
 public class Purchase {
 
     private String id;
+
+    private String tid;
+
+    @Excel(name = "教师姓名")
+    @TableField(exist = false)
+    private String tname;
 
     @Excel(name = "名称")
     private String name;
@@ -23,10 +30,7 @@ public class Purchase {
     @Excel(name = "价格")
     private float price;
 
-    @Excel(name = "希望购买的人数")
-    private Integer want;
-
-    @Excel(name = "希望购买的数量")
+    @Excel(name = "购买数量")
     private Integer count;
 
     @Excel(name = "期望购买时间")

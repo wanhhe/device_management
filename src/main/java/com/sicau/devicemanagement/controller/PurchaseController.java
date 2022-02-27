@@ -8,7 +8,9 @@ import com.sicau.devicemanagement.common.utils.PageUtils;
 import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.file.DateUtils;
 import com.sicau.devicemanagement.domain.Purchase;
+import com.sicau.devicemanagement.domain.model.LoginUser;
 import com.sicau.devicemanagement.service.impl.PurchaseService;
+import com.sicau.devicemanagement.service.impl.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,9 @@ public class PurchaseController extends BaseController {
 
     @Autowired
     private PurchaseService purchaseService;
+
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 展示出想要购买的设备列表
@@ -50,16 +55,15 @@ public class PurchaseController extends BaseController {
      */
     @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
     @PostMapping
-    public AjaxResult create(@RequestBody Purchase purchase) {
+    public AjaxResult create(@RequestBody Purchase purchase, @RequestHeader("Authorization") String token) {
         if (StringUtils.isEmpty(purchase.getName())) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
         if (purchase.getCount() <= 0 || purchase.getPrice() <= 0) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
-        if (DateUtils.dateStrIsValid(purchase.getSupposePurchaseTime())) {
-            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
-        }
+        LoginUser loginUser = tokenService.getLoginUser(token);
+        purchase.setTid(loginUser.getUserId());
         return toAjax(purchaseService.create(purchase));
     }
 
@@ -92,34 +96,6 @@ public class PurchaseController extends BaseController {
     @PutMapping("/num/{id}")
     public AjaxResult reduce(@PathVariable("id") String id) {
         return toAjax(purchaseService.reduce(id));
-    }
-
-    /**
-     * 给我也整一个
-     *
-     * @param id id
-     * @return {@link AjaxResult }
-     * @author sora
-     * @date 2022/02/26
-     */
-    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
-    @GetMapping("/{id}")
-    public AjaxResult want(@PathVariable("id") String id) {
-        return toAjax(purchaseService.want(id));
-    }
-
-    /**
-     * 取消想要
-     *
-     * @param id id
-     * @return {@link AjaxResult }
-     * @author sora
-     * @date 2022/02/26
-     */
-    @PreAuthorize("hasAnyRole('teacher','admin','superAdmin')")
-    @PutMapping("/{id}")
-    public AjaxResult diswant(@PathVariable("id") String id) {
-        return toAjax(purchaseService.diswant(id));
     }
 
     /**
