@@ -2,7 +2,6 @@ package com.sicau.devicemanagement.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.common.constant.HttpStatus;
