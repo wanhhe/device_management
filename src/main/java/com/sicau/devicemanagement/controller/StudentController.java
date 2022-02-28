@@ -45,6 +45,7 @@ public class StudentController extends BaseController
      * 查询【请填写功能名称】列表
      */
     @GetMapping("/list")
+    @PreAuthorize("hasAnyRole('admin','superAdmin','teacher')")
     public TableDataInfo list(Student student)
     {
         startPage();

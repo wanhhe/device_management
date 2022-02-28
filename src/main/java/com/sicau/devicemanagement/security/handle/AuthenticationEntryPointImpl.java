@@ -30,7 +30,8 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint, S
             throws IOException
     {
         int code = HttpStatus.UNAUTHORIZED;
-        String msg = StringUtils.format("请求访问：{}，认证失败，无法访问系统资源");
+        String msg = StringUtils.format("请求访问:" + request.getRequestURI() +
+                ",认证失败，无法访问系统资源");
         ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.error(code, msg)));
     }
 }

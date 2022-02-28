@@ -55,7 +55,7 @@ public class SysLoginService {
         // 生成token
 
         String token = tokenService.createToken(loginUser);
-        return AjaxResult.success("登录成功").put("role",loginUser.getRole()).put(Constants.TOKEN,token);
+        return AjaxResult.success("登录成功").put("role",loginUser.getRole()).put(Constants.TOKEN,token).put("uid",loginUser.getUserId());
     }
 
     /**

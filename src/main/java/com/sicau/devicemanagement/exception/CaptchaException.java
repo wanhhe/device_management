@@ -3,12 +3,15 @@ package com.sicau.devicemanagement.exception;
 import lombok.Data;
 
 @Data
-public class CaptchaException extends Throwable {
+public class CaptchaException extends RuntimeException {
     private int code;
-    private String meg;
+    private String message;
+    CaptchaException(){
+
+    }
 
 
     public CaptchaException(String msg){
-        this.meg = msg;
+        this.message= msg;
     }
 }
