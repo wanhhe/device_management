@@ -154,8 +154,8 @@ public class StudentController extends BaseController
         if (!loginUser.getUserId().equals(uid)) {
             return AjaxResult.error(HttpStatus.FORBIDDEN, "您没有权限进行该操作");
         }
-        String res = studentService.getPasswordVerify(uid);
-        return res != null ? AjaxResult.success(res) : AjaxResult.error();
+        String code = studentService.getPasswordVerify(uid);
+        return code != null ? AjaxResult.success(code) : AjaxResult.error();
     }
 
     /**
@@ -199,8 +199,8 @@ public class StudentController extends BaseController
         if (!loginUser.getUserId().equals(uid)) {
             return AjaxResult.error(HttpStatus.FORBIDDEN, "您没有权限进行该操作");
         }
-        String res = studentService.getTelVerify(uid);
-        return res != null ? AjaxResult.success(res) : AjaxResult.error();
+        String code = studentService.getTelVerify(uid);
+        return code != null ? AjaxResult.success(code) : AjaxResult.error();
     }
 
     /**
