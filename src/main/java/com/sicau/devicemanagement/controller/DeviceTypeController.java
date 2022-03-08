@@ -31,6 +31,7 @@ public class DeviceTypeController extends BaseController
     /**
      * 查询【请填写功能名称】列表
      */
+    @PreAuthorize("hasAnyRole('student','teacher','admin','superAdmin')")
     @GetMapping("/list")
     public TableDataInfo list(DeviceType deviceType)
     {

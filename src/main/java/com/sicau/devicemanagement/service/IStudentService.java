@@ -81,7 +81,7 @@ public interface IStudentService
      * @author sora
      * @date 2022/02/15
      */
-    public boolean getPasswordVerify(String uid);
+    public String getPasswordVerify(String uid);
 
     /**
      * 学生修改自己账号的手机号
@@ -103,7 +103,7 @@ public interface IStudentService
      * @author sora
      * @date 2022/02/15
      */
-    public boolean getTelVerify(String uid);
+    public String getTelVerify(String uid);
 
     /**
      * 封禁学生

@@ -143,17 +143,20 @@ public class TeacherServiceImpl implements ITeacherService
      * @date 2022/02/15
      */
     @Override
-    public boolean getPasswordVerify(String uid) {
+    public String getPasswordVerify(String uid) {
         Teacher teacher = teacherMapper.selectTeacherByUid(uid);
         if (teacher == null) {
-            return false;
+            return null;
         }
         String code = VerifyCodeUtils.generateVerifyCode(6);
         // 存redis
         redisCache.setCacheObject("update_password/"+uid, code, 5, TimeUnit.MINUTES);
         // 发短信
         String res = smsService.sendUpdatePasswordVerifyCode(teacher.getTel(), code);
-        return "OK".equals(res.substring(0, 2));
+        if ("OK".equals(res.substring(0, 2))) {
+            return code;
+        }
+        return null;
     }
 
     @Override
@@ -172,16 +175,19 @@ public class TeacherServiceImpl implements ITeacherService
     }
 
     @Override
-    public boolean getTelVerify(String uid) {
+    public String getTelVerify(String uid) {
         Teacher teacher = teacherMapper.selectTeacherByUid(uid);
         if (teacher == null) {
-            return false;
+            return null;
         }
         String code = VerifyCodeUtils.generateVerifyCode(6);
         // 存redis
         redisCache.setCacheObject("update_tel/"+uid, code, 5, TimeUnit.MINUTES);
         // 发短信
         String res = smsService.sendUpdateTelVerifyCode(teacher.getTel(), code);
-        return "OK".equals(res.substring(0, 2));
+        if ("OK".equals(res.substring(0, 2))) {
+            return code;
+        }
+        return null;
     }
 }
