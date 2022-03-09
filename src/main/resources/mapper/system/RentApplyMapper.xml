@@ -144,7 +144,7 @@
                  inner join `student` as stu
                             on ra.`applicants_id` = stu.`uid`
         where stu.`name` = #{name}
-          and stu.`teacher_id` = #{uid}
+          and stu.`uid` = #{uid}
         order by stu.`name` asc
     </select>
 
