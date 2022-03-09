@@ -66,8 +66,8 @@
             <if test="auditStatus != null ">and audit_status = #{auditStatus}</if>
             <if test="isDel != null ">and is_del = #{isDel}</if>
             <if test="instructorId != null ">and instructor_id = #{instructorId}</if>
-            <if test="administrator_id != null ">and administrator_id = #{administratorId}</if>
-            <if test="owner_id != null ">and owner_id = #{ownerId}</if>
+            <if test="administratorId != null ">and administrator_id = #{administratorId}</if>
+            <if test="ownerId != null ">and owner_id = #{ownerId}</if>
             <if test="failed != null ">and failed = #{failed}</if>
             <if test="createTime != null ">and create_time = #{createTime}</if>
             <if test="finishTime != null ">and finish_time = #{finishTime}</if>
@@ -144,7 +144,7 @@
                  inner join `student` as stu
                             on ra.`applicants_id` = stu.`uid`
         where stu.`name` = #{name}
-          and stu.`teacher_id` = #{uid}
+          and stu.`uid` = #{uid}
         order by stu.`name` asc
     </select>
 

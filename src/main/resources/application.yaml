@@ -21,6 +21,7 @@ spring:
 #    database: 5
     database: 0
     # 密码
+    password: QAZWSXEDC
 #    password: Ng*SCIqT&PWByk@7h7t*uXZ51KAQizV7
 
     # 连接超时时间

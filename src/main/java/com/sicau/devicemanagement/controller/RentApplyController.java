@@ -43,12 +43,14 @@ public class RentApplyController extends BaseController {
     private IDeviceService deviceService;
 
     /**
-     * 查询【请填写功能名称】列表
+     * 查询【自己申请的接口】列表
      * // todo 该接口暂时未使用
      */
     @GetMapping("/list")
-    public TableDataInfo list(RentApply rentApply) {
+    public TableDataInfo list(@RequestHeader("Authorization") String token) {
         startPage();
+        RentApply rentApply = new RentApply();
+        rentApply.setApplicantsId(tokenService.getLoginUser(token).getUserId());
         List<RentApply> list = rentApplyService.selectRentApplyList(rentApply);
         return getDataTable(list);
     }
