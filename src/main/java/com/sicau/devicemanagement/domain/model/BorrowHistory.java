@@ -60,13 +60,22 @@ public class BorrowHistory {
     @Excel(name = "指导老师是否通过，1为通过")
     private Integer instructorPass;
 
+    @Excel(name = "指导老师审核时间")
+    private String instructorPassTime;
+
     /** 管理老师是否通过，1为通过 */
     @Excel(name = "管理老师是否通过，1为通过")
     private Integer administratorPass;
 
+    @Excel(name = "管理老师审核时间")
+    private String administratorPassTime;
+
     /** 拥有老师是否通过，1为通过 */
     @Excel(name = "拥有老师是否通过，1为通过")
     private Integer ownerPass;
+
+    @Excel(name = "拥有老师审核时间")
+    private String ownerPassTime;
 
     public void setCreateTime(Date nowDate) {
     }

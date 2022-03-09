@@ -6,6 +6,7 @@ import com.sicau.devicemanagement.common.constant.Constants;
 import com.sicau.devicemanagement.domain.Device;
 import com.sicau.devicemanagement.domain.DeviceType;
 import com.sicau.devicemanagement.domain.RentApply;
+import com.sicau.devicemanagement.domain.Teacher;
 import com.sicau.devicemanagement.domain.model.BorrowHistory;
 import com.sicau.devicemanagement.domain.model.DeviceUsingSituation;
 import com.sicau.devicemanagement.mapper.*;
@@ -425,6 +426,7 @@ public class HistoryService {
      */
     private List<BorrowHistory> applyToBorrow(List<RentApply> list) {
         List<BorrowHistory> res = new LinkedList<>();
+        Teacher teacher;
         for (RentApply temp : list) {
             BorrowHistory borrowHistory = new BorrowHistory();
             borrowHistory.setId(temp.getId());
@@ -434,12 +436,17 @@ public class HistoryService {
             } else if (temp.getApplicantsType().equals(Constants.ROLE_STUDENT)) {
                 borrowHistory.setStudent(studentMapper.selectStudentByUid(temp.getApplicantsId()));
             }
+            borrowHistory.setApplicantsType(temp.getApplicantsType());
             borrowHistory.setDeviceStatus(temp.getDeviceStatus());
             borrowHistory.setFinishTime(temp.getFinishTime());
             borrowHistory.setSchedule(scheduleMapper.selectScheduleById(temp.getScheduleId()));
             borrowHistory.setCreatTime(temp.getCreateTime());
             borrowHistory.setRefuseReason(temp.getRefuseReason());
-            borrowHistory.setRefuser(teacherMapper.selectTeacherByUid(temp.getRefuserId()));
+            teacher = teacherMapper.selectTeacherByUid(temp.getRefuserId());
+            teacher.setPassword(null);
+            teacher.setRoleId(null);
+            teacher.setEmployeeId(null);
+            borrowHistory.setRefuser(teacher);
             borrowHistory.setInstructorPass(temp.getInstructorPass());
             borrowHistory.setAdministratorPass(temp.getAdministratorPass());
             borrowHistory.setOwnerPass(temp.getOwnerPass());
