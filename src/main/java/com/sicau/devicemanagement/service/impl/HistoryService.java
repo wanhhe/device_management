@@ -61,6 +61,29 @@ public class HistoryService {
         return borrowHistories;
     }
 
+    public List<BorrowHistory> getBorrowHistoryByUid(String uid, int size, int page, int purpose) {
+        QueryWrapper<RentApply> rentApplyQueryWrapper = new QueryWrapper<>();
+        int offset = size * (page-1);
+        rentApplyQueryWrapper.last("limit "+offset + ", "+size);
+        // 未归还
+        if (purpose == 0) {
+            rentApplyQueryWrapper.eq("applicants_id", uid).eq("device_status", Constants.DEVICE_USING);
+        } else if (purpose == 1) { // 审核中
+            rentApplyQueryWrapper.eq("applicants_id", uid).eq("device_status", Constants.DEVICE_APPLY_AUDITING);
+        } else if (purpose == 2) { // 待使用
+            rentApplyQueryWrapper.eq("applicants_id", uid).eq("device_status", Constants.DEVICE_PREUSING);
+        } else if (purpose == 3) { // 待归还
+            rentApplyQueryWrapper.eq("applicants_id", uid).eq("device_status", Constants.DEVICE_RETURNING);
+        } else if (purpose == 4) { // 已归还
+            rentApplyQueryWrapper.eq("applicants_id", uid).eq("device_status", Constants.DEVICE_RETURNED);
+        } else if (purpose == 5) { // 已拒绝
+            rentApplyQueryWrapper.eq("applicants_id", uid).eq("device_status", Constants.DEVICE_APPLY_FAIL);
+        }
+        List<RentApply> rentApplies = rentApplyMapper.selectList(rentApplyQueryWrapper);
+        List<BorrowHistory> borrowHistories = applyToBorrow(rentApplies);
+        return borrowHistories;
+    }
+
 //    /**
 //     * 管理员通过角色查找借用历史
 //     *

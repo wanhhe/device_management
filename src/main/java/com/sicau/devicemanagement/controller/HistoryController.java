@@ -83,6 +83,28 @@ public class HistoryController {
         return AjaxResult.success(historyService.getBorrowHistoryByUid(uid, size, page));
     }
 
+    @PreAuthorize("hasAnyRole('student','teacher','admin','superAdmin')")
+    @GetMapping("/self/{uid}/{size}/{page}/{purpose}")
+    public AjaxResult getSelfUnreturnHistory(@PathVariable("uid") String uid,
+                                             @PathVariable("size") int size,
+                                             @PathVariable("page") int page,
+                                             @PathVariable("purpose") int purpose,
+                                             @RequestHeader("Authorization") String token) {
+        // 判断身份
+        LoginUser loginUser = tokenService.getLoginUser(token);
+        if (!uid.equals(loginUser.getUserId())) {
+            return AjaxResult.error(HttpStatus.UNAUTHORIZED, "token校验失败");
+        }
+        if (PageUtils.pageCuttingIllegal(size, page)) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
+        }
+        if (purpose < 0 || purpose > 5) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
+        }
+        return AjaxResult.success(historyService.getBorrowHistoryByUid(uid, size, page, purpose));
+
+    }
+
     /**
      * 通过名字查询下属学生的设备租借历史
      *

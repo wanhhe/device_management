@@ -81,10 +81,10 @@ public interface ITeacherService
      * @author sora
      * @date 2022/02/15
      */
-    public boolean getPasswordVerify(String uid);
+    public String getPasswordVerify(String uid);
 
     /**
-     * 学生修改自己账号的手机号
+     * 教师修改自己账号的手机号
      *
      * @param uid    uid
      * @param tel    电话
@@ -103,5 +103,5 @@ public interface ITeacherService
      * @author sora
      * @date 2022/02/15
      */
-    public boolean getTelVerify(String uid);
+    public String getTelVerify(String uid);
 }

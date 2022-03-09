@@ -142,17 +142,20 @@ public class StudentServiceImpl implements IStudentService
      * @date 2022/02/15
      */
     @Override
-    public boolean getPasswordVerify(String uid) {
+    public String getPasswordVerify(String uid) {
         Student student = studentMapper.selectStudentByUid(uid);
         if (student == null) {
-            return false;
+            return null;
         }
         String code = VerifyCodeUtils.generateVerifyCode(6);
         // 存redis
         redisCache.setCacheObject("update_password/"+uid, code, 5, TimeUnit.MINUTES);
         // 发短信
         String res = smsService.sendUpdatePasswordVerifyCode(student.getTel(), code);
-        return "OK".equals(res.substring(0, 2));
+        if ("OK".equals(res.substring(0, 2))) {
+            return code;
+        }
+        return null;
     }
 
     @Override
@@ -171,17 +174,20 @@ public class StudentServiceImpl implements IStudentService
     }
 
     @Override
-    public boolean getTelVerify(String uid) {
+    public String getTelVerify(String uid) {
         Student student = studentMapper.selectStudentByUid(uid);
         if (student == null) {
-            return false;
+            return null;
         }
         String code = VerifyCodeUtils.generateVerifyCode(6);
         // 存redis
         redisCache.setCacheObject("update_tel/"+uid, code, 5, TimeUnit.MINUTES);
         // 发短信
         String res = smsService.sendUpdateTelVerifyCode(student.getTel(), code);
-        return "OK".equals(res.substring(0, 2));
+        if ("OK".equals(res.substring(0, 2))) {
+            return code;
+        }
+        return null;
     }
 
     /**
