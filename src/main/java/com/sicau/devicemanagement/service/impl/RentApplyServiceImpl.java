@@ -22,6 +22,7 @@ import com.sicau.devicemanagement.service.IRentApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -560,6 +561,8 @@ public class RentApplyServiceImpl implements IRentApplyService {
                 // 更新阶段
                 Integer auditStatus = updatedApply.getAuditStatus();
                 updatedApply.setAuditStatus(++auditStatus);
+                // 通过时间
+                updatedApply.setInstructorPassTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(System.currentTimeMillis()));
 
             }
             // 审核使用自己的设备
@@ -567,10 +570,13 @@ public class RentApplyServiceImpl implements IRentApplyService {
                 updatedApply.setOwnerPass(res);
                 Integer auditStatus = updatedApply.getAuditStatus();
                 updatedApply.setAuditStatus(++auditStatus);
+                updatedApply.setOwnerPassTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(System.currentTimeMillis()));
             }
             // 审核者是 超级管理员
         } else if (StringUtils.equals(role, Constants.ROLE_SUPER_ADMIN)) {
             updatedApply.setAdministratorPass(res);
+            // 设置通过时间
+            updatedApply.setAdministratorPassTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(System.currentTimeMillis()));
             Integer auditStatus = updatedApply.getAuditStatus();
             updatedApply.setAuditStatus(++auditStatus);
         }
