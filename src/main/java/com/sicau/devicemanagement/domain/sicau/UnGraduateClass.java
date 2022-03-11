@@ -1,9 +1,9 @@
-package com.sicau.devicemanagement.domain.model;
+package com.sicau.devicemanagement.domain.sicau;
 
 import lombok.Data;
 
 @Data
-public class UnGraduateClass {
+public class UnGraduateClass extends Curriculum{
 
 //    - 课程号 KCH `string`
 //            - 开课学年度 KKXND `string`
@@ -17,17 +17,39 @@ public class UnGraduateClass {
 //            "KCXZ":"实践教学","JSXMA":"罗鸿兵","JSXM":"罗鸿兵","ZYYQ":"给排水(本)201901,给排水(本)201902","XKRS":"57"
 //            ,"KCKSDW":"土木工程学院"}
 
-    private String KCH;
+    /* 排课类别 */
+    private String PKLB;
 
-    private String KKXND;
+    /* 单列实验 */
+    private String DLSY;
 
+    /* 上课班级 */
+    private String SKBJ;
+
+    /* 周学时 */
+    private int ZHXS;
+
+    /* 专业要求 */
+    private String ZYYQ;
+
+    /* 选课人数 */
+    private int XKRS;
+
+    /* 周次 */
     private String ZC;
 
-    private String JXDD;
+    /* 课程开设单位 */
+    private String KCKSDW;
 
+    /* 教师姓名A */
+    private String JSXMA;
+
+    /* 课程性质 */
+    private String KCXZ;
+
+    /* 上课时间 */
     private String SKSJ;
 
+    /* 校区名称 */
     private String XQMC;
-
-    private String KCKSDW;
 }

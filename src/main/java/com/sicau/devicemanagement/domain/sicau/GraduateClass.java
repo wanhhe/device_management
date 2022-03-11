@@ -1,9 +1,9 @@
-package com.sicau.devicemanagement.domain.model;
+package com.sicau.devicemanagement.domain.sicau;
 
 import lombok.Data;
 
 @Data
-public class GraduateClass {
+public class GraduateClass extends Curriculum{
 
 //    - 周次 QSZ `string`
 //            - ==开课学年度== KKXND `string`
@@ -17,17 +17,48 @@ public class GraduateClass {
 //            "XF":"2","XH":"2018408026","KKXQM":"第二学期","KCH":"20951251","RKJSGH":"72038",
 //            "ZXS":"32","XM":"程密","JXBH":"20951251001","QSZ":"00000000001100000000","KCKSDWH":"","JSXM":"黄凤"}
 
+    /**
+     * 周次
+     */
     private String QSZ;
 
-    private String KKXND;
+    /**
+     * 姓名
+     */
+    private String XM;
 
+    /**
+     * 教学班号
+     */
     private String JXBH;
 
+    /**
+     * 学号
+     */
+    private String XH;
+
+    /**
+     * 开课学期码
+     */
     private String KKXQM;
 
+    /**
+     * 上课节次
+     */
     private String SKSJ;
 
-    private String JXDD;
+    /**
+     * 课程开设单位
+     */
+    private String KCKSDWH;
 
-    private String KCH;
+    /**
+     * 课容量
+     */
+    private int KRL;
+
+    /**
+     * 任课教师工号
+     */
+    private String RKJSGH;
 }

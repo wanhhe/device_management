@@ -1,14 +1,9 @@
 package com.sicau.devicemanagement.service.impl;
 
-import com.sicau.devicemanagement.common.utils.http.HttpUtils;
-import com.sicau.devicemanagement.domain.model.SmsBody;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 短信服务

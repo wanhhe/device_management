@@ -1,6 +1,4 @@
-package com.sicau.devicemanagement.domain.model;
-
-import java.sql.Timestamp;
+package com.sicau.devicemanagement.domain.sicau;
 
 public class SmsBody {
 
