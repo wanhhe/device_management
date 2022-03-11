@@ -9,6 +9,7 @@ import com.sicau.devicemanagement.common.core.controller.BaseController;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
 import com.sicau.devicemanagement.common.core.page.TableDataInfo;
 
+import com.sicau.devicemanagement.common.utils.PageUtils;
 import com.sicau.devicemanagement.common.utils.StringUtils;
 
 import com.sicau.devicemanagement.domain.RentApply;
@@ -212,7 +213,13 @@ public class RentApplyController extends BaseController {
     @PreAuthorize("hasAnyRole('teacher', 'admin', 'superAdmin')")
     @GetMapping("/return/confirm")
     public AjaxResult get(@RequestParam("size") int size, @RequestParam("page") int page, @RequestHeader("Authorization") String token) {
+        if (PageUtils.pageCuttingIllegal(size, page)) {
+            return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
+        }
         LoginUser loginUser = tokenService.getLoginUser(token);
+        if (loginUser == null) {
+            return AjaxResult.error();
+        }
         return AjaxResult.success(rentApplyService.getReturnApply(loginUser.getUserId(), size, page));
     }
 
