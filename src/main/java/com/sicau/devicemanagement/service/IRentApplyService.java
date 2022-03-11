@@ -153,6 +153,8 @@ public interface IRentApplyService
      */
     boolean isUserFinishDevice(String uid, String id);
 
+    List<RentApply> getReturnApply(String uid, int size, int page);
+
     /**
      * 处理请求
      * @param rid 请求记录的id

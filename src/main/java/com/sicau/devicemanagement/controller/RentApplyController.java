@@ -209,6 +209,13 @@ public class RentApplyController extends BaseController {
         return AjaxResult.success();
     }
 
+    @PreAuthorize("hasAnyRole('teacher', 'admin', 'superAdmin')")
+    @GetMapping("/return/confirm")
+    public AjaxResult get(@RequestParam("size") int size, @RequestParam("page") int page, @RequestHeader("Authorization") String token) {
+        LoginUser loginUser = tokenService.getLoginUser(token);
+        return AjaxResult.success(rentApplyService.getReturnApply(loginUser.getUserId(), size, page));
+    }
+
     /**
      * 在使用之前已经设备损坏
      *

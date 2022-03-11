@@ -517,6 +517,15 @@ public class RentApplyServiceImpl implements IRentApplyService {
         return rentApply.getDeviceStatus().equals(Constants.DEVICE_USING);
     }
 
+    @Override
+    public List<RentApply> getReturnApply(String uid, int size, int page) {
+        QueryWrapper<RentApply> queryWrapper = new QueryWrapper<>();
+        int offset = size * (page - 1);
+        queryWrapper.last("limit "+offset+", " + size);
+        queryWrapper.eq("owner_id", uid).eq("device_status", Constants.DEVICE_RETURNING);
+        return rentApplyMapper.selectList(queryWrapper);
+    }
+
     /**
      * 处理请求
      *
