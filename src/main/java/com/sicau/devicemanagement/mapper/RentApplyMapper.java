@@ -176,4 +176,6 @@ public interface RentApplyMapper extends BaseMapper<RentApply>
     public List<RentApply> selectApplyBorrowDevice(String userId);
 
     public List<RentApply> selectNeedCheckedBySuperAdmin(String userId);
+
+    public List<RentApply> selectOverTimeUnUsingApply(String ownerId, String nowTime);
 }

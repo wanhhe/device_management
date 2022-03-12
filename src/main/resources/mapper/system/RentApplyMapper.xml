@@ -195,6 +195,13 @@
             and   ra.administrator_id = #{userId}
     </select>
 
+    <select id="selectOverTimeUnUsingApply" resultType="com.sicau.devicemanagement.domain.RentApply">
+        select ra.*
+        from `rent_apply` as ra inner join `schedule` as sc
+        on ra.`schedule_id` = sc.`id`
+        where ra.`owner_id` = #{ownerId} and #{nowTime} > sc.`end_time` and ra.`device_status` = '审核通过' or ra.`device_status` = '待使用' or ra.`device_status` = '使用中'
+    </select>
+
     <insert id="insertRentApply" parameterType="RentApply">
         insert into rent_apply
         <trim prefix="(" suffix=")" suffixOverrides=",">

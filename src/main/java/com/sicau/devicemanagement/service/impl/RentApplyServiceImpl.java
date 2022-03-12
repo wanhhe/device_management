@@ -2,6 +2,7 @@ package com.sicau.devicemanagement.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.pagehelper.PageHelper;
 import com.sicau.devicemanagement.common.constant.Constants;
 
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
@@ -523,7 +524,10 @@ public class RentApplyServiceImpl implements IRentApplyService {
         int offset = size * (page - 1);
         queryWrapper.last("limit "+offset+", " + size);
         queryWrapper.eq("owner_id", uid).eq("device_status", Constants.DEVICE_RETURNING);
-        return rentApplyMapper.selectList(queryWrapper);
+        List<RentApply> res = new LinkedList<>(rentApplyMapper.selectList(queryWrapper));
+        PageHelper.startPage(page, size);
+        res.addAll(rentApplyMapper.selectOverTimeUnUsingApply(uid, DateUtils.dateTimeNow(DateUtils.YYYY_MM_DD_HH_MM_SS)));
+        return res;
     }
 
     /**

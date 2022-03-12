@@ -137,7 +137,7 @@ public class RentApplyController extends BaseController {
         LoginUser loginUser = tokenService.getLoginUser(token);
         boolean access;
         String uid;
-        if (loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
+        if (roleBase(loginUser.getRole(), Constants.ROLE_TEACHER)) {
             uid = loginUser.getUserId();
             // 判断是否能够使用设备
             access = rentApplyService.isUserAccessDevice(uid, id);
@@ -155,6 +155,44 @@ public class RentApplyController extends BaseController {
             rentApplyService.studentStartUsingDevice(id);
         }
         return AjaxResult.success();
+    }
+
+    /**
+     * 判断该用户角色是否在基本角色之上
+     *
+     * @param user 用户
+     * @param base 基地
+     * @return boolean
+     * @author sora
+     * @date 2022/03/12
+     */
+    private boolean roleBase(String user, String base) {
+        int stu = 1, tea = 2, admin = 3, superAdmin = 4;
+        int baseId = roleId(base);
+        int userId= roleId(user);
+        return userId >= baseId;
+    }
+
+    /**
+     * 角色id转换成数字
+     *
+     * @param role 角色
+     * @return int
+     * @author sora
+     * @date 2022/03/12
+     */
+    private int roleId(String role) {
+        if (role.equals(Constants.ROLE_STUDENT)) {
+            return 1;
+        } else if (role.equals(Constants.ROLE_TEACHER)) {
+            return 2;
+        } else if (role.equals(Constants.ROLE_ADMIN)) {
+            return 3;
+        } else if (role.equals(role.equals(Constants.ROLE_SUPER_ADMIN))) {
+            return 4;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -210,9 +248,19 @@ public class RentApplyController extends BaseController {
         return AjaxResult.success();
     }
 
+    /**
+     * 获得待归还的物品列表
+     *
+     * @param size  大小
+     * @param page  页面
+     * @param token 令牌
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/03/12
+     */
     @PreAuthorize("hasAnyRole('teacher', 'admin', 'superAdmin')")
     @GetMapping("/return/confirm")
-    public AjaxResult get(@RequestParam("size") int size, @RequestParam("page") int page, @RequestHeader("Authorization") String token) {
+    public AjaxResult getReturnApply(@RequestParam("size") int size, @RequestParam("page") int page, @RequestHeader("Authorization") String token) {
         if (PageUtils.pageCuttingIllegal(size, page)) {
             return AjaxResult.error(HttpStatus.BAD_REQUEST, "参数错误");
         }
@@ -237,23 +285,28 @@ public class RentApplyController extends BaseController {
     public AjaxResult hasDamagedBeforeUseDevice(@PathVariable("id") String id, @RequestHeader("Authorization") String token) {
         LoginUser loginUser = tokenService.getLoginUser(token);
         String uid = loginUser.getUserId();
-        ;
-        boolean access;
-        if (loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
-            // 判断是否能够使用设备
-            access = rentApplyService.isUserAccessDevice(uid, id);
-            if (!access) {
-                return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
-            }
-            rentApplyService.finishUse(uid, id);
-        } else if (loginUser.getRole().equals(Constants.ROLE_STUDENT)) {
-            // 判断是否能够使用设备
-            access = rentApplyService.isUserAccessDevice(uid, id);
-            if (!access) {
-                return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
-            }
-            rentApplyService.finishUse(uid, id);
+//        boolean access;
+//        if (roleBase(loginUser.getRole(), Constants.ROLE_TEACHER)) {
+//            // 判断是否能够使用设备
+//            access = rentApplyService.isUserAccessDevice(uid, id);
+//            if (!access) {
+//                return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
+//            }
+//            rentApplyService.finishUse(uid, id);
+//        } else if (loginUser.getRole().equals(Constants.ROLE_STUDENT)) {
+//            // 判断是否能够使用设备
+//            access = rentApplyService.isUserAccessDevice(uid, id);
+//            if (!access) {
+//                return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
+//            }
+//            rentApplyService.finishUse(uid, id);
+//        }
+        // 判断是否能够使用设备
+        boolean access = rentApplyService.isUserAccessDevice(uid, id);
+        if (!access) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
         }
+        rentApplyService.finishUse(uid, id);
         return AjaxResult.success();
     }
 
@@ -270,26 +323,33 @@ public class RentApplyController extends BaseController {
     @GetMapping("/damage/replacement/{id}")
     public AjaxResult replaceDeviceBecauseDamage(@PathVariable("id") String id, @RequestHeader("Authorization") String token) {
         LoginUser loginUser = tokenService.getLoginUser(token);
-        String uid;
-        boolean access;
-        Device res = null;
-        if (loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
-            uid = loginUser.getUserId();
-            // 判断是否能够使用设备
-            access = rentApplyService.isUserAccessDevice(uid, id);
-            if (!access) {
-                return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
-            }
-            res = deviceService.replaceDevice(uid, id);
-        } else if (loginUser.getRole().equals(Constants.ROLE_STUDENT)) {
-            uid = loginUser.getUserId();
-            // 判断是否能够使用设备
-            access = rentApplyService.isUserAccessDevice(uid, id);
-            if (!access) {
-                return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
-            }
-            res = deviceService.replaceDevice(uid, id);
+//        String uid;
+//        boolean access;
+//        Device res = null;
+//        if (loginUser.getRole().equals(Constants.ROLE_TEACHER)) {
+//            uid = loginUser.getUserId();
+//            // 判断是否能够使用设备
+//            access = rentApplyService.isUserAccessDevice(uid, id);
+//            if (!access) {
+//                return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
+//            }
+//            res = deviceService.replaceDevice(uid, id);
+//        } else if (loginUser.getRole().equals(Constants.ROLE_STUDENT)) {
+//            uid = loginUser.getUserId();
+//            // 判断是否能够使用设备
+//            access = rentApplyService.isUserAccessDevice(uid, id);
+//            if (!access) {
+//                return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
+//            }
+//            res = deviceService.replaceDevice(uid, id);
+//        }
+        String uid = loginUser.getUserId();
+        // 判断是否能够使用设备
+        boolean access = rentApplyService.isUserAccessDevice(uid, id);
+        if (!access) {
+            return AjaxResult.error(HttpStatus.FORBIDDEN, "该时间段您无权使用该设备!");
         }
+        Device res = deviceService.replaceDevice(uid, id);
         if (res == null) {
             return AjaxResult.error(HttpStatus.ACCEPTED, "无可用设备");
         }

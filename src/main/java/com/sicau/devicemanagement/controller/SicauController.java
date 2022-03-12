@@ -1,19 +1,10 @@
 package com.sicau.devicemanagement.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.sicau.devicemanagement.common.core.controller.entity.AjaxResult;
-import com.sicau.devicemanagement.domain.model.BigJson;
-import com.sicau.devicemanagement.domain.model.JSONBO;
-import com.sicau.devicemanagement.domain.sicau.ClassInfo;
-import com.sicau.devicemanagement.domain.sicau.GraduateClass;
-import com.sicau.devicemanagement.domain.sicau.SicauBody;
 import com.sicau.devicemanagement.service.impl.SicauService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -25,20 +16,40 @@ public class SicauController {
 
     @GetMapping("/lab/{size}/{page}")
     public AjaxResult updateLab(@PathVariable("size") int size, @PathVariable("page") int page, @RequestParam("types") List<String> types) {
-        System.out.println("enter lab");
-        sicauService.updateClassInfo(size, page, types);
-        return AjaxResult.success();
+        return AjaxResult.success(sicauService.updateClassInfo(size, page, types));
     }
 
     @GetMapping("/lab/{size}/{page}/{campus}")
     public AjaxResult updateLab(@PathVariable("size") int size, @PathVariable("page") int page,
                                 @PathVariable("campus") String campus, @RequestParam("types") List<String> types) {
-        System.out.println("enter lab");
-        for (String s : types) {
-            System.out.println(s);
-        }
-        sicauService.updateClassInfo(size, page, types, campus);
-        return AjaxResult.success();
+        return AjaxResult.success(sicauService.updateClassInfo(size, page, types, campus));
+    }
+
+    /**
+     * 一次更新所有实验室
+     *
+     * @param campus 校园
+     * @param types  类型
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/03/12
+     */
+    @GetMapping("/lab/{campus}")
+    public AjaxResult updateAllLab(@PathVariable("campus") String campus, @RequestParam("types") List<String> types) {
+        return AjaxResult.success(sicauService.updateAllBuilding(types, campus));
+    }
+
+    /**
+     * 一次更新所有实验室
+     *
+     * @param types 类型
+     * @return {@link AjaxResult }
+     * @author sora
+     * @date 2022/03/12
+     */
+    @GetMapping("/lab")
+    public AjaxResult updateAllLab(@RequestParam("types") List<String> types) {
+        return AjaxResult.success(sicauService.updateAllBuilding(types));
     }
 
     @GetMapping("/graduate/{size}/{page}")
@@ -56,6 +67,12 @@ public class SicauController {
     @GetMapping("/rent/{size}/{page}")
     public AjaxResult updateRent(@PathVariable("size") int size, @PathVariable("page") int page) {
         sicauService.updateRent(size, page);
+        return AjaxResult.success();
+    }
+
+    @GetMapping("/lab/cache/{campus}")
+    public AjaxResult delLabCache(@PathVariable("campus") String campus) {
+        sicauService.delBuildCache("building/"+campus);
         return AjaxResult.success();
     }
 

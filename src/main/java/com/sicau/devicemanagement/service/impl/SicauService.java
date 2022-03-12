@@ -2,7 +2,7 @@ package com.sicau.devicemanagement.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
+import com.sicau.devicemanagement.common.core.redis.RedisCache;
 import com.sicau.devicemanagement.common.utils.StringUtils;
 import com.sicau.devicemanagement.common.utils.uuid.IdUtils;
 import com.sicau.devicemanagement.domain.Lab;
@@ -10,6 +10,7 @@ import com.sicau.devicemanagement.domain.Schedule;
 import com.sicau.devicemanagement.domain.sicau.*;
 import com.sicau.devicemanagement.mapper.LabMapper;
 import com.sicau.devicemanagement.mapper.ScheduleMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,8 +21,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class SicauService {
@@ -35,11 +35,10 @@ public class SicauService {
     @Resource
     private RestTemplate restTemplate;
 
-    private String token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MjA3MCIsInVzZXJfbmFtZSI6IjcyMDcwIiwic2Vzc2lvbiI6IkppeDViejFKUlFDX0ZXOU9EbWhFcHdma2hfbThOUnBTZVphVnBlOWVBMmc4a" +
-            "FRGMXpDRmQhODM0MjMxNjk5IiwiaXNTdXBlckFkbWluIjoiMCIsInVzZXJOYW1lIjoi5byg6I65IiwidXNlcklkIjoiMTE5MzU5IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImNsaWVudF9pZCI6InNjdS1yc3AtcHVibGl" +
-            "jLWNsaWVudCIsInRnYyI6bnVsbCwic3VjY2VzcyI6dHJ1ZSwic2NvcGUiOlsicmVhZCJdLCJleHBpcmUiOjE2NDcwMzEzNjU0NzYsImV4cCI6MTY0NzAzMTM2NSwiZGVwYXJ0IjoiOTYwNkQ4RUUxRTQ0NEE2Qzg2NUUyQUNBNEVERUMw" +
-            "MUYiLCJqdGkiOiJmNmI3MjJjOC00YTVjLTRjYzAtOWFlNS0zOGE1YzVlYmZlOGEiLCJ0ZW5hbnQiOiJhYzg4Y2ViMzg2YWE0MjMxYjA5YmY0NzJjYjkzN2MyNCIsInN0YXR1cyI6MjAwfQ.g-upjWulRkX7iYvzMGPoFK4Rpq4H6UCe" +
-            "6nwd1ajxQ-aRiNxukk2WZB-6jYFyYgFtp7X6H7v4sWQRzTouH6irV2KqlaS_pvD52VLN5dV_1n_m_1bvdpURYzI6gc3Ovv3NtOxCe8ZRo_yTm5m0a7EGYLkIAMBfrCdSOdLMfBSaSG8";
+    @Autowired
+    private RedisCache redisCache;
+
+    private String token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MjA3MCIsInVzZXJfbmFtZSI6IjcyMDcwIiwic2Vzc2lvbiI6IldJcDgwaEJyYWlTTWNOOHdDeGYyeWNxSjQ5d3E3Z0RyX0k2LWJEQ2xWUGZqS0o5czV3TU4hODM0MjMxNjk5IiwiaXNTdXBlckFkbWluIjoiMCIsInVzZXJOYW1lIjoi5byg6I65IiwidXNlcklkIjoiMTE5MzU5IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImNsaWVudF9pZCI6InNjdS1yc3AtcHVibGljLWNsaWVudCIsInRnYyI6bnVsbCwic3VjY2VzcyI6dHJ1ZSwic2NvcGUiOlsicmVhZCJdLCJleHBpcmUiOjE2NDcwODgxNzM0MjYsImV4cCI6MTY0NzA4ODE3MywiZGVwYXJ0IjoiOTYwNkQ4RUUxRTQ0NEE2Qzg2NUUyQUNBNEVERUMwMUYiLCJqdGkiOiJiM2VlZWMwOS1hMmMwLTQ4MzUtOGVlNS02YTM3ZTBjMTdkMTkiLCJ0ZW5hbnQiOiJhYzg4Y2ViMzg2YWE0MjMxYjA5YmY0NzJjYjkzN2MyNCIsInN0YXR1cyI6MjAwfQ.i0EfOGkdAEHaTZVDRAdIe8pWtHCEdciIfHF3AWFUD9HNR-iOrkb5WEKjgb6zl-CkqtYxT7W0PIK0-R975d5z30Yy7bRcNTofLz8Qvx_A5KdLCWG7r68N5nSa_Vcm3PQS3SNl1Is_8gXLwX37T5MMeDcA11jpeAJ69M0SrkRdkl4";
 
     private static final String USERNAME = "72070";
 
@@ -62,6 +61,8 @@ public class SicauService {
     private static final String GRADUATE_URL = "http://bdo.sicau.edu.cn:9090/api/rsp/data/yjsxskc";
 
     private HttpHeaders header;
+
+    private static final String BUILDING_KEY = "building/";
 
     /**
      * 过时的状态码
@@ -106,52 +107,68 @@ public class SicauService {
     }
 
     public void updateRent(int size, int page) {
-        List<ClassRent> classRents = post(CLASSRENT_URL, size, page, ClassRent.class);
-        if (classRents == null) {
-            return;
-        }
+        String json = post(CLASSRENT_URL, size, page, ClassRent.class);
+        List<ClassRent> classRents = parseValue(json, ClassRent.class);
         for (ClassRent tmp : classRents) {
 
         }
     }
 
-    public void updateClassInfo(int size, int page, List<String> types) {
-        updateClassInfo(size, page, types, "0");
+    public int updateClassInfo(int size, int page, List<String> types) {
+        return updateClassInfo(size, page, types, "1");
     }
 
-    public void updateClassInfo(int size, int page, List<String> types, String campus) {
+    public int updateClassInfo(int size, int page, List<String> types, String campus) {
         // 解析resultValue
-        List<ClassInfo> classInfos = post(CLASSINFO_URL, size, page, ClassInfo.class);
-        if (classInfos == null) {
-            return;
-        }
+        String json = post(CLASSINFO_URL, size, page, ClassInfo.class);
+        List<ClassInfo> classInfos = parseValue(json, ClassInfo.class);
         handlerClassRoom(classInfos, types);
         boolean cam = false;
         if ("1".equals(campus) || "2".equals(campus) || "3".equals(campus)) {
             handlerClassRoom(classInfos, campus);
             cam = true;
         }
+        System.out.println(classInfos);
         Lab lab = new Lab();
         String[] buildNum;
+        int count = 0;
+        Set<String> campusSet = new HashSet<>();
+        System.out.println("size"+classInfos.size());
         for (ClassInfo tmp : classInfos) {
-            lab.setId(IdUtils.simpleUUID());
+            System.out.println(tmp);
+            if (isBuildingExists(campus, tmp.getJSH())) {
+                System.out.println("enter ex");
+                continue;
+            }
+            // 加入集合
+            campusSet.add(tmp.getJSH());
+            lab.setId(tmp.getID_());
             if (cam) {
                 lab.setCampusId(campus);
             }
             // 教室号 3-226
-            buildNum = splitClassRoomNum(tmp.getJSH());
-            lab.setBuildNum(buildNum[0]);
-            lab.setNumber(buildNum[1]);
-            labMapper.insertLab(lab);
+            if (tmp.getJSH().contains("-")) {
+                buildNum = splitClassRoomNum(tmp.getJSH());
+                lab.setBuildNum(buildNum[0]);
+                lab.setNumber(buildNum[1]);
+            } else {
+                lab.setBuildNum(tmp.getJSH());
+                lab.setNumber("0");
+            }
+            if (labMapper.insertLab(lab) > 0) {
+                count++;
+            }
+            System.out.println("haha");
         }
+        // 存入redis
+        redisCache.setCacheSet(BUILDING_KEY+campus, campusSet);
+        return count;
     }
 
     public void updateGraduateClass(int size,  int page) {
         // 解析resultValue
-         List<GraduateClass> graduateClasses = post(GRADUATE_URL, size, page, GraduateClass.class);
-        if (graduateClasses == null) {
-            return;
-        }
+        String json = post(GRADUATE_URL, size, page, GraduateClass.class);
+        List<GraduateClass> graduateClasses = parseValue(json, GraduateClass.class);
         Schedule schedule = new Schedule();
             for (GraduateClass tmp : graduateClasses) {
                 // 如果不是2022年的课就跳过
@@ -181,10 +198,8 @@ public class SicauService {
 
     public void updateUnGraduateClass(int size, int page) {
         // 解析resultValue
-        List<UnGraduateClass> unGraduateClasses = post(UNDERGRADUATE_URL, size, page, UnGraduateClass.class);
-        if (unGraduateClasses == null) {
-            return;
-        }
+        String json = post(UNDERGRADUATE_URL, size, page, UnGraduateClass.class);
+        List<UnGraduateClass> unGraduateClasses = parseValue(json, UnGraduateClass.class);
         Schedule schedule = new Schedule();
         for (UnGraduateClass tmp : unGraduateClasses) {
             if (!"雅安".equals(tmp.getXQMC())) {
@@ -212,6 +227,51 @@ public class SicauService {
 
     public void updateUnGraduateClass() {
         updateUnGraduateClass(10, 1);
+    }
+
+    /**
+     * 更新所有实验室
+     *
+     * @param types  类型
+     * @param campus 校园
+     * @return int
+     * @author sora
+     * @date 2022/03/12
+     */
+    public int updateAllBuilding(List<String> types, String campus) {
+        int total = getTotal(CLASSINFO_URL, ClassInfo.class);
+        int size = 100;
+        int page = 1, num = 0, res = 0;
+        while (num <= total) {
+            res += updateClassInfo(size, page, types, campus);
+            page++;
+            num += size;
+        }
+        System.out.println("update all finish");
+        return res;
+    }
+
+    /**
+     * 更新所有实验室
+     *
+     * @param types  类型
+     * @return int
+     * @author sora
+     * @date 2022/03/12
+     */
+    public int updateAllBuilding(List<String> types) {
+        return updateAllBuilding(types, "1");
+    }
+
+    /**
+     * 删除redis的实验室缓存
+     *
+     * @param key 关键
+     * @author sora
+     * @date 2022/03/12
+     */
+    public void delBuildCache(String key) {
+        redisCache.deleteObject(key);
     }
 
     /**
@@ -257,8 +317,7 @@ public class SicauService {
      * @author sora
      * @date 2022/03/11
      */
-    private <T> LinkedList<T> post(String url, int size, int page, Class<T> resultValue) {
-        System.out.println("enter post");
+    private <T> String post(String url, int size, int page, Class<T> resultValue) {
         MultiValueMap<String, Integer> map = getPageFormDataParam(size, page);
         HttpEntity<MultiValueMap<String, Integer>> param = new HttpEntity<>(map, getHeader());
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, param, String.class);
@@ -268,15 +327,41 @@ public class SicauService {
             return null;
         }
         SicauBody<T> sicauBody = JSONObject.parseObject(body, SicauBody.class);
-        int total = sicauBody.getTotal();
         int status = sicauBody.getStatus();
         System.out.println(status);
         if (status == this.obsoleteStatus) {
             login();
             return post(url, size, page, resultValue);
         }
-//        return JSON.parseArray(JSON.parseObject(body).getString("resultValue"), resultValue);
-        return new LinkedList<>(JSON.parseArray(JSON.parseObject(body).getString("resultValue"), resultValue));
+        return body;
+    }
+
+    private <T> LinkedList<T> parseValue(String json, Class<T> resultValue) {
+        return new LinkedList<>(JSON.parseArray(JSON.parseObject(json).getString("resultValue"), resultValue));
+    }
+
+
+    private <T> int getTotal(String url, Class<T> resultValue) {
+        MultiValueMap<String, Integer> map = getPageFormDataParam(10, 1);
+        HttpEntity<MultiValueMap<String, Integer>> param = new HttpEntity<>(map, getHeader());
+        System.out.println(3);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, param, String.class);
+        System.out.println(2);
+        String body = responseEntity.getBody();
+        if (body == null) {
+            System.out.println("updateRent body is nulll");
+            return -1;
+        }
+        System.out.println(1);
+        SicauBody<T> sicauBody = JSONObject.parseObject(body, SicauBody.class);
+        System.out.println(4);
+        int status = sicauBody.getStatus();
+        System.out.println(status);
+        if (status == this.obsoleteStatus) {
+            login();
+            return getTotal(url, resultValue);
+        }
+        return sicauBody.getTotal();
     }
 
     /**
@@ -361,6 +446,38 @@ public class SicauService {
      * @date 2022/03/11
      */
     private String[] splitClassRoomNum(String num) {
-        return num.split("-");
+        return num.split("-", 2);
+    }
+
+    /**
+     * 判断该教室是否存在
+     *
+     * @param campus   校园
+     * @param location 位置 10-504
+     * @return boolean
+     * @author sora
+     * @date 2022/03/12
+     */
+    private boolean isBuildingExists(String campus, String location) {
+        System.out.println(location);
+        System.out.println("is exists?");
+        Set<String> cacheSet = redisCache.getCacheSet(BUILDING_KEY + campus);
+        System.out.println("here");
+        return cacheSet.contains(location);
+    }
+
+    /**
+     * 判断该教室是否存在
+     *
+     * @param campus   校园
+     * @param buildNum 建立全国矿工工会
+     * @param number   数量
+     * @return boolean
+     * @author sora
+     * @date 2022/03/12
+     */
+    private boolean isBuildingExists(String campus, String buildNum, String number) {
+        String location = buildNum + "-" + number;
+        return isBuildingExists(campus, location);
     }
 }
