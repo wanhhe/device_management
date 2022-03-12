@@ -53,8 +53,8 @@ public class DeviceController extends BaseController
         util.exportExcel(response, list, "【请填写功能名称】数据");
     }
 
-    @PreAuthorize("hasAnyRole('admin','superAdmin')")
-    @GetMapping("/export/{size}/{page}")
+//    @PreAuthorize("hasAnyRole('admin','superAdmin')")
+    @GetMapping("/export/{size}/{page}/{name}")
     public void export(@PathVariable("size") int size, @PathVariable("page") int page,
                         HttpServletResponse response) {
         if (size < 1 || page < 1) {
